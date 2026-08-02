@@ -41,6 +41,9 @@ function actualizarPreview(campo, valor) {
         case 'primary_color':
             $('#previewLogo, #previewAvatar').css('background', valor);
             break;
+        case 'content_bg':
+            $('#previewContent, #previewShell').css('background', valor);
+            break;
     }
 }
 
@@ -50,7 +53,7 @@ function cargarColores() {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            var campos = ['sidebar_bg', 'sidebar_text', 'sidebar_active_bg', 'topbar_bg', 'topbar_text', 'primary_color'];
+            var campos = ['sidebar_bg', 'sidebar_text', 'sidebar_active_bg', 'topbar_bg', 'topbar_text', 'primary_color', 'content_bg'];
             campos.forEach(function(c) {
                 if (data[c]) {
                     $('#' + c + '_text').val(data[c]);
@@ -72,6 +75,7 @@ function guardarColores() {
         topbar_bg: $('#topbar_bg_text').val(),
         topbar_text: $('#topbar_text_text').val(),
         primary_color: $('#primary_color_text').val(),
+        content_bg: $('#content_bg_text').val(),
     };
 
     showLoading();
@@ -121,6 +125,7 @@ function restaurarColores() {
                 topbar_bg: 'rgba(15,15,26,0.92)',
                 topbar_text: '#e2e8f0',
                 primary_color: '#4669FA',
+                content_bg: '#0f0f1a',
             };
             Object.keys(defaults).forEach(function(c) {
                 var val = defaults[c];

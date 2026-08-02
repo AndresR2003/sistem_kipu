@@ -54,6 +54,13 @@
                                 <input type="text" class="form-control" id="topbar_text_text" value="#e2e8f0" maxlength="20">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fondo del Contenido</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" class="form-control form-control-color" id="content_bg" value="#0f0f1a" style="width:50px;height:38px;padding:2px;">
+                                <input type="text" class="form-control" id="content_bg_text" value="#0f0f1a" maxlength="20">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-4 d-flex gap-2">
@@ -71,7 +78,7 @@
         <div class="col-lg-5">
             <div class="card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:84px;">
                 <h6 class="mb-3"><i class="bi bi-eye-fill"></i> Vista Previa</h6>
-                <div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-body);">
+                <div id="previewShell" style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-body);">
                     <div id="previewTopbar" style="background:rgba(15,15,26,0.92);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);">
                         <span id="previewTopbarText" style="color:#e2e8f0;font-size:0.8rem;font-weight:600;"><i class="bi bi-grid-1x2-fill"></i> Dashboard</span>
                         <span style="display:flex;align-items:center;gap:10px;">
@@ -90,7 +97,7 @@
                                 <i class="bi bi-credit-card-fill"></i>
                             </div>
                         </div>
-                        <div style="flex:1;background:var(--bg-body);padding:14px;">
+                        <div id="previewContent" style="flex:1;background:var(--bg-body);padding:14px;">
                             <div style="display:flex;gap:8px;margin-bottom:10px;">
                                 <div style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);">
                                     <div style="height:7px;width:55%;background:var(--border-light);border-radius:4px;margin-bottom:6px;"></div>

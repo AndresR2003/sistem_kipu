@@ -9,6 +9,7 @@ try {
     if (!empty($cfg['topbar_bg']))          echo '--bg-topbar:' . $cfg['topbar_bg'] . ';';
     if (!empty($cfg['topbar_text']))        echo '--topbar-text:' . $cfg['topbar_text'] . ';';
     if (!empty($cfg['primary_color']))      echo '--primary:' . $cfg['primary_color'] . ';';
+    if (!empty($cfg['content_bg']))         echo '--bg-body:' . $cfg['content_bg'] . ';';
 } catch (\Throwable $e) {}
 ?>
 ">
