@@ -105,6 +105,15 @@ class EntregaModel extends Model
         return $this->update($id, ['publicado' => $publicado]);
     }
 
+    public function PublicarCon(int $id, string $tipo, ?int $destinatarioId): bool
+    {
+        return $this->update($id, [
+            'publicado'          => 1,
+            'destinatario_tipo'  => $tipo,
+            'destinatario_id'    => $destinatarioId,
+        ]);
+    }
+
     public function ObtenerRegistros(string $fechaInicio = '', string $fechaFin = ''): array
     {
         $db = \Config\Database::connect();

@@ -69,6 +69,15 @@ class Entregas extends BaseController
         return $this->response->setJSON($this->model->ObtenerTodasConDestinatario());
     }
 
+    public function obtener(int $id): \CodeIgniter\HTTP\Response
+    {
+        $tarea = $this->model->ObtenerPorId($id);
+        if (!$tarea) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Tarea no encontrada.']);
+        }
+        return $this->response->setJSON($tarea);
+    }
+
     public function registros(): \CodeIgniter\HTTP\Response
     {
         $inicio = $this->request->getGet('inicio') ?? '';
@@ -133,12 +142,33 @@ class Entregas extends BaseController
         if (!$tarea) {
             return $this->response->setJSON(['success' => false, 'message' => 'Tarea no encontrada.']);
         }
-        $nuevo = $tarea['publicado'] ? 0 : 1;
-        $ok = $this->model->TogglePublicado($id, $nuevo);
+
+        $json = $this->request->getJSON(true) ?? [];
+        $tipo = $json['destinatario_tipo'] ?? 'todos';
+        $destId = !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null;
+
+        $ok = $this->model->PublicarCon($id, $tipo, $destId);
         return $this->response->setJSON([
             'success' => $ok,
-            'publicado' => (bool) $nuevo,
-            'message' => $ok ? ($nuevo ? 'Tarea publicada.' : 'Tarea despublicada.') : 'Error.',
+            'publicado' => (bool) $ok,
+            'message' => $ok ? 'Tarea publicada.' : 'Error al publicar.',
+        ]);
+    }
+
+    public function despublicar(int $id): \CodeIgniter\HTTP\Response
+    {
+        $tarea = $this->model->ObtenerPorId($id);
+        if (!$tarea || !$tarea['publicado']) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'La tarea no esta publicada.',
+            ]);
+        }
+
+        $ok = $this->model->TogglePublicado($id, 0);
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Tarea despublicada.' : 'Error al despublicar.',
         ]);
     }
 

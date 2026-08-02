@@ -118,3 +118,33 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Publicar tarea -->
+<div class="modal fade" id="modalPublicar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="bi bi-send-fill" style="color:var(--success);"></i> Publicar tarea</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pubTareaId">
+                <div class="mb-2">
+                    <label class="form-label small">Dirigido a</label>
+                    <select class="form-select" id="pubTipo" onchange="togglePubDestinatario()">
+                        <option value="todos">Todos</option>
+                        <option value="usuarios">Usuarios</option>
+                        <option value="departamento">Departamento</option>
+                    </select>
+                </div>
+                <div class="mb-2" id="pubDestinatarioWrap" style="display:none;">
+                    <select class="form-select" id="pubDestinatario"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success btn-sm" onclick="confirmarPublicar()"><i class="bi bi-send-fill"></i> Publicar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -49,7 +49,6 @@ function cargarTareasAdmin() {
                     : (t.destinatario_tipo === 'usuarios'
                         ? '<span class="badge-dest"><i class="bi bi-person-fill"></i> ' + escHtml(t.destinatario_nombre || 'Usuario') + '</span>'
                         : '<span class="badge-dest"><i class="bi bi-people-fill"></i> ' + escHtml(t.destinatario_nombre || 'Departamento') + '</span>');
-                var jsonTarea = JSON.stringify(t).replace(/'/g, '&#39;');
                 var fila = '<tr>' +
                     '<td><div class="fw-semibold">' + escHtml(t.titulo) + '</div>' +
                     (t.descripcion ? '<small class="text-muted">' + escHtml(t.descripcion) + '</small>' : '') + '</td>' +
@@ -59,8 +58,8 @@ function cargarTareasAdmin() {
                     '<td>' + dest + '</td>' +
                     '<td>' + estado + '</td>' +
                     '<td class="text-center text-nowrap">' +
-                    '<button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarTarea(' + t.id + ', \'' + jsonTarea + '\')"><i class="bi bi-pencil"></i></button> ' +
-                    '<button class="btn btn-sm btn-outline-secondary" title="Publicar/Despublicar" onclick="togglePublicado(' + t.id + ')"><i class="bi bi-eye"></i></button> ' +
+                    '<button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarTarea(' + t.id + ')"><i class="bi bi-pencil"></i></button> ' +
+                    '<button class="btn btn-sm btn-outline-secondary" title="Publicar/Despublicar" onclick="gestionarPublicacion(' + t.id + ')"><i class="bi bi-eye"></i></button> ' +
                     '<button class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="eliminarTarea(' + t.id + ', \'' + escHtml(t.titulo).replace(/'/g, '\\\'') + '\')"><i class="bi bi-trash"></i></button>' +
                     '</td></tr>';
                 tbody.append(fila);
@@ -124,28 +123,34 @@ function nuevaTarea() {
     new bootstrap.Modal(document.getElementById('modalTarea')).show();
 }
 
-function editarTarea(id, jsonTarea) {
-    var t;
-    try {
-        t = JSON.parse(jsonTarea.replace(/&#39;/g, "'"));
-    } catch (e) {
-        Swal.fire('Error', 'No se pudo cargar la tarea.', 'error');
-        return;
-    }
-    $('#tareaId').val(t.id);
-    $('#tareaTitulo').val(t.titulo || '');
-    $('#tareaDescripcion').val(t.descripcion || '');
-    $('#tareaInicio').val((t.fecha_inicio || '').slice(0, 10));
-    $('#tareaFin').val(t.fecha_fin ? t.fecha_fin.slice(0, 10) : '');
-    $('#tareaTipo').val(t.destinatario_tipo || 'todos');
-    toggleTareaDestinatario();
-    if (t.destinatario_id) {
-        $('#tareaDestinatario').val(String(t.destinatario_id));
-    }
-    $('#tareaRepetir').prop('checked', !!t.repetir_diario);
-    $('#tareaPublicado').prop('checked', !!t.publicado);
-    $('#modalTareaTitulo').html('<i class="bi bi-pencil"></i> Editar tarea');
-    new bootstrap.Modal(document.getElementById('modalTarea')).show();
+function editarTarea(id) {
+    showLoading();
+    $.ajax({
+        url: BASE + 'obtener/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function(t) {
+            hideLoading();
+            $('#tareaId').val(t.id);
+            $('#tareaTitulo').val(t.titulo || '');
+            $('#tareaDescripcion').val(t.descripcion || '');
+            $('#tareaInicio').val((t.fecha_inicio || '').slice(0, 10));
+            $('#tareaFin').val(t.fecha_fin ? t.fecha_fin.slice(0, 10) : '');
+            $('#tareaTipo').val(t.destinatario_tipo || 'todos');
+            toggleTareaDestinatario();
+            if (t.destinatario_id) {
+                $('#tareaDestinatario').val(String(t.destinatario_id));
+            }
+            $('#tareaRepetir').prop('checked', !!t.repetir_diario);
+            $('#tareaPublicado').prop('checked', !!t.publicado);
+            $('#modalTareaTitulo').html('<i class="bi bi-pencil"></i> Editar tarea');
+            new bootstrap.Modal(document.getElementById('modalTarea')).show();
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'No se pudo cargar la tarea.', 'error');
+        }
+    });
 }
 
 function guardarTarea() {
@@ -190,15 +195,127 @@ function guardarTarea() {
     });
 }
 
-function togglePublicado(id) {
+function gestionarPublicacion(id) {
+    showLoading();
+    $.ajax({
+        url: BASE + 'obtener/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function(t) {
+            hideLoading();
+            if (parseInt(t.publicado)) {
+                Swal.fire({
+                    title: 'Despublicar tarea',
+                    text: '¿Retirar la tarea "' + t.titulo + '" de la seccion Tareas?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Si, despublicar',
+                    cancelButtonText: 'Cancelar'
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        despublicarTarea(id);
+                    }
+                });
+            } else {
+                abrirModalPublicar(t);
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'No se pudo cargar la tarea.', 'error');
+        }
+    });
+}
+
+function abrirModalPublicar(t) {
+    $('#pubTareaId').val(t.id);
+    $('#pubTipo').val(t.destinatario_tipo || 'todos');
+    togglePubDestinatario();
+    if (t.destinatario_id) {
+        $('#pubDestinatario').val(String(t.destinatario_id));
+    }
+    new bootstrap.Modal(document.getElementById('modalPublicar')).show();
+}
+
+function togglePubDestinatario() {
+    var tipo = $('#pubTipo').val();
+    if (tipo === 'todos') {
+        $('#pubDestinatarioWrap').hide();
+        return;
+    }
+    $('#pubDestinatarioWrap').show();
+
+    if (destinatariosCache) {
+        llenarPubDestinatarios(tipo);
+        return;
+    }
+
+    $.ajax({
+        url: BASE_URL + 'borradores/destinatarios',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            destinatariosCache = data;
+            llenarPubDestinatarios(tipo);
+        }
+    });
+}
+
+function llenarPubDestinatarios(tipo) {
+    var sel = $('#pubDestinatario');
+    sel.empty();
+    if (tipo === 'usuarios' && destinatariosCache.usuarios) {
+        destinatariosCache.usuarios.forEach(function(u) {
+            sel.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
+        });
+    } else if (tipo === 'departamento' && destinatariosCache.departamentos) {
+        destinatariosCache.departamentos.forEach(function(d) {
+            sel.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
+        });
+    }
+}
+
+function confirmarPublicar() {
+    var id = $('#pubTareaId').val();
+    var tipo = $('#pubTipo').val();
+    var destId = tipo !== 'todos' ? parseInt($('#pubDestinatario').val()) : null;
+
     showLoading();
     $.ajax({
         url: BASE + 'publicar/' + id,
         type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            destinatario_tipo: tipo,
+            destinatario_id: destId
+        }),
         dataType: 'json',
         success: function(response) {
             hideLoading();
-            Swal.fire(response.success ? 'Exito' : 'Error', response.message, response.success ? 'success' : 'error');
+            if (response.success) {
+                bootstrap.Modal.getInstance(document.getElementById('modalPublicar')).hide();
+                Swal.fire({ icon: 'success', title: 'Publicada', text: 'La tarea se publico en Tareas.', timer: 1500, showConfirmButton: false });
+                cargarTareasAdmin();
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        }
+    });
+}
+
+function despublicarTarea(id) {
+    showLoading();
+    $.ajax({
+        url: BASE + 'despublicar/' + id,
+        type: 'POST',
+        dataType: 'json',
+        success: function(response) {
+            hideLoading();
+            Swal.fire(response.success ? 'Despublicada' : 'Error', response.message, response.success ? 'success' : 'error');
             cargarTareasAdmin();
         },
         error: function() {

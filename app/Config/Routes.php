@@ -103,10 +103,12 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('entregas', 'Entregas::index');
     $routes->get('entregas/listar', 'Entregas::listar');
     $routes->get('entregas/listarAdmin', 'Entregas::listarAdmin');
+    $routes->get('entregas/obtener/(:num)', 'Entregas::obtener/$1');
     $routes->get('entregas/registros', 'Entregas::registros');
     $routes->post('entregas/guardar', 'Entregas::guardar');
     $routes->post('entregas/eliminar/(:num)', 'Entregas::eliminar/$1');
     $routes->post('entregas/publicar/(:num)', 'Entregas::publicar/$1');
+    $routes->post('entregas/despublicar/(:num)', 'Entregas::despublicar/$1');
     $routes->post('entregas/completar/(:num)', 'Entregas::completar/$1');
     $routes->post('entregas/eliminarRegistro/(:num)', 'Entregas::eliminarRegistro/$1');
 
