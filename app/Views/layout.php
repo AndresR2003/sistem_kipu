@@ -30,9 +30,9 @@ try {
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #06b6d4;
-            --sidebar-width: 248px;
-            --sidebar-collapsed: 68px;
-            --topbar-height: 60px;
+            --sidebar-width: 226px;
+            --sidebar-collapsed: 62px;
+            --topbar-height: 52px;
             --radius: 12px;
             --radius-sm: 8px;
             --transition: 0.25s ease;
@@ -85,8 +85,8 @@ try {
             background: var(--bg-body);
             color: var(--text);
             min-height: 100vh;
-            font-size: 0.875rem;
-            line-height: 1.5;
+            font-size: 0.83rem;
+            line-height: 1.45;
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -110,26 +110,26 @@ try {
         [data-sidebar="collapsed"] .sidebar { width: var(--sidebar-collapsed); }
 
         .sidebar-brand {
-            padding: 16px 18px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 10px;
-            min-height: 60px;
+            min-height: 52px;
             flex-shrink: 0;
             position: relative;
         }
 
         .sidebar-brand .brand-icon {
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border-radius: var(--radius-sm);
             background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             flex-shrink: 0;
         }
 
@@ -141,7 +141,7 @@ try {
 
         .sidebar-brand .brand-text h5 {
             font-weight: 800;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             margin: 0;
             color: var(--text);
             letter-spacing: -0.3px;
@@ -150,9 +150,9 @@ try {
 
         .sidebar-brand .brand-text small {
             color: var(--text-muted);
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             display: block;
         }
 
@@ -194,17 +194,17 @@ try {
         }
 
         .sidebar-nav {
-            padding: 12px 0;
+            padding: 8px 0;
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
         }
 
         .sidebar-nav .nav-label {
-            padding: 8px 20px 4px;
-            font-size: 0.6rem;
+            padding: 6px 16px 2px;
+            font-size: 0.55rem;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1.1px;
             color: var(--text-muted);
             font-weight: 600;
             white-space: nowrap;
@@ -212,17 +212,17 @@ try {
 
         [data-sidebar="collapsed"] .sidebar-nav .nav-label { opacity: 0; }
 
-        .sidebar-nav .nav-item { margin: 2px 10px; }
+        .sidebar-nav .nav-item { margin: 1px 8px; }
 
         .sidebar-nav .nav-link {
             color: var(--text-nav);
-            padding: 10px 12px;
+            padding: 7px 10px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.2s;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             text-decoration: none;
             white-space: nowrap;
@@ -230,8 +230,8 @@ try {
         }
 
         .sidebar-nav .nav-link i {
-            font-size: 1.15rem;
-            width: 22px;
+            font-size: 1rem;
+            width: 20px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -257,7 +257,7 @@ try {
         .sidebar-nav .nav-divider {
             height: 1px;
             background: var(--border);
-            margin: 8px 16px;
+            margin: 6px 14px;
         }
 
         .main-content {
@@ -286,7 +286,7 @@ try {
         .top-navbar h6 {
             margin: 0;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: var(--topbar-text, var(--text));
         }
 
@@ -376,13 +376,13 @@ try {
             letter-spacing: 0.5px;
         }
 
-        .content-area { padding: 24px 28px; }
+        .content-area { padding: 16px 20px; }
 
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px 22px;
+            padding: 13px 16px;
             transition: all 0.25s;
             height: 100%;
             position: relative;
@@ -405,20 +405,20 @@ try {
         .stat-card:hover::before { opacity: 1; }
 
         .stat-card .icon-box {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            margin-bottom: 14px;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
         }
 
         .stat-card .stat-value {
-            font-size: 1.6rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
             letter-spacing: -0.5px;
         }
 
@@ -434,7 +434,7 @@ try {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px;
+            padding: 14px 16px;
         }
 
         .table {
@@ -443,7 +443,7 @@ try {
             --bs-table-hover-bg: rgba(70,105,250,0.03) !important;
             --bs-table-color: var(--text) !important;
             --bs-table-border-color: var(--border) !important;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin-bottom: 0;
         }
 
@@ -453,14 +453,14 @@ try {
             color: var(--text);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.68rem;
-            letter-spacing: 0.6px;
-            padding: 11px 14px;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
         }
 
         .table tbody td {
             border-bottom: 1px solid var(--border);
-            padding: 11px 14px;
+            padding: 8px 12px;
             vertical-align: middle;
             color: var(--text);
         }
@@ -522,14 +522,14 @@ try {
 
         .modal-header {
             border-bottom: 1px solid var(--border);
-            padding: 16px 22px;
+            padding: 12px 18px;
         }
 
         .modal-header .btn-close { filter: invert(0.6); }
-        .modal-body { padding: 22px; }
+        .modal-body { padding: 18px; }
         .modal-footer {
             border-top: 1px solid var(--border);
-            padding: 14px 22px;
+            padding: 10px 18px;
         }
 
         .form-control, .form-select {
@@ -537,8 +537,8 @@ try {
             border: 1px solid var(--border-light);
             color: var(--text);
             border-radius: var(--radius-sm);
-            padding: 9px 14px;
-            font-size: 0.85rem;
+            padding: 7px 12px;
+            font-size: 0.83rem;
         }
 
         .form-control:focus, .form-select:focus {
@@ -632,8 +632,8 @@ try {
             gap: 12px;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 18px;
-            padding: 16px 20px;
+            margin-bottom: 14px;
+            padding: 12px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
