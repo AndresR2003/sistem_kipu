@@ -130,6 +130,17 @@ function cargarTareasDiarias(initial) {
                         (t.descripcion ? '<div class="pub-contenido">' + escHtml(t.descripcion) + '</div>' : '') +
                         '</div></div>' +
                         (hechoPor ? '<div class="ent-hechos">' + hechoPor + '</div>' : '') +
+                        '<div class="pub-acciones">' +
+                        '<button class="rec" onclick="agregarRecordatorio(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+                        '<button class="mar" onclick="agregarMarcador(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+                        '<button class="com" onclick="toggleComentariosEnt(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios</button>' +
+                        '</div>' +
+                        '<div class="comentarios-wrap" id="comentarios-ent-' + t.id + '" style="display:none;">' +
+                        '<div class="comentarios-lista"></div>' +
+                        '<div class="comentarios-form">' +
+                        '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+                        '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentarioEnt(' + t.id + ', this)">Enviar</button>' +
+                        '</div></div>' +
                         '</div>';
                 });
 
@@ -220,6 +231,69 @@ function toggleTarea(id, checkbox) {
         },
         error: function() {
             checkbox.checked = !checkbox.checked;
+        }
+    });
+}
+
+function toggleComentariosEnt(id) {
+    var wrap = $('#comentarios-ent-' + id);
+    var visible = wrap.is(':visible');
+    wrap.slideToggle(200);
+    if (!visible) cargarComentariosEnt(id);
+}
+
+function cargarComentariosEnt(id) {
+    var lista = $('#comentarios-ent-' + id + ' .comentarios-lista');
+    $.ajax({
+        url: BASE_URL + 'entregas/comentarios/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            lista.empty();
+            if (!data || data.length === 0) {
+                lista.html('<div class="comentario-vacio">Sin comentarios</div>');
+                return;
+            }
+            data.forEach(function(c) {
+                var nombre = c.autor_nombre || 'Desconocido';
+                var fecha  = c.created_at ? formatearFechaHora(c.created_at) : '';
+                lista.append(
+                    '<div class="comentario-item">' +
+                    '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + '</span></div>' +
+                    '<div class="comentario-texto">' + escHtml(c.comentario) + '</div>' +
+                    '</div>'
+                );
+            });
+        }
+    });
+}
+
+function guardarComentarioEnt(id, btn) {
+    var wrap = $('#comentarios-ent-' + id);
+    var ta   = wrap.find('textarea');
+    var texto = ta.val().trim();
+    if (!texto) return;
+
+    $(btn).prop('disabled', true);
+    $.ajax({
+        url: BASE_URL + 'entregas/comentario',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ entrega_id: id, comentario: texto }),
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                ta.val('');
+                cargarComentariosEnt(id);
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        },
+        complete: function() {
+            $(btn).prop('disabled', false);
         }
     });
 }

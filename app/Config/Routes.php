@@ -112,6 +112,8 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->post('entregas/despublicar/(:num)', 'Entregas::despublicar/$1');
     $routes->post('entregas/completar/(:num)', 'Entregas::completar/$1');
     $routes->post('entregas/eliminarRegistro/(:num)', 'Entregas::eliminarRegistro/$1');
+    $routes->get('entregas/comentarios/(:num)', 'Entregas::listarComentarios/$1');
+    $routes->post('entregas/comentario', 'Entregas::guardarComentario');
 
     $routes->get('noticias', 'Noticias::index');
     $routes->get('ideas', 'Ideas::index');

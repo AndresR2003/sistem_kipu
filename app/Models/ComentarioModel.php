@@ -13,7 +13,7 @@ class ComentarioModel extends Model
     protected $createdField  = 'created_at';
 
     protected $allowedFields = [
-        'borrador_id', 'usuario_id', 'comentario',
+        'borrador_id', 'entrega_id', 'usuario_id', 'comentario',
     ];
 
     public function ObtenerPorBorrador(int $borradorId): array
@@ -21,6 +21,15 @@ class ComentarioModel extends Model
         return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre')
                     ->join('admin_usuarios', 'admin_usuarios.id = comentarios.usuario_id', 'left')
                     ->where('comentarios.borrador_id', $borradorId)
+                    ->orderBy('comentarios.created_at', 'ASC')
+                    ->findAll();
+    }
+
+    public function ObtenerPorEntrega(int $entregaId): array
+    {
+        return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre')
+                    ->join('admin_usuarios', 'admin_usuarios.id = comentarios.usuario_id', 'left')
+                    ->where('comentarios.entrega_id', $entregaId)
                     ->orderBy('comentarios.created_at', 'ASC')
                     ->findAll();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ComentarioModel;
 use App\Models\DepartamentoModel;
 use App\Models\EntregaModel;
 
@@ -222,6 +223,36 @@ class Entregas extends BaseController
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Registro eliminado.' : 'Error al eliminar.',
+        ]);
+    }
+
+    public function listarComentarios(int $id): \CodeIgniter\HTTP\Response
+    {
+        $model = new ComentarioModel();
+        return $this->response->setJSON($model->ObtenerPorEntrega($id));
+    }
+
+    public function guardarComentario(): \CodeIgniter\HTTP\Response
+    {
+        $json = $this->request->getJSON(true);
+
+        if (!$json || empty($json['entrega_id']) || empty($json['comentario'])) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Faltan datos.',
+            ]);
+        }
+
+        $model = new ComentarioModel();
+        $ok    = $model->Guardar([
+            'entrega_id'  => (int) $json['entrega_id'],
+            'usuario_id'  => session()->get('usuario_id') ?? session()->get('admin_id'),
+            'comentario'  => $json['comentario'],
+        ]);
+
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Comentario agregado.' : 'Error al guardar.',
         ]);
     }
 }
