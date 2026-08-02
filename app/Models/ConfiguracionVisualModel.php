@@ -15,7 +15,7 @@ class ConfiguracionVisualModel extends Model
 
     protected $allowedFields = [
         'sidebar_bg', 'sidebar_text', 'sidebar_active_bg',
-        'topbar_bg', 'topbar_text', 'primary_color', 'content_bg',
+        'topbar_bg', 'topbar_text', 'primary_color', 'content_bg', 'card_bg',
     ];
 
     public function Obtener(): array
@@ -33,6 +33,7 @@ class ConfiguracionVisualModel extends Model
             'topbar_text'       => '#e2e8f0',
             'primary_color'     => '#4669FA',
             'content_bg'        => '#0f0f1a',
+            'card_bg'           => '#1a1a2e',
         ];
     }
 

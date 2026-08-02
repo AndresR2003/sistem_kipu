@@ -61,6 +61,13 @@
                                 <input type="text" class="form-control" id="content_bg_text" value="#0f0f1a" maxlength="20">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fondo de Tarjetas</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" class="form-control form-control-color" id="card_bg" value="#1a1a2e" style="width:50px;height:38px;padding:2px;">
+                                <input type="text" class="form-control" id="card_bg_text" value="#1a1a2e" maxlength="20">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-4 d-flex gap-2">
@@ -99,11 +106,11 @@
                         </div>
                         <div id="previewContent" style="flex:1;background:var(--bg-body);padding:14px;">
                             <div style="display:flex;gap:8px;margin-bottom:10px;">
-                                <div style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);">
+                                <div class="preview-card" style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);">
                                     <div style="height:7px;width:55%;background:var(--border-light);border-radius:4px;margin-bottom:6px;"></div>
                                     <div style="height:7px;width:35%;background:var(--border);border-radius:4px;"></div>
                                 </div>
-                                <div style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);">
+                                <div class="preview-card" style="flex:1;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);">
                                     <div style="height:7px;width:55%;background:var(--border-light);border-radius:4px;margin-bottom:6px;"></div>
                                     <div style="height:7px;width:35%;background:var(--border);border-radius:4px;"></div>
                                 </div>

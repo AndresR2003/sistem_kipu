@@ -10,6 +10,7 @@ try {
     if (!empty($cfg['topbar_text']))        echo '--topbar-text:' . $cfg['topbar_text'] . ';';
     if (!empty($cfg['primary_color']))      echo '--primary:' . $cfg['primary_color'] . ';';
     if (!empty($cfg['content_bg']))         echo '--bg-body:' . $cfg['content_bg'] . ';';
+    if (!empty($cfg['card_bg']))            echo '--bg-card:' . $cfg['card_bg'] . ';';
 } catch (\Throwable $e) {}
 ?>
 ">
