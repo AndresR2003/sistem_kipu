@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class BorradorModel extends Model
+{
+    protected $table      = 'borradores';
+    protected $primaryKey = 'id';
+    protected $returnType = 'array';
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+
+    protected $allowedFields = [
+        'titulo', 'contenido', 'etiqueta', 'fijado', 'usuario_id',
+        'seccion_destino', 'destinatario_tipo', 'destinatario_id', 'publicado', 'completado',
+    ];
+
+    protected $validationRules = [
+        'titulo' => 'required|max_length[255]',
+    ];
+
+    protected $validationMessages = [
+        'titulo' => ['required' => 'El titulo es obligatorio.'],
+    ];
+
+    public function ObtenerTodos(): array
+    {
+        return $this->orderBy('fijado DESC, updated_at DESC')->findAll();
+    }
+
+    public function ObtenerPorId(int $id): ?array
+    {
+        return $this->find($id);
+    }
+
+    public function ObtenerPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): array
+    {
+        $this->where('publicado', 1)->where('seccion_destino', $seccion);
+
+        // Admin y superadmin ven todas las publicaciones
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            $this->groupStart();
+            $this->where('destinatario_tipo', 'todos');
+            if ($usuarioId) {
+                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
+            }
+            if ($departamentoId) {
+                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
+            }
+            $this->groupEnd();
+        }
+
+        return $this->orderBy('fijado DESC, updated_at DESC')->findAll();
+    }
+
+    public function Guardar(array $datos): bool
+    {
+        if (!empty($datos['id'])) {
+            $id = $datos['id'];
+            unset($datos['id']);
+            return $this->update($id, $datos);
+        }
+        return $this->insert($datos) ? true : false;
+    }
+
+    public function Eliminar(int $id): bool
+    {
+        return $this->delete($id);
+    }
+
+    public function Publicar(int $id, string $seccion, string $tipo, ?int $destinatarioId): bool
+    {
+        return $this->update($id, [
+            'seccion_destino'    => $seccion,
+            'destinatario_tipo'  => $tipo,
+            'destinatario_id'    => $destinatarioId,
+            'publicado'          => 1,
+        ]);
+    }
+
+    public function Despublicar(int $id): bool
+    {
+        return $this->update($id, [
+            'publicado' => 0,
+        ]);
+    }
+
+    public function ToggleCompletado(int $id, int $completado): bool
+    {
+        return $this->update($id, ['completado' => $completado]);
+    }
+}
