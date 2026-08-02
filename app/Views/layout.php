@@ -48,7 +48,7 @@ try {
             --bg-input-hover: rgba(255,255,255,0.07);
             --bg-topbar: rgba(15,15,26,0.92);
             --text: #e2e8f0;
-            --text-muted: rgba(255,255,255,0.38);
+            --text-muted: rgba(255,255,255,0.52);
             --text-nav: rgba(255,255,255,0.55);
             --border: rgba(255,255,255,0.05);
             --border-light: rgba(255,255,255,0.1);
@@ -556,6 +556,8 @@ try {
             font-size: 0.8rem;
             margin-bottom: 4px;
         }
+
+        .text-muted { color: var(--text-muted) !important; }
 
         div.dataTables_wrapper { background: transparent !important; }
 

@@ -39,7 +39,7 @@ function actualizarPreview(campo, valor) {
             $('#previewTopbarText, #previewTopbarIcon').css('color', valor);
             break;
         case 'primary_color':
-            $('#previewSidebarActive').css('background', valor);
+            $('#previewLogo, #previewAvatar').css('background', valor);
             break;
     }
 }

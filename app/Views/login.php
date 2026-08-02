@@ -13,7 +13,7 @@
             --bg-body: #0f0f1a;
             --bg-card: #1a1a2e;
             --text: #e2e8f0;
-            --text-muted: rgba(255,255,255,0.38);
+            --text-muted: rgba(255,255,255,0.52);
             --input-bg: rgba(255,255,255,0.04);
             --border: rgba(255,255,255,0.06);
         }
