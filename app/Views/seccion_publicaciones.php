@@ -56,8 +56,8 @@
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-meta{font-size:0.65rem;margin:0;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-badge{font-size:0.55rem;padding:2px 7px;margin:0;}
-#publicacionesContainer[data-seccion="tareas"] .pub-check{gap:10px;}
-#publicacionesContainer[data-seccion="tareas"] .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;}
+#publicacionesContainer[data-seccion="tareas"] .pub-check{gap:10px;justify-content:space-between;}
+#publicacionesContainer[data-seccion="tareas"] .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;order:2;}
 #publicacionesContainer[data-seccion="tareas"] .pub-acciones{margin-top:2px;opacity:0;transition:opacity 0.15s;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card:hover .pub-acciones{opacity:1;}
 #publicacionesContainer[data-seccion="tareas"] .pub-acciones button{font-size:0.65rem;padding:2px 7px;}
