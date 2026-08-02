@@ -1,69 +1,148 @@
-# CodeIgniter 4 Application Starter
+# Sistema de Gestion Litio
 
-## What is CodeIgniter?
+Sistema de gestion interna para el hotel Litio, desarrollado con **CodeIgniter 4** y **Bootstrap 5**.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Funcionalidades
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- **Inicio**: Bienvenida con accesos rapidos a las secciones
+- **Noticias / Ideas / Manual / Tareas**: Publicaciones con destinatarios (todos, individual, departamento) y comentarios
+- **Tareas**: Marcar como realizadas mediante checkbox
+- **Recordatorios / Marcadores**: Personales por usuario
+- **Borradores**: Flujo de trabajo borrador -> publicacion
+- **Calendario**: Eventos y reuniones
+- **Colaboradores / Personal**: Gestion de empleados con roles y departamentos
+- **Configuracion Visual**: Colores del sistema personalizables
+- **Usuarios / Pagos** (solo admin): Control de pagos con comprobantes
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Requisitos
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+- **XAMPP** con **PHP 8.2** o superior (https://www.apachefriends.org)
+- **Git** (https://git-scm.com)
+- **Composer** (https://getcomposer.org)
+- Cuenta de **GitHub**
 
-## Installation & updates
+## Instalacion (primer uso)
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+1. **Clonar el repositorio**
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+   ```bash
+   git clone https://github.com/AndresR2003/sistem_lito.git
+   cd sistem_lito
+   ```
 
-## Setup
+2. **Instalar dependencias**
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+   ```bash
+   composer install
+   ```
 
-## Important Change with index.php
+3. **Crear el archivo `.env`**
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+   El archivo `.env` NO esta en el repositorio por seguridad (contiene credenciales de la base de datos).
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+   ```bash
+   copy env .env
+   ```
 
-**Please** read the user guide for a better explanation of how CI4 works!
+   Luego editar `.env` con las credenciales de la base de datos. Dos opciones:
 
-## Repository Management
+   **Opcion A - Base de datos compartida (recomendada):**
+   Solicitar al administrador las credenciales del servidor (host, usuario, contrasena, nombre de la BD) y completarlas.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+   **Opcion B - Base de datos local:**
+   Crear una base de datos nueva en `phpMyAdmin` y configurar:
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+   ```
+   database.default.hostname = localhost
+   database.default.database = nombre_de_la_bd
+   database.default.username = root
+   database.default.password =
+   ```
 
-## Server Requirements
+4. **Base de datos**
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+   Ejecutar los archivos SQL en el siguiente orden (estan en la raiz del proyecto):
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+   - `database_migration_*.sql` (migraciones, en orden alfabetico/cronologico)
+   - `database_seed_*.sql` (datos de ejemplo, opcional)
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+   > ⚠️ **Importante**: Si se usa la base de datos compartida, las migraciones se ejecutan una sola vez en el servidor. No volver a ejecutarlas.
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+5. **Levantar el sistema**
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+   - Copiar la carpeta a `C:\xampp\htdocs\sistem_lito` (si no se clono ahi directamente)
+   - Iniciar **Apache** y **MySQL** en el panel de XAMPP
+   - Abrir en el navegador: `http://localhost/sistem_lito`
+
+6. **Usuarios de acceso**
+
+   - El administrador puede crear usuarios desde **Colaboradores / Personal**
+   - Credenciales por defecto (si se ejecuto el seed de empleados): `username` / `123456`
+
+## Flujo de trabajo con Git
+
+### Reglas basicas
+
+1. **Siempre `git pull` antes de empezar a trabajar** para traer los ultimos cambios
+2. **Commit frecuente** con mensajes descriptivos
+3. **`git pull` antes de `git push`** para evitar conflictos
+4. No editar el mismo archivo a la vez que otra persona
+
+### Trabajo diario (cambios pequenos)
+
+```bash
+git pull                                  # traer cambios de los demas
+# ... hacer modificaciones ...
+git add .
+git commit -m "Descripcion del cambio"
+git push                                  # subir cambios
+```
+
+### Trabajo con ramas (cambios grandes)
+
+```bash
+git checkout -b nombre-de-la-rama         # crear rama nueva
+# ... hacer modificaciones ...
+git add .
+git commit -m "Descripcion del cambio"
+git push -u origin nombre-de-la-rama      # subir la rama
+```
+
+Luego en GitHub crear un **Pull Request** para fusionar la rama con `main`.
+
+### Resolucion de conflictos
+
+Si dos personas editan las mismas lineas, Git marca el conflicto en el archivo:
+
+```
+<<<<<<< HEAD
+tu codigo
+=======
+codigo del otro
+>>>>>>> nombre-de-la-rama
+```
+
+Se elige manualmente que version queda, se eliminan los marcadores y se hace commit.
+
+## Estructura del proyecto
+
+```
+app/
+  Controllers/    # Controladores del sistema
+  Models/         # Modelos de base de datos
+  Views/          # Vistas (HTML + PHP)
+  Config/         # Configuracion (rutas, filtros, etc.)
+js/               # Archivos JavaScript por seccion
+public/           # Archivos publicos (fotos de perfil, etc.)
+database_*.sql    # Migraciones y seeds de base de datos
+```
+
+## Seguridad
+
+- El archivo `.env` con las credenciales **nunca** se sube a GitHub (esta en `.gitignore`)
+- Los comprobantes de pago subidos (`uploads/`) no se versionan
+- Las sesiones y archivos temporales (`writable/`) no se versionan
+
+## Soporte
+
+Para reportar problemas o proponer mejoras, usar los issues del repositorio de GitHub.
