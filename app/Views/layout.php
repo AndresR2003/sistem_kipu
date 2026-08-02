@@ -817,12 +817,6 @@ try {
             <div class="nav-divider"></div>
             <div class="nav-label">Herramientas</div>
             <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'entregas' ? 'active' : '' ?>" href="<?= site_url('entregas') ?>">
-                    <i class="bi bi-arrow-left-right"></i>
-                    <span>Entregas / Pases de turno</span>
-                </a>
-            </div>
-            <div class="nav-item">
                 <a class="nav-link <?= uri_string() === 'noticias' ? 'active' : '' ?>" href="<?= site_url('noticias') ?>">
                     <i class="bi bi-newspaper"></i>
                     <span>Noticias</span>
@@ -890,6 +884,12 @@ try {
                 <a class="nav-link <?= uri_string() === 'pagos' ? 'active' : '' ?>" href="<?= site_url('pagos') ?>">
                     <i class="bi bi-credit-card-fill"></i>
                     <span>Pagos</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link <?= uri_string() === 'entregas' ? 'active' : '' ?>" href="<?= site_url('entregas') ?>">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <span>Entregas / Pases de turno</span>
                 </a>
             </div>
             <?php endif; ?>

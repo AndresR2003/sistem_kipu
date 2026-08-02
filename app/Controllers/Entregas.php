@@ -13,8 +13,13 @@ class Entregas extends BaseController
         $this->model = new EntregaModel();
     }
 
-    public function index(): string
+    public function index()
     {
+        $rol = session()->get('admin_rol') ?? 'empleado';
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            return redirect()->to(site_url('tareas'));
+        }
+
         $pageScripts = '<script src="' . base_url('js/entregas.js') . '?v=' . filemtime(FCPATH . 'js/entregas.js') . '"></script>';
 
         return view('layout', [
@@ -27,7 +32,10 @@ class Entregas extends BaseController
     public function listar(): \CodeIgniter\HTTP\Response
     {
         $fecha = $this->request->getGet('fecha') ?? date('Y-m-d');
-        $tareas = $this->model->ObtenerActivas($fecha);
+        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $rol = session()->get('admin_rol') ?? 'empleado';
+        $departamentoId = (int) (session()->get('id_departamento') ?? 0);
+        $tareas = $this->model->ObtenerActivas($fecha, $usuarioId, $departamentoId ?: null, $rol);
         $registros = $this->model->ObtenerRegistrosDeHoy($fecha);
 
         $porTarea = [];
@@ -58,7 +66,7 @@ class Entregas extends BaseController
 
     public function listarAdmin(): \CodeIgniter\HTTP\Response
     {
-        return $this->response->setJSON($this->model->ObtenerTodas());
+        return $this->response->setJSON($this->model->ObtenerTodasConDestinatario());
     }
 
     public function registros(): \CodeIgniter\HTTP\Response
@@ -87,6 +95,8 @@ class Entregas extends BaseController
             'fecha_inicio'  => $json['fecha_inicio'],
             'fecha_fin'     => $json['fecha_fin'] ?? null,
             'publicado'     => !empty($json['publicado']) ? 1 : 0,
+            'destinatario_tipo' => $json['destinatario_tipo'] ?? 'todos',
+            'destinatario_id'   => !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null,
             'created_by'    => session()->get('usuario_id') ?? session()->get('admin_id'),
         ];
 
@@ -139,10 +149,26 @@ class Entregas extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Tarea no disponible.']);
         }
 
-        $fecha = $this->request->getGet('fecha') ?? date('Y-m-d');
+        $json = $this->request->getJSON(true) ?? [];
+        $fecha = $json['fecha'] ?? date('Y-m-d');
+        $completado = !empty($json['completado']) ? 1 : 0;
         $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $rol = session()->get('admin_rol') ?? 'empleado';
+        $departamentoId = (int) (session()->get('id_departamento') ?? 0);
 
-        $resultado = $this->model->RegistrarEjecucion($id, $usuarioId, $fecha);
+        $activas = $this->model->ObtenerActivas($fecha, $usuarioId, $departamentoId ?: null, $rol);
+        $visible = false;
+        foreach ($activas as $a) {
+            if ((int) $a['id'] === $id) {
+                $visible = true;
+                break;
+            }
+        }
+        if (!$visible) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No tienes asignada esta tarea.']);
+        }
+
+        $resultado = $this->model->RegistrarEjecucion($id, $usuarioId, $fecha, $completado);
         return $this->response->setJSON($resultado);
     }
 

@@ -15,7 +15,7 @@ class EntregaModel extends Model
 
     protected $allowedFields = [
         'titulo', 'descripcion', 'repetir_diario', 'fecha_inicio', 'fecha_fin',
-        'publicado', 'created_by',
+        'publicado', 'created_by', 'destinatario_tipo', 'destinatario_id',
     ];
 
     protected $validationRules = [
@@ -33,12 +33,34 @@ class EntregaModel extends Model
         return $this->orderBy('created_at DESC')->findAll();
     }
 
+    public function ObtenerTodasConDestinatario(): array
+    {
+        $db = \Config\Database::connect();
+        $sql = "SELECT e.*,
+                       CASE
+                           WHEN e.destinatario_tipo = 'todos' THEN 'Todos'
+                           WHEN e.destinatario_tipo = 'usuarios' THEN u.nombre
+                           WHEN e.destinatario_tipo = 'departamento' THEN d.descripcion
+                       END AS destinatario_nombre,
+                       CASE
+                           WHEN e.destinatario_tipo = 'todos' THEN 'Todos'
+                           WHEN e.destinatario_tipo = 'usuarios' THEN 'Usuario'
+                           WHEN e.destinatario_tipo = 'departamento' THEN 'Departamento'
+                       END AS destinatario_tipo_nombre
+                FROM entregas e
+                LEFT JOIN admin_usuarios u ON e.destinatario_tipo = 'usuarios' AND u.id = e.destinatario_id
+                LEFT JOIN departamentos d ON e.destinatario_tipo = 'departamento' AND d.id = e.destinatario_id
+                ORDER BY e.created_at DESC";
+        $query = $db->query($sql);
+        return $query->getResultArray();
+    }
+
     public function ObtenerPorId(int $id): ?array
     {
         return $this->find($id);
     }
 
-    public function ObtenerActivas(string $fecha): array
+    public function ObtenerActivas(string $fecha, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): array
     {
         $this->where('publicado', 1);
         $this->where('fecha_inicio <=', $fecha);
@@ -46,6 +68,20 @@ class EntregaModel extends Model
         $this->where('fecha_fin IS NULL');
         $this->orWhere('fecha_fin >=', $fecha);
         $this->groupEnd();
+
+        // Admin y superadmin ven todas las tareas
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            $this->groupStart();
+            $this->where('destinatario_tipo', 'todos');
+            if ($usuarioId) {
+                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
+            }
+            if ($departamentoId) {
+                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
+            }
+            $this->groupEnd();
+        }
+
         return $this->orderBy('repetir_diario DESC, id ASC')->findAll();
     }
 
@@ -106,9 +142,21 @@ class EntregaModel extends Model
         return $query->getResultArray();
     }
 
-    public function RegistrarEjecucion(int $entregaId, int $usuarioId, string $fecha): array
+    public function RegistrarEjecucion(int $entregaId, int $usuarioId, string $fecha, int $completado = 1): array
     {
         $db = \Config\Database::connect();
+
+        if ($completado === 0) {
+            $ok = $db->query(
+                "DELETE FROM entrega_registros WHERE entrega_id = ? AND usuario_id = ? AND fecha = ?",
+                [$entregaId, $usuarioId, $fecha]
+            );
+            return [
+                'success' => true,
+                'message' => 'Tarea desmarcada.',
+            ];
+        }
+
         $fechaHora = date('Y-m-d H:i:s');
 
         $existe = $db->query(

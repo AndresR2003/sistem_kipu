@@ -1,7 +1,9 @@
 var BASE = BASE_URL + 'entregas/';
+var destinatariosCache = null;
 
 $(document).ready(function() {
-    cargarPaseTurno();
+    cargarTareasAdmin();
+    cargarRegistros();
 });
 
 function formatearFecha(fecha) {
@@ -26,98 +28,6 @@ function escHtml(str) {
     return $('<div>').text(str).html();
 }
 
-function cambiarTab(tab, btn) {
-    $('.nav-tabs-lito button').removeClass('active');
-    $(btn).addClass('active');
-    if (tab === 'hoy') {
-        $('#tabHoy').show();
-        $('#tabAdmin').hide();
-    } else {
-        $('#tabHoy').hide();
-        $('#tabAdmin').show();
-        cargarTareasAdmin();
-        cargarRegistros();
-    }
-}
-
-function cargarPaseTurno() {
-    var fecha = $('#fechaPase').val();
-    if (!fecha) {
-        fecha = new Date().toISOString().slice(0, 10);
-        $('#fechaPase').val(fecha);
-    }
-    $('#fechaHoy').text('Turno del dia: ' + formatearFecha(fecha));
-
-    var cont = $('#tareasHoy');
-    cont.html('<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</div>');
-
-    $.ajax({
-        url: BASE + 'listar?fecha=' + fecha,
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            var hoy = new Date().toISOString().slice(0, 10);
-
-            if (!data.tareas || data.tareas.length === 0) {
-                cont.html('<div class="text-center py-5 text-muted"><i class="bi bi-inbox"></i><p class="mt-2 mb-0">No hay tareas publicadas para este dia.</p></div>');
-                return;
-            }
-
-            var html = '';
-            data.tareas.forEach(function(t) {
-                var hechoPor = '';
-                (t.hecho_por || []).forEach(function(h) {
-                    hechoPor += '<span class="ent-hecho' + (h.mio ? ' mio' : '') + '"><i class="bi bi-check-circle-fill"></i> ' + escHtml(h.nombre) + ' · ' + formatearFechaHora(h.hora) + '</span>';
-                });
-
-                var boton;
-                if (t.hecho_por_mi) {
-                    boton = '<span class="badge bg-success"><i class="bi bi-check2-all"></i> Completado</span>';
-                } else if (fecha === hoy) {
-                    boton = '<button class="btn btn-primary-custom btn-sm" onclick="completarTarea(' + t.id + ', \'' + fecha + '\')"><i class="bi bi-check2"></i> Marcar realizada</button>';
-                } else {
-                    boton = '<span class="badge bg-secondary">No registrado</span>';
-                }
-
-                html += '<div class="entrega-card' + (t.hecho_por_mi ? ' completada' : '') + '">' +
-                    '<div class="d-flex justify-content-between align-items-start gap-2">' +
-                    '<div><div class="ent-titulo">' + escHtml(t.titulo) + '</div>' +
-                    (t.descripcion ? '<div class="ent-desc">' + escHtml(t.descripcion) + '</div>' : '') +
-                    '</div>' + boton + '</div>' +
-                    '<div class="ent-meta"><i class="bi bi-arrow-repeat"></i> ' + (parseInt(t.repetir_diario) ? 'Diaria' : 'Unica') + '</div>' +
-                    (hechoPor ? '<div class="ent-hechos">' + hechoPor + '</div>' : '') +
-                    '</div>';
-            });
-            cont.html(html);
-        },
-        error: function() {
-            cont.html('<div class="text-center py-5 text-danger">Error al cargar las tareas.</div>');
-        }
-    });
-}
-
-function completarTarea(id, fecha) {
-    showLoading();
-    $.ajax({
-        url: BASE + 'completar/' + id + '?fecha=' + fecha,
-        type: 'POST',
-        dataType: 'json',
-        success: function(response) {
-            hideLoading();
-            if (response.success) {
-                Swal.fire({ icon: 'success', title: 'Tarea registrada', text: response.message, timer: 1500, showConfirmButton: false });
-                cargarPaseTurno();
-            } else {
-                Swal.fire('Error', response.message || 'No se pudo registrar.', 'error');
-            }
-        },
-        error: function() {
-            hideLoading();
-            Swal.fire('Error', 'Error de conexion.', 'error');
-        }
-    });
-}
-
 function cargarTareasAdmin() {
     $.ajax({
         url: BASE + 'listarAdmin',
@@ -127,13 +37,18 @@ function cargarTareasAdmin() {
             var tbody = $('#tbodyEntregas');
             tbody.empty();
             if (!data || data.length === 0) {
-                tbody.html('<tr><td colspan="6" class="text-center text-muted py-4">Sin tareas configuradas.</td></tr>');
+                tbody.html('<tr><td colspan="7" class="text-center text-muted py-4">Sin tareas configuradas.</td></tr>');
                 return;
             }
             data.forEach(function(t) {
                 var estado = parseInt(t.publicado)
                     ? '<span class="badge-estado pub">Publicada</span>'
                     : '<span class="badge-estado despub">Oculta</span>';
+                var dest = t.destinatario_tipo === 'todos'
+                    ? '<span class="badge-dest"><i class="bi bi-globe"></i> Todos</span>'
+                    : (t.destinatario_tipo === 'usuarios'
+                        ? '<span class="badge-dest"><i class="bi bi-person-fill"></i> ' + escHtml(t.destinatario_nombre || 'Usuario') + '</span>'
+                        : '<span class="badge-dest"><i class="bi bi-people-fill"></i> ' + escHtml(t.destinatario_nombre || 'Departamento') + '</span>');
                 var jsonTarea = JSON.stringify(t).replace(/'/g, '&#39;');
                 var fila = '<tr>' +
                     '<td><div class="fw-semibold">' + escHtml(t.titulo) + '</div>' +
@@ -141,6 +56,7 @@ function cargarTareasAdmin() {
                     '<td>' + (parseInt(t.repetir_diario) ? '<i class="bi bi-arrow-repeat"></i> Diaria' : 'Unica') + '</td>' +
                     '<td>' + formatearFecha(t.fecha_inicio) + '</td>' +
                     '<td>' + formatearFecha(t.fecha_fin) + '</td>' +
+                    '<td>' + dest + '</td>' +
                     '<td>' + estado + '</td>' +
                     '<td class="text-center text-nowrap">' +
                     '<button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarTarea(' + t.id + ', \'' + jsonTarea + '\')"><i class="bi bi-pencil"></i></button> ' +
@@ -151,9 +67,47 @@ function cargarTareasAdmin() {
             });
         },
         error: function() {
-            $('#tbodyEntregas').html('<tr><td colspan="6" class="text-center text-danger py-4">Error al cargar tareas.</td></tr>');
+            $('#tbodyEntregas').html('<tr><td colspan="7" class="text-center text-danger py-4">Error al cargar tareas.</td></tr>');
         }
     });
+}
+
+function toggleTareaDestinatario() {
+    var tipo = $('#tareaTipo').val();
+    if (tipo === 'todos') {
+        $('#tareaDestinatarioWrap').hide();
+        return;
+    }
+    $('#tareaDestinatarioWrap').show();
+
+    if (destinatariosCache) {
+        llenarTareaDestinatarios(tipo);
+        return;
+    }
+
+    $.ajax({
+        url: BASE_URL + 'borradores/destinatarios',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            destinatariosCache = data;
+            llenarTareaDestinatarios(tipo);
+        }
+    });
+}
+
+function llenarTareaDestinatarios(tipo) {
+    var sel = $('#tareaDestinatario');
+    sel.empty();
+    if (tipo === 'usuarios' && destinatariosCache.usuarios) {
+        destinatariosCache.usuarios.forEach(function(u) {
+            sel.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
+        });
+    } else if (tipo === 'departamento' && destinatariosCache.departamentos) {
+        destinatariosCache.departamentos.forEach(function(d) {
+            sel.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
+        });
+    }
 }
 
 function nuevaTarea() {
@@ -162,6 +116,8 @@ function nuevaTarea() {
     $('#tareaDescripcion').val('');
     $('#tareaInicio').val(new Date().toISOString().slice(0, 10));
     $('#tareaFin').val('');
+    $('#tareaTipo').val('todos');
+    $('#tareaDestinatarioWrap').hide();
     $('#tareaRepetir').prop('checked', true);
     $('#tareaPublicado').prop('checked', true);
     $('#modalTareaTitulo').html('<i class="bi bi-plus-circle"></i> Nueva tarea');
@@ -181,6 +137,11 @@ function editarTarea(id, jsonTarea) {
     $('#tareaDescripcion').val(t.descripcion || '');
     $('#tareaInicio').val((t.fecha_inicio || '').slice(0, 10));
     $('#tareaFin').val(t.fecha_fin ? t.fecha_fin.slice(0, 10) : '');
+    $('#tareaTipo').val(t.destinatario_tipo || 'todos');
+    toggleTareaDestinatario();
+    if (t.destinatario_id) {
+        $('#tareaDestinatario').val(String(t.destinatario_id));
+    }
     $('#tareaRepetir').prop('checked', !!t.repetir_diario);
     $('#tareaPublicado').prop('checked', !!t.publicado);
     $('#modalTareaTitulo').html('<i class="bi bi-pencil"></i> Editar tarea');
@@ -195,7 +156,9 @@ function guardarTarea() {
         fecha_inicio: $('#tareaInicio').val(),
         fecha_fin: $('#tareaFin').val() || null,
         repetir_diario: $('#tareaRepetir').is(':checked') ? 1 : 0,
-        publicado: $('#tareaPublicado').is(':checked') ? 1 : 0
+        publicado: $('#tareaPublicado').is(':checked') ? 1 : 0,
+        destinatario_tipo: $('#tareaTipo').val(),
+        destinatario_id: $('#tareaTipo').val() !== 'todos' ? parseInt($('#tareaDestinatario').val()) : null
     };
 
     if (!payload.titulo || !payload.fecha_inicio) {

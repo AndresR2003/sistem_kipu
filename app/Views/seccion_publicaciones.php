@@ -18,6 +18,9 @@
 .pub-card.completada{opacity:0.55;}
 .pub-card.completada .pub-titulo{text-decoration:line-through;color:var(--text-muted);}
 .pub-card.completada .pub-contenido{text-decoration:line-through;color:var(--text-muted);}
+.ent-hechos{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.ent-hecho{display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;background:rgba(34,197,94,0.12);color:#22c55e;padding:4px 10px;border-radius:12px;}
+.ent-hecho.mio{background:rgba(70,105,250,0.15);color:var(--primary);}
 .comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;}
 .comentarios-lista{max-height:260px;overflow-y:auto;}
 .comentario-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:0.78rem;}

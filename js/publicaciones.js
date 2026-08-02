@@ -1,13 +1,26 @@
 function cargarPublicaciones(seccion) {
+    var c = $('#publicacionesContainer');
+    c.html('<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</div>');
+
+    if (seccion === 'tareas') {
+        cargarTareasDiarias(true);
+    } else {
+        cargarBorradoresPublicados(seccion);
+    }
+}
+
+function cargarBorradoresPublicados(seccion) {
     $.ajax({
         url: BASE_URL + 'borradores/listar-publicados/' + seccion,
         type: 'GET',
         dataType: 'json',
         success: function(data) {
             var c = $('#publicacionesContainer');
-            c.empty();
+            c.find('.text-center.py-5').remove();
             if (!data || data.length === 0) {
-                c.html('<div class="text-center py-5"><i class="bi bi-inbox" style="font-size:2rem;color:var(--text-muted);"></i><p class="text-muted mt-2 small">No hay publicaciones</p></div>');
+                if ($('#tareasDiariasBlock').length === 0) {
+                    c.html('<div class="text-center py-5"><i class="bi bi-inbox" style="font-size:2rem;color:var(--text-muted);"></i><p class="text-muted mt-2 small">No hay publicaciones</p></div>');
+                }
                 return;
             }
             data.forEach(function(p) {
@@ -50,6 +63,69 @@ function cargarPublicaciones(seccion) {
                     '</div>';
                 c.append(card);
             });
+        }
+    });
+}
+
+function cargarTareasDiarias(initial) {
+    $.ajax({
+        url: BASE_URL + 'entregas/listar',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            var block = $('#tareasDiariasBlock');
+            if (!data.tareas || data.tareas.length === 0) {
+                block.remove();
+            } else {
+                var html = '<div style="padding:10px 4px 4px;">' +
+                    '<span class="pub-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="bi bi-arrow-repeat"></i> TAREAS DIARIAS DE HOY</span></div>';
+                data.tareas.forEach(function(t) {
+                    var hechoPor = '';
+                    (t.hecho_por || []).forEach(function(h) {
+                        hechoPor += '<span class="ent-hecho' + (h.mio ? ' mio' : '') + '"><i class="bi bi-check-circle-fill"></i> ' + escHtml(h.nombre) + ' · ' + formatearFechaHora(h.hora) + '</span>';
+                    });
+                    var completado = t.hecho_por_mi ? 'completada' : '';
+                    var checked = t.hecho_por_mi ? 'checked' : '';
+                    html += '<div class="pub-card ' + completado + '" id="pub-ent-' + t.id + '">' +
+                        '<span class="pub-badge"><i class="bi bi-arrow-repeat"></i> Diaria</span>' +
+                        '<div class="pub-check">' +
+                        '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTareaEntregas(' + t.id + ', this)">' +
+                        '<div>' +
+                        '<div class="pub-titulo">' + escHtml(t.titulo) + '</div>' +
+                        (t.descripcion ? '<div class="pub-contenido">' + escHtml(t.descripcion) + '</div>' : '') +
+                        '</div></div>' +
+                        (hechoPor ? '<div class="ent-hechos">' + hechoPor + '</div>' : '') +
+                        '</div>';
+                });
+                if (block.length) {
+                    block.html(html);
+                } else {
+                    block = $('<div id="tareasDiariasBlock"></div>').html(html);
+                    $('#publicacionesContainer').prepend(block);
+                }
+            }
+            if (initial) cargarBorradoresPublicados('tareas');
+        }
+    });
+}
+
+function toggleTareaEntregas(id, checkbox) {
+    $.ajax({
+        url: BASE_URL + 'entregas/completar/' + id,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ completado: checkbox.checked ? 1 : 0 }),
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                cargarTareasDiarias(false);
+            } else {
+                checkbox.checked = !checkbox.checked;
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            checkbox.checked = !checkbox.checked;
         }
     });
 }
