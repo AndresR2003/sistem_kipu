@@ -36,8 +36,8 @@
 .comentarios-form textarea:focus{border-color:var(--primary);box-shadow:none;}
 
 /* ===== Organizacion compacta seccion Tareas ===== */
-.tareas-grupo{margin-bottom:14px;}
-.tareas-grupo-titulo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;margin-bottom:8px;border-radius:10px;background:var(--bg-card-alt);border:1px solid var(--border);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text);}
+.tareas-grupo{margin-bottom:14px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.tareas-grupo-titulo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;border-radius:0;background:var(--bg-card-alt);border:none;border-bottom:1px solid var(--border);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text);}
 .tareas-grupo-titulo.diaria{color:#22c55e;}
 .tareas-grupo-titulo i{font-size:0.85rem;}
 .tareas-grupo-titulo .tareas-fecha{color:var(--text-muted);text-transform:none;font-weight:500;letter-spacing:0;}
@@ -48,7 +48,10 @@
 .tareas-vacio i{font-size:1.4rem;display:block;margin-bottom:6px;opacity:0.4;}
 
 /* Tarjetas compactas dentro de Tareas */
-#publicacionesContainer[data-seccion="tareas"] .pub-card{padding:10px 12px;margin-bottom:8px;border-radius:10px;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card{padding:10px 12px;margin:0;border-radius:0;border:none;border-bottom:1px solid var(--border);}
+#publicacionesContainer[data-seccion="tareas"] .pub-card:last-child{border-bottom:none;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card:hover{background:var(--bg-input);border-color:var(--border);border-left-color:#22c55e;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card.diaria{border-left:3px solid #22c55e;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-titulo{font-size:0.85rem;margin:0;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
 #publicacionesContainer[data-seccion="tareas"] .pub-card .pub-meta{font-size:0.65rem;margin:0;}
