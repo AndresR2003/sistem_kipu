@@ -48,23 +48,27 @@
 .tareas-vacio i{font-size:1.4rem;display:block;margin-bottom:6px;opacity:0.4;}
 
 /* Tarjetas compactas dentro de Tareas */
-#publicacionesContainer[data-seccion="tareas"] .pub-card{padding:10px 12px;margin:0;border-radius:0;border:none;border-bottom:1px solid var(--border);}
-#publicacionesContainer[data-seccion="tareas"] .pub-card:last-child{border-bottom:none;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card:hover{background:var(--bg-input);border-color:var(--border);border-left-color:#22c55e;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card.diaria{border-left:3px solid #22c55e;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-titulo{font-size:0.85rem;margin:0;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-meta{font-size:0.65rem;margin:0;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-badge{font-size:0.55rem;padding:2px 7px;margin:0;}
-#publicacionesContainer[data-seccion="tareas"] .pub-check{gap:10px;justify-content:space-between;}
-#publicacionesContainer[data-seccion="tareas"] .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;order:2;}
-#publicacionesContainer[data-seccion="tareas"] .pub-acciones{margin-top:2px;opacity:0;transition:opacity 0.15s;}
-#publicacionesContainer[data-seccion="tareas"] .pub-card:hover .pub-acciones{opacity:1;}
-#publicacionesContainer[data-seccion="tareas"] .pub-acciones button{font-size:0.65rem;padding:2px 7px;}
-#publicacionesContainer[data-seccion="tareas"] .ent-hechos{margin-top:6px;gap:5px;}
-#publicacionesContainer[data-seccion="tareas"] .ent-hecho{font-size:0.62rem;padding:3px 8px;}
-#publicacionesContainer[data-seccion="tareas"] .comentarios-wrap{margin-top:8px;padding-top:8px;}
-#publicacionesContainer[data-seccion="tareas"] .comentarios-lista{max-height:200px;}
+.pub-compact .pub-card{padding:10px 12px;margin:0;border-radius:0;border:none;border-bottom:1px solid var(--border);}
+.pub-compact .pub-card:last-child{border-bottom:none;}
+.pub-compact .pub-card:hover{background:var(--bg-input);border-color:var(--border);border-left-color:#22c55e;}
+.pub-compact .pub-card.diaria{border-left:3px solid #22c55e;}
+.pub-compact .pub-card .pub-titulo{font-size:0.85rem;margin:0;}
+.pub-compact .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
+.pub-compact .pub-card .pub-meta{font-size:0.65rem;margin:0;}
+.pub-compact .pub-card .pub-badge{font-size:0.55rem;padding:2px 7px;margin:0;}
+.pub-compact .pub-check{gap:10px;justify-content:space-between;}
+.pub-compact .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;order:2;}
+.pub-compact .pub-acciones{margin-top:2px;opacity:0;transition:opacity 0.15s;}
+.pub-compact .pub-card:hover .pub-acciones{opacity:1;}
+.pub-compact .pub-acciones button{font-size:0.65rem;padding:2px 7px;}
+.pub-compact .ent-hechos{margin-top:6px;gap:5px;}
+.pub-compact .ent-hecho{font-size:0.62rem;padding:3px 8px;}
+.pub-compact .comentarios-wrap{margin-top:8px;padding-top:8px;}
+.pub-compact .comentarios-lista{max-height:200px;}
+
+/* Lista con contenedor para secciones sin grupos (noticias, manual) */
+.publicaciones-lista{border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.publicaciones-lista .pub-card:last-child{border-bottom:none;}
 </style>
 
 <div class="table-container">
@@ -81,7 +85,7 @@
             </div>
         </div>
     </div>
-    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>">
+    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>" class="<?= in_array($seccion, ['tareas', 'noticias', 'manual']) ? 'pub-compact' : '' ?>">
         <div class="text-center py-5 text-muted">
             <div class="spinner-border spinner-border-sm"></div> Cargando...
         </div>

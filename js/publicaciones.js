@@ -40,6 +40,12 @@ function cargarBorradoresPublicados(seccion) {
                 }
                 return;
             }
+
+            var lista = $('#publicacionesLista');
+            if (!lista.length) {
+                lista = $('<div class="publicaciones-lista" id="publicacionesLista"></div>');
+                c.append(lista);
+            }
             data.forEach(function(p) {
                 var badge = '';
                 if (p.destinatario_tipo === 'usuarios') badge = '<span class="pub-badge"><i class="bi bi-person-fill"></i> Individual</span>';
@@ -78,7 +84,7 @@ function cargarBorradoresPublicados(seccion) {
                     '</div>' +
                     '</div>' +
                     '</div>';
-                c.append(card);
+                lista.append(card);
             });
         }
     });
