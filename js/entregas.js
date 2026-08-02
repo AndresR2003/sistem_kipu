@@ -4,6 +4,7 @@ var destinatariosCache = null;
 $(document).ready(function() {
     cargarTareasAdmin();
     cargarRegistros();
+    cargarStatsHoy();
 });
 
 function cambiarTab(tab, btn) {
@@ -16,6 +17,81 @@ function cambiarTab(tab, btn) {
         $('#tabTareas').hide();
         $('#tabRegistros').show();
     }
+}
+
+function vacioHtml(colspan, icono, texto) {
+    return '<tr><td colspan="' + colspan + '"><div class="tabla-vacia"><i class="bi ' + icono + '"></i><p>' + texto + '</p></div></td></tr>';
+}
+
+function cargarTareasAdmin() {
+    $.ajax({
+        url: BASE + 'listarAdmin',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            var tbody = $('#tbodyEntregas');
+            tbody.empty();
+            if (!data || data.length === 0) {
+                tbody.html(vacioHtml(7, 'bi-inbox', 'Sin tareas configuradas. Crea la primera con "Nueva tarea".'));
+                actualizarStats([]);
+                return;
+            }
+            data.forEach(function(t) {
+                var estado = parseInt(t.publicado)
+                    ? '<span class="badge-estado pub">Publicada</span>'
+                    : '<span class="badge-estado despub">Oculta</span>';
+                var dest = t.destinatario_tipo === 'todos'
+                    ? '<span class="badge-dest"><i class="bi bi-globe"></i> Todos</span>'
+                    : (t.destinatario_tipo === 'usuarios'
+                        ? '<span class="badge-dest"><i class="bi bi-person-fill"></i> ' + escHtml(t.destinatario_nombre || 'Usuario') + '</span>'
+                        : '<span class="badge-dest"><i class="bi bi-people-fill"></i> ' + escHtml(t.destinatario_nombre || 'Departamento') + '</span>');
+                var fila = '<tr>' +
+                    '<td><div class="fw-semibold">' + escHtml(t.titulo) + '</div>' +
+                    (t.descripcion ? '<small class="text-muted">' + escHtml(t.descripcion) + '</small>' : '') + '</td>' +
+                    '<td>' + (parseInt(t.repetir_diario) ? '<i class="bi bi-arrow-repeat" style="color:var(--primary);"></i> Diaria' : 'Unica') + '</td>' +
+                    '<td>' + formatearFecha(t.fecha_inicio) + '</td>' +
+                    '<td>' + formatearFecha(t.fecha_fin) + '</td>' +
+                    '<td>' + dest + '</td>' +
+                    '<td>' + estado + '</td>' +
+                    '<td class="text-center text-nowrap">' +
+                    '<button class="btn-sm-icon edt" title="Editar" onclick="editarTarea(' + t.id + ')"><i class="bi bi-pencil"></i></button>' +
+                    '<button class="btn-sm-icon eye" title="Publicar/Despublicar" onclick="gestionarPublicacion(' + t.id + ')"><i class="bi bi-eye"></i></button>' +
+                    '<button class="btn-sm-icon del" title="Eliminar" onclick="eliminarTarea(' + t.id + ', \'' + escHtml(t.titulo).replace(/'/g, '\\\'') + '\')"><i class="bi bi-trash"></i></button>' +
+                    '</td></tr>';
+                tbody.append(fila);
+            });
+            actualizarStats(data);
+        },
+        error: function() {
+            $('#tbodyEntregas').html(vacioHtml(7, 'bi-exclamation-triangle', 'Error al cargar tareas.'));
+        }
+    });
+}
+
+function actualizarStats(tareas) {
+    var total = tareas.length;
+    var pub = 0, ocultas = 0;
+    tareas.forEach(function(t) {
+        if (parseInt(t.publicado)) pub++; else ocultas++;
+    });
+    $('#statTotal').text(total);
+    $('#statPub').text(pub);
+    $('#statOcultas').text(ocultas);
+}
+
+function cargarStatsHoy() {
+    var hoy = new Date().toISOString().slice(0, 10);
+    $.ajax({
+        url: BASE + 'registros?inicio=' + hoy + '&fin=' + hoy,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#statHoy').text(data ? data.length : 0);
+        },
+        error: function() {
+            $('#statHoy').text('-');
+        }
+    });
 }
 
 function formatearFecha(fecha) {
@@ -381,7 +457,7 @@ function cargarRegistros() {
             var tbody = $('#tbodyRegistros');
             tbody.empty();
             if (!data || data.length === 0) {
-                tbody.html('<tr><td colspan="5" class="text-center text-muted py-4">Sin registros en el rango seleccionado.</td></tr>');
+                tbody.html(vacioHtml(5, 'bi-clipboard-check', 'Sin registros en el rango seleccionado.'));
                 return;
             }
             data.forEach(function(r) {
@@ -389,15 +465,15 @@ function cargarRegistros() {
                     '<td>' + formatearFecha(r.fecha) + '</td>' +
                     '<td>' + formatearFechaHora(r.completado_at) + '</td>' +
                     '<td>' + escHtml(r.titulo) + '</td>' +
-                    '<td><i class="bi bi-person-fill"></i> ' + escHtml(r.usuario_nombre || 'Desconocido') + '</td>' +
+                    '<td><i class="bi bi-person-fill" style="color:var(--primary);"></i> ' + escHtml(r.usuario_nombre || 'Desconocido') + '</td>' +
                     '<td class="text-center">' +
-                    '<button class="btn btn-sm btn-outline-danger" title="Eliminar registro" onclick="eliminarRegistro(' + r.id + ')"><i class="bi bi-trash"></i></button>' +
+                    '<button class="btn-sm-icon del" title="Eliminar registro" onclick="eliminarRegistro(' + r.id + ')"><i class="bi bi-trash"></i></button>' +
                     '</td></tr>';
                 tbody.append(fila);
             });
         },
         error: function() {
-            $('#tbodyRegistros').html('<tr><td colspan="5" class="text-center text-danger py-4">Error al cargar registros.</td></tr>');
+            $('#tbodyRegistros').html(vacioHtml(5, 'bi-exclamation-triangle', 'Error al cargar registros.'));
         }
     });
 }

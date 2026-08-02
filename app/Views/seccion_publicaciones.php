@@ -21,6 +21,9 @@
 .ent-hechos{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .ent-hecho{display:inline-flex;align-items:center;gap:6px;font-size:0.7rem;background:rgba(34,197,94,0.12);color:#22c55e;padding:4px 10px;border-radius:12px;}
 .ent-hecho.mio{background:rgba(70,105,250,0.15);color:var(--primary);}
+.tareas-diarias-titulo{display:flex;align-items:center;gap:8px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#22c55e;padding:14px 4px 10px;border-bottom:1px dashed var(--border);margin-bottom:14px;}
+.tareas-diarias-titulo span{color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0;}
+.pub-card.diaria{border-left:3px solid #22c55e;}
 .comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;}
 .comentarios-lista{max-height:260px;overflow-y:auto;}
 .comentario-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:0.78rem;}

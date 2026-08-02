@@ -77,8 +77,8 @@ function cargarTareasDiarias(initial) {
             if (!data.tareas || data.tareas.length === 0) {
                 block.remove();
             } else {
-                var html = '<div style="padding:10px 4px 4px;">' +
-                    '<span class="pub-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="bi bi-arrow-repeat"></i> TAREAS DIARIAS DE HOY</span></div>';
+                var fechaTxt = formatearFecha(data.fecha);
+                var html = '<div class="tareas-diarias-titulo"><i class="bi bi-arrow-repeat"></i> Tareas diarias de hoy <span>· ' + fechaTxt + '</span></div>';
                 data.tareas.forEach(function(t) {
                     var hechoPor = '';
                     (t.hecho_por || []).forEach(function(h) {
@@ -86,8 +86,10 @@ function cargarTareasDiarias(initial) {
                     });
                     var completado = t.hecho_por_mi ? 'completada' : '';
                     var checked = t.hecho_por_mi ? 'checked' : '';
-                    html += '<div class="pub-card ' + completado + '" id="pub-ent-' + t.id + '">' +
-                        '<span class="pub-badge"><i class="bi bi-arrow-repeat"></i> Diaria</span>' +
+                    html += '<div class="pub-card diaria ' + completado + '" id="pub-ent-' + t.id + '">' +
+                        '<div class="d-flex align-items-center gap-2 mb-1">' +
+                        '<span class="pub-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="bi bi-arrow-repeat"></i> Diaria</span>' +
+                        '</div>' +
                         '<div class="pub-check">' +
                         '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTareaEntregas(' + t.id + ', this)">' +
                         '<div>' +
