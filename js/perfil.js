@@ -16,7 +16,7 @@ function cargarPerfil() {
             $('#perfilRol').val(p.rol === 'superadmin' ? 'Superadmin' : 'Admin');
 
             if (p.foto) {
-                $('#fotoPerfil').attr('src', BASE_URL + '/' + p.foto);
+                $('#fotoPerfil').attr('src', BASE_URL + p.foto);
             } else {
                 $('#fotoPerfil').attr('src', 'https://ui-avatars.com/api/?name=' + encodeURIComponent(p.nombre) + '&background=4669FA&color=fff&size=120');
             }
