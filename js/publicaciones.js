@@ -17,6 +17,23 @@ function cargarBorradoresPublicados(seccion) {
         success: function(data) {
             var c = $('#publicacionesContainer');
             c.find('.text-center.py-5').remove();
+
+            if (seccion === 'tareas') {
+                var lista = $('#tareasPublicadasLista');
+                if (!lista.length) return;
+                lista.empty();
+                if (!data || data.length === 0) {
+                    $('#tareasPubCount').text('0');
+                    lista.html('<div class="tareas-vacio"><i class="bi bi-inbox"></i>Sin otras tareas</div>');
+                    return;
+                }
+                $('#tareasPubCount').text(data.length);
+                data.forEach(function(p) {
+                    lista.append(tareaPublicadaCard(p));
+                });
+                return;
+            }
+
             if (!data || data.length === 0) {
                 if ($('#tareasDiariasBlock').length === 0) {
                     c.html('<div class="text-center py-5"><i class="bi bi-inbox" style="font-size:2rem;color:var(--text-muted);"></i><p class="text-muted mt-2 small">No hay publicaciones</p></div>');
@@ -73,42 +90,92 @@ function cargarTareasDiarias(initial) {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
+            var c = $('#publicacionesContainer');
+            c.find('.text-center.py-5').remove();
+
+            if (!c.find('#tareasPublicadasBlock').length) {
+                c.append(
+                    '<div class="tareas-grupo" id="tareasPublicadasBlock">' +
+                    '<div class="tareas-grupo-titulo"><span><i class="bi bi-check2-square"></i> Otras tareas</span><span class="tareas-count" id="tareasPubCount">0</span></div>' +
+                    '<div id="tareasPublicadasLista"><div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</div></div>' +
+                    '</div>'
+                );
+            }
+
+            var tareas = data.tareas || [];
             var block = $('#tareasDiariasBlock');
-            if (!data.tareas || data.tareas.length === 0) {
+            if (tareas.length === 0) {
                 block.remove();
             } else {
                 var fechaTxt = formatearFecha(data.fecha);
-                var html = '<div class="tareas-diarias-titulo"><i class="bi bi-arrow-repeat"></i> Tareas diarias de hoy <span>· ' + fechaTxt + '</span></div>';
-                data.tareas.forEach(function(t) {
+                var hechas = 0;
+                tareas.forEach(function(t) { if (t.hecho_por_mi) hechas++; });
+                var pct = Math.round(hechas / tareas.length * 100);
+                var html = '<div class="tareas-grupo-titulo diaria"><span><i class="bi bi-arrow-repeat"></i> Tareas diarias <span class="tareas-fecha">' + fechaTxt + '</span></span>' +
+                    '<span class="d-flex align-items-center gap-2"><span class="tareas-progreso"><span style="width:' + pct + '%"></span></span><span class="tareas-count">' + hechas + '/' + tareas.length + '</span></span></div>';
+
+                tareas.forEach(function(t) {
                     var hechoPor = '';
                     (t.hecho_por || []).forEach(function(h) {
-                        hechoPor += '<span class="ent-hecho' + (h.mio ? ' mio' : '') + '"><i class="bi bi-check-circle-fill"></i> ' + escHtml(h.nombre) + ' · ' + formatearFechaHora(h.hora) + '</span>';
+                        hechoPor += '<span class="ent-hecho' + (h.mio ? ' mio' : '') + '"><i class="bi bi-check-circle-fill"></i> ' + escHtml(h.nombre) + '</span>';
                     });
                     var completado = t.hecho_por_mi ? 'completada' : '';
                     var checked = t.hecho_por_mi ? 'checked' : '';
                     html += '<div class="pub-card diaria ' + completado + '" id="pub-ent-' + t.id + '">' +
-                        '<div class="d-flex align-items-center gap-2 mb-1">' +
-                        '<span class="pub-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="bi bi-arrow-repeat"></i> Diaria</span>' +
-                        '</div>' +
                         '<div class="pub-check">' +
                         '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTareaEntregas(' + t.id + ', this)">' +
-                        '<div>' +
-                        '<div class="pub-titulo">' + escHtml(t.titulo) + '</div>' +
+                        '<div class="flex-grow-1">' +
+                        '<div class="d-flex align-items-center flex-wrap gap-2"><span class="pub-titulo">' + escHtml(t.titulo) + '</span>' +
+                        '<span class="pub-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="bi bi-arrow-repeat"></i> Diaria</span></div>' +
                         (t.descripcion ? '<div class="pub-contenido">' + escHtml(t.descripcion) + '</div>' : '') +
                         '</div></div>' +
                         (hechoPor ? '<div class="ent-hechos">' + hechoPor + '</div>' : '') +
                         '</div>';
                 });
+
                 if (block.length) {
                     block.html(html);
                 } else {
-                    block = $('<div id="tareasDiariasBlock"></div>').html(html);
+                    block = $('<div class="tareas-grupo" id="tareasDiariasBlock"></div>').html(html);
                     $('#publicacionesContainer').prepend(block);
                 }
             }
             if (initial) cargarBorradoresPublicados('tareas');
         }
     });
+}
+
+function tareaPublicadaCard(p) {
+    var badge = '';
+    if (p.destinatario_tipo === 'usuarios') badge = '<span class="pub-badge"><i class="bi bi-person-fill"></i> Individual</span>';
+    else if (p.destinatario_tipo === 'departamento') badge = '<span class="pub-badge"><i class="bi bi-people-fill"></i> Departamento</span>';
+    else badge = '<span class="pub-badge"><i class="bi bi-globe"></i> Todos</span>';
+
+    var d = p.updated_at ? formatearFecha(p.updated_at) : '';
+    var completado = parseInt(p.completado) ? 'completada' : '';
+    var checked = parseInt(p.completado) ? 'checked' : '';
+
+    return '<div class="pub-card ' + completado + '" id="pub-' + p.id + '">' +
+        '<div class="pub-check">' +
+        '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTarea(' + p.id + ', this)">' +
+        '<div class="flex-grow-1">' +
+        '<div class="pub-titulo">' + escHtml(p.titulo) + '</div>' +
+        '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
+        '<div class="d-flex align-items-center flex-wrap gap-2">' + badge +
+        '<span class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</span></div>' +
+        '</div></div>' +
+        '<div class="pub-acciones">' +
+        '<button class="rec" onclick="agregarRecordatorio(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+        '<button class="mar" onclick="agregarMarcador(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+        '<button class="com" onclick="toggleComentarios(' + p.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios</button>' +
+        '</div>' +
+        '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
+        '<div class="comentarios-lista"></div>' +
+        '<div class="comentarios-form">' +
+        '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentario(' + p.id + ', this)">Enviar</button>' +
+        '</div></div>' +
+        '</div>';
 }
 
 function toggleTareaEntregas(id, checkbox) {

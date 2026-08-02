@@ -34,14 +34,49 @@
 .comentario-vacio{text-align:center;color:var(--text-muted);font-size:0.75rem;padding:8px 0;}
 .comentarios-form textarea{font-size:0.78rem;background:var(--bg-input);color:var(--text);border-color:var(--border);}
 .comentarios-form textarea:focus{border-color:var(--primary);box-shadow:none;}
+
+/* ===== Organizacion compacta seccion Tareas ===== */
+.tareas-grupo{margin-bottom:14px;}
+.tareas-grupo-titulo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;margin-bottom:8px;border-radius:10px;background:var(--bg-card-alt);border:1px solid var(--border);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text);}
+.tareas-grupo-titulo.diaria{color:#22c55e;}
+.tareas-grupo-titulo i{font-size:0.85rem;}
+.tareas-grupo-titulo .tareas-fecha{color:var(--text-muted);text-transform:none;font-weight:500;letter-spacing:0;}
+.tareas-grupo-titulo .tareas-count{background:var(--bg-input);padding:2px 9px;border-radius:12px;font-size:0.65rem;color:var(--text-muted);font-weight:600;}
+.tareas-progreso{height:4px;width:110px;background:var(--bg-input);border-radius:2px;overflow:hidden;}
+.tareas-progreso span{display:block;height:100%;background:var(--success);border-radius:2px;}
+.tareas-vacio{text-align:center;padding:22px 12px;color:var(--text-muted);font-size:0.8rem;}
+.tareas-vacio i{font-size:1.4rem;display:block;margin-bottom:6px;opacity:0.4;}
+
+/* Tarjetas compactas dentro de Tareas */
+#publicacionesContainer[data-seccion="tareas"] .pub-card{padding:10px 12px;margin-bottom:8px;border-radius:10px;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-titulo{font-size:0.85rem;margin:0;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-meta{font-size:0.65rem;margin:0;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card .pub-badge{font-size:0.55rem;padding:2px 7px;margin:0;}
+#publicacionesContainer[data-seccion="tareas"] .pub-check{gap:10px;}
+#publicacionesContainer[data-seccion="tareas"] .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;}
+#publicacionesContainer[data-seccion="tareas"] .pub-acciones{margin-top:2px;opacity:0;transition:opacity 0.15s;}
+#publicacionesContainer[data-seccion="tareas"] .pub-card:hover .pub-acciones{opacity:1;}
+#publicacionesContainer[data-seccion="tareas"] .pub-acciones button{font-size:0.65rem;padding:2px 7px;}
+#publicacionesContainer[data-seccion="tareas"] .ent-hechos{margin-top:6px;gap:5px;}
+#publicacionesContainer[data-seccion="tareas"] .ent-hecho{font-size:0.62rem;padding:3px 8px;}
+#publicacionesContainer[data-seccion="tareas"] .comentarios-wrap{margin-top:8px;padding-top:8px;}
+#publicacionesContainer[data-seccion="tareas"] .comentarios-lista{max-height:200px;}
 </style>
 
 <div class="table-container">
     <div class="table-header">
-        <h5 class="mb-0"><i class="bi bi-<?php
-            $iconos = ['noticias' => 'newspaper', 'ideas' => 'lightbulb-fill', 'manual' => 'book-fill', 'tareas' => 'check2-square'];
-            echo $iconos[$seccion] ?? 'file-text';
-        ?>"></i> <?= ucfirst($seccion) ?></h5>
+        <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+            <div>
+                <h5 class="mb-0"><i class="bi bi-<?php
+                    $iconos = ['noticias' => 'newspaper', 'ideas' => 'lightbulb-fill', 'manual' => 'book-fill', 'tareas' => 'check2-square'];
+                    echo $iconos[$seccion] ?? 'file-text';
+                ?>"></i> <?= ucfirst($seccion) ?></h5>
+                <?php if ($seccion === 'tareas'): ?>
+                <small class="text-muted">Marca las tareas que vayas realizando</small>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
     <div id="publicacionesContainer" data-seccion="<?= $seccion ?>">
         <div class="text-center py-5 text-muted">
