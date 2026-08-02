@@ -6,6 +6,18 @@ $(document).ready(function() {
     cargarRegistros();
 });
 
+function cambiarTab(tab, btn) {
+    $('#entTabs button').removeClass('active');
+    $(btn).addClass('active');
+    if (tab === 'tareas') {
+        $('#tabTareas').show();
+        $('#tabRegistros').hide();
+    } else {
+        $('#tabTareas').hide();
+        $('#tabRegistros').show();
+    }
+}
+
 function formatearFecha(fecha) {
     if (!fecha) return '';
     var d = new Date(fecha.replace(' ', 'T'));

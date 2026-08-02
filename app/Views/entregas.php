@@ -5,6 +5,11 @@
 .badge-estado.pub{background:rgba(34,197,94,0.15);color:#22c55e;}
 .badge-estado.despub{background:rgba(239,68,68,0.15);color:#ef4444;}
 .badge-dest{font-size:0.6rem;padding:2px 8px;border-radius:8px;font-weight:600;background:rgba(70,105,250,0.12);color:var(--primary);}
+.nav-tabs-lito{display:flex;gap:4px;border-bottom:1px solid var(--border);padding:0 18px;}
+.nav-tabs-lito button{background:transparent;border:none;padding:12px 16px;font-size:0.85rem;color:var(--text-muted);border-bottom:2px solid transparent;transition:all 0.15s;}
+.nav-tabs-lito button:hover{color:var(--text);}
+.nav-tabs-lito button.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600;}
+.tab-pane{padding:18px;}
 </style>
 
 <div class="table-container" style="padding:0;overflow:hidden;">
@@ -12,7 +17,13 @@
         <h5 class="mb-0" style="font-size:0.95rem;"><i class="bi bi-arrow-left-right"></i> Entregas / Pases de turno <small class="text-muted">(administracion)</small></h5>
     </div>
 
-    <div class="p-3">
+    <div class="nav-tabs-lito" id="entTabs">
+        <button class="active" onclick="cambiarTab('tareas', this)"><i class="bi bi-list-task"></i> Tareas</button>
+        <button onclick="cambiarTab('registros', this)"><i class="bi bi-clipboard-check"></i> Revision de tareas realizadas</button>
+    </div>
+
+    <!-- TAB TAREAS -->
+    <div class="tab-pane" id="tabTareas">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
             <h6 class="mb-0"><i class="bi bi-list-task"></i> Tareas preseleccionadas</h6>
             <button class="btn btn-primary-custom btn-sm" onclick="nuevaTarea()">
@@ -20,7 +31,7 @@
             </button>
         </div>
 
-        <div class="table-responsive mb-4">
+        <div class="table-responsive">
             <table class="table table-hover w-100">
                 <thead>
                     <tr>
@@ -36,7 +47,10 @@
                 <tbody id="tbodyEntregas"></tbody>
             </table>
         </div>
+    </div>
 
+    <!-- TAB REGISTROS -->
+    <div class="tab-pane" id="tabRegistros" style="display:none;">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
             <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Revision de tareas realizadas</h6>
             <div class="d-flex gap-2">
