@@ -85,7 +85,7 @@ function toggleTareaDestinatario() {
     }
 
     $.ajax({
-        url: BASE_URL + 'borradores/destinatarios',
+        url: BASE + 'destinatarios',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -251,7 +251,7 @@ function togglePubDestinatario() {
     }
 
     $.ajax({
-        url: BASE_URL + 'borradores/destinatarios',
+        url: BASE + 'destinatarios',
         type: 'GET',
         dataType: 'json',
         success: function(data) {

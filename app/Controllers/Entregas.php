@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\DepartamentoModel;
 use App\Models\EntregaModel;
 
 class Entregas extends BaseController
@@ -67,6 +68,19 @@ class Entregas extends BaseController
     public function listarAdmin(): \CodeIgniter\HTTP\Response
     {
         return $this->response->setJSON($this->model->ObtenerTodasConDestinatario());
+    }
+
+    public function destinatarios(): \CodeIgniter\HTTP\Response
+    {
+        $db = \Config\Database::connect();
+        $usuarios = $db->table('admin_usuarios')->where('activo', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
+        $deptoModel = new DepartamentoModel();
+        $deptos = $deptoModel->ObtenerTodos();
+
+        return $this->response->setJSON([
+            'usuarios'      => $usuarios,
+            'departamentos' => $deptos,
+        ]);
     }
 
     public function obtener(int $id): \CodeIgniter\HTTP\Response

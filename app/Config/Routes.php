@@ -103,6 +103,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('entregas', 'Entregas::index');
     $routes->get('entregas/listar', 'Entregas::listar');
     $routes->get('entregas/listarAdmin', 'Entregas::listarAdmin');
+    $routes->get('entregas/destinatarios', 'Entregas::destinatarios');
     $routes->get('entregas/obtener/(:num)', 'Entregas::obtener/$1');
     $routes->get('entregas/registros', 'Entregas::registros');
     $routes->post('entregas/guardar', 'Entregas::guardar');
