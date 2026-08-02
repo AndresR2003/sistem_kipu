@@ -101,6 +101,15 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('borradores/destinatarios', 'Borradores::destinatarios');
     $routes->get('borradores/listar-publicados/(:segment)', 'Borradores::listarPublicados/$1');
     $routes->get('entregas', 'Entregas::index');
+    $routes->get('entregas/listar', 'Entregas::listar');
+    $routes->get('entregas/listarAdmin', 'Entregas::listarAdmin');
+    $routes->get('entregas/registros', 'Entregas::registros');
+    $routes->post('entregas/guardar', 'Entregas::guardar');
+    $routes->post('entregas/eliminar/(:num)', 'Entregas::eliminar/$1');
+    $routes->post('entregas/publicar/(:num)', 'Entregas::publicar/$1');
+    $routes->post('entregas/completar/(:num)', 'Entregas::completar/$1');
+    $routes->post('entregas/eliminarRegistro/(:num)', 'Entregas::eliminarRegistro/$1');
+
     $routes->get('noticias', 'Noticias::index');
     $routes->get('ideas', 'Ideas::index');
     $routes->get('manual', 'Manual::index');
