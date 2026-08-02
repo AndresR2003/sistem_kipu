@@ -107,7 +107,7 @@ class Perfil extends BaseController
         $ext = $file->getExtension();
         $nombre = 'perfil_' . $id . '_' . time() . '.' . $ext;
 
-        $uploadPath = ROOTPATH . 'public/uploads/perfil';
+        $uploadPath = FCPATH . 'uploads/perfil';
         if (!is_dir($uploadPath)) {
             mkdir($uploadPath, 0775, true);
         }
