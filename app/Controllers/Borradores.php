@@ -80,6 +80,9 @@ class Borradores extends BaseController
     {
         $model = new BorradorModel();
         $ok    = $model->Eliminar($id);
+        if ($ok) {
+            service('cache')->delete('ultimo_anuncio');
+        }
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Borrador eliminado.' : 'Error al eliminar.',
@@ -122,13 +125,29 @@ class Borradores extends BaseController
             (int) $json['id'],
             $json['seccion'],
             $json['destinatario_tipo'] ?? 'todos',
-            !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null
+            !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null,
+            !empty($json['anuncio']) ? 1 : 0
         );
+
+        if ($ok && !empty($json['anuncio'])) {
+            service('cache')->delete('ultimo_anuncio');
+        }
 
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Publicado correctamente.' : 'Error al publicar.',
         ]);
+    }
+
+    public function anuncio()
+    {
+        $cache = service('cache');
+        $anuncio = $cache->get('ultimo_anuncio');
+        if ($anuncio === null) {
+            $anuncio = (new BorradorModel())->ObtenerUltimoAnuncio();
+            $cache->save('ultimo_anuncio', $anuncio, 60);
+        }
+        return $this->response->setJSON(['success' => true, 'data' => $anuncio]);
     }
 
     public function destinatarios()
@@ -173,6 +192,9 @@ class Borradores extends BaseController
         }
 
         $ok = $model->Despublicar($id);
+        if ($ok) {
+            service('cache')->delete('ultimo_anuncio');
+        }
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Publicacion retirada.' : 'Error al despublicar.',

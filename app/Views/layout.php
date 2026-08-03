@@ -11,7 +11,14 @@ try {
     if (!empty($cfg['primary_color']))      echo '--primary:' . $cfg['primary_color'] . ';';
     if (!empty($cfg['content_bg']))         echo '--bg-body:' . $cfg['content_bg'] . ';';
     if (!empty($cfg['card_bg']))            echo '--bg-card:' . $cfg['card_bg'] . ';';
-} catch (\Throwable $e) {}
+    $anuncioActivo = service('cache')->get('ultimo_anuncio');
+    if ($anuncioActivo === null) {
+        $anuncioActivo = model('App\Models\BorradorModel')->ObtenerUltimoAnuncio();
+        service('cache')->save('ultimo_anuncio', $anuncioActivo, 60);
+    }
+} catch (\Throwable $e) {
+    $anuncioActivo = null;
+}
 ?>
 ">
 <head>
@@ -352,6 +359,68 @@ try {
             font-weight: 700;
             border: 2px solid var(--bg-topbar);
         }
+
+        .notif-panel {
+            width: 320px;
+            padding: 0;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            max-height: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notif-titulo {
+            margin: 0;
+            padding: 12px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .notif-titulo i { color: var(--primary); margin-right: 6px; }
+
+        .notif-lista {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        .notif-item:hover { background: var(--bg-input); }
+
+        .notif-item .notif-icon {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: rgba(245,158,11,0.14);
+            color: var(--warning);
+        }
+
+        .notif-item .notif-txt { flex: 1; min-width: 0; }
+        .notif-item .notif-txt .t { font-size: 0.78rem; font-weight: 600; color: var(--text); line-height: 1.35; }
+        .notif-item .notif-txt .s { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+
+        .notif-vacio {
+            padding: 24px 16px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .notif-vacio i { font-size: 1.4rem; opacity: 0.4; display: block; margin-bottom: 6px; }
 
         .topbar-actions .dropdown-menu-custom {
             background: var(--modal-bg);
@@ -925,17 +994,25 @@ try {
                     <i class="bi bi-list"></i>
                 </button>
                 <h6 class="mb-0"><?= esc($titulo ?? 'Dashboard') ?></h6>
-                <?php if (!empty($cfg['anuncio'])): ?>
-                <span class="topbar-anuncio"><i class="bi bi-megaphone-fill"></i> <?= esc($cfg['anuncio']) ?></span>
+                <?php if (!empty($anuncioActivo['titulo'])): ?>
+                <span class="topbar-anuncio"><i class="bi bi-megaphone-fill"></i> <?= esc($anuncioActivo['titulo']) ?></span>
                 <?php endif; ?>
             </div>
             <div class="topbar-actions">
                 <button class="topbar-btn" id="themeToggle" title="Cambiar tema">
                     <i class="bi bi-moon-fill"></i>
                 </button>
-                <div class="topbar-btn position-relative" id="notificationBell" title="Notificaciones" role="button">
-                    <i class="bi bi-bell-fill"></i>
-                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                <div class="dropdown">
+                    <div class="topbar-btn position-relative" id="notificationBell" title="Notificaciones" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                    </div>
+                    <div class="dropdown-menu dropdown-menu-custom dropdown-menu-end notif-panel" id="notifPanel">
+                        <h6 class="notif-titulo"><i class="bi bi-bell-fill"></i> Notificaciones</h6>
+                        <div id="notifLista" class="notif-lista">
+                            <div class="notif-vacio text-muted small"><i class="bi bi-inbox"></i> Cargando...</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="dropdown">
                     <a href="#" class="user-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1013,11 +1090,54 @@ try {
                 type: 'POST',
                 dataType: 'json',
                 success: function(response) {
-                    if (response.success && response.data.hayPendientes) {
-                        $('#notificationBadge').text(response.data.pendientes).show();
+                    if (!response.success) return;
+                    var d = response.data || {};
+                    var total = 0;
+                    var html = '';
+
+                    if (d.anuncio && d.anuncio.titulo) {
+                        total++;
+                        html += '<div class="notif-item">' +
+                            '<div class="notif-icon"><i class="bi bi-megaphone-fill"></i></div>' +
+                            '<div class="notif-txt">' +
+                            '<div class="t">' + $('<div>').text(d.anuncio.titulo).html() + '</div>' +
+                            '<div class="s"><i class="bi bi-newspaper"></i> Anuncio de Noticias</div>' +
+                            '</div></div>';
+                    }
+
+                    if (parseInt(d.pendientes) > 0) {
+                        total++;
+                        html += '<div class="notif-item">' +
+                            '<div class="notif-icon"><i class="bi bi-cash-stack"></i></div>' +
+                            '<div class="notif-txt">' +
+                            '<div class="t">' + d.pendientes + ' pago(s) pendientes de aprobacion</div>' +
+                            '<div class="s"><i class="bi bi-credit-card"></i> Pagos</div>' +
+                            '</div></div>';
+                    }
+
+                    if (parseInt(d.conDeuda) > 0) {
+                        total++;
+                        html += '<div class="notif-item">' +
+                            '<div class="notif-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>' +
+                            '<div class="notif-txt">' +
+                            '<div class="t">' + d.conDeuda + ' colaborador(es) con deuda</div>' +
+                            '<div class="s"><i class="bi bi-credit-card"></i> Pagos</div>' +
+                            '</div></div>';
+                    }
+
+                    if (total > 0) {
+                        $('#notificationBadge').text(total).show();
                     } else {
                         $('#notificationBadge').hide();
                     }
+
+                    if (!html) {
+                        html = '<div class="notif-vacio"><i class="bi bi-inbox"></i>Sin notificaciones</div>';
+                    }
+                    $('#notifLista').html(html);
+                },
+                error: function() {
+                    $('#notifLista').html('<div class="notif-vacio"><i class="bi bi-exclamation-triangle"></i>Error al cargar</div>');
                 }
             });
         }

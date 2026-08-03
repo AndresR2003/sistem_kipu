@@ -100,6 +100,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->post('borradores/completar/(:num)', 'Borradores::completar/$1');
     $routes->get('borradores/destinatarios', 'Borradores::destinatarios');
     $routes->get('borradores/listar-publicados/(:segment)', 'Borradores::listarPublicados/$1');
+    $routes->get('borradores/anuncio', 'Borradores::anuncio');
     $routes->get('entregas', 'Entregas::index');
     $routes->get('entregas/listar', 'Entregas::listar');
     $routes->get('entregas/listarAdmin', 'Entregas::listarAdmin');

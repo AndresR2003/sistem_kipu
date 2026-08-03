@@ -677,17 +677,25 @@ class Api extends BaseController
     // =====================================================
 
     /**
-     * Obtener notificaciones (pagos pendientes)
+     * Obtener notificaciones (pagos pendientes + ultimo anuncio)
      */
     public function notificaciones()
     {
         $pendientes = $this->pagoModel->ContarPendientes();
         $conDeuda = $this->pagoModel->ContarConDeuda();
 
+        $cache = service('cache');
+        $anuncio = $cache->get('ultimo_anuncio');
+        if ($anuncio === null) {
+            $anuncio = (new \App\Models\BorradorModel())->ObtenerUltimoAnuncio();
+            $cache->save('ultimo_anuncio', $anuncio, 60);
+        }
+
         return $this->RespuestaJson(true, 'Notificaciones', [
             'pendientes' => $pendientes,
             'conDeuda'   => $conDeuda,
-            'hayPendientes' => $pendientes > 0,
+            'anuncio'    => $anuncio,
+            'hayPendientes' => $pendientes > 0 || !empty($anuncio),
         ]);
     }
 }

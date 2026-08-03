@@ -15,7 +15,7 @@ class BorradorModel extends Model
 
     protected $allowedFields = [
         'titulo', 'contenido', 'etiqueta', 'fijado', 'usuario_id',
-        'seccion_destino', 'destinatario_tipo', 'destinatario_id', 'publicado', 'completado',
+        'seccion_destino', 'destinatario_tipo', 'destinatario_id', 'publicado', 'completado', 'anuncio',
     ];
 
     protected $validationRules = [
@@ -96,13 +96,14 @@ class BorradorModel extends Model
         return $this->delete($id);
     }
 
-    public function Publicar(int $id, string $seccion, string $tipo, ?int $destinatarioId): bool
+    public function Publicar(int $id, string $seccion, string $tipo, ?int $destinatarioId, int $anuncio = 0): bool
     {
         return $this->update($id, [
             'seccion_destino'    => $seccion,
             'destinatario_tipo'  => $tipo,
             'destinatario_id'    => $destinatarioId,
             'publicado'          => 1,
+            'anuncio'            => $anuncio ? 1 : 0,
         ]);
     }
 
@@ -111,6 +112,18 @@ class BorradorModel extends Model
         return $this->update($id, [
             'publicado' => 0,
         ]);
+    }
+
+    public function ObtenerUltimoAnuncio(): ?array
+    {
+        $db = \Config\Database::connect();
+        $row = $db->table('borradores')
+            ->where('anuncio', 1)
+            ->where('publicado', 1)
+            ->orderBy('updated_at', 'DESC')
+            ->get(1)
+            ->getRowArray();
+        return $row ?: null;
     }
 
     public function ToggleCompletado(int $id, int $completado): bool

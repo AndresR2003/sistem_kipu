@@ -86,12 +86,18 @@
                 <input type="hidden" id="pubBorradorId">
                 <div class="mb-2">
                     <label class="form-label small">Mostrar en</label>
-                    <select class="form-select" id="pubSeccion">
+                    <select class="form-select" id="pubSeccion" onchange="toggleAnuncioCheck()">
                         <option value="noticias">Noticias</option>
                         <option value="ideas">Ideas</option>
                         <option value="manual">Manual</option>
                         <option value="tareas">Tareas</option>
                     </select>
+                </div>
+                <div class="mb-2" id="anuncioCheckWrap">
+                    <label class="form-check d-flex align-items-center gap-2">
+                        <input type="checkbox" class="form-check-input" id="pubAnuncio" style="margin-top:0;">
+                        <span class="small"><i class="bi bi-megaphone-fill" style="color:var(--warning);"></i> Mostrar como anuncio en la campanita y barra superior</span>
+                    </label>
                 </div>
                 <div class="mb-2">
                     <label class="form-label small">Destinatarios</label>
@@ -161,8 +167,20 @@ function publicarBorrador() {
     $('#pubSeccion').val('noticias');
     $('#pubTipo').val('todos');
     $('#pubDestinatarioWrap').hide();
+    $('#pubAnuncio').prop('checked', false);
+    toggleAnuncioCheck();
     toggleDestinatario();
     $('#modalPublicar').modal('show');
+}
+
+function toggleAnuncioCheck() {
+    var seccion = $('#pubSeccion').val();
+    if (seccion === 'noticias') {
+        $('#anuncioCheckWrap').show();
+    } else {
+        $('#anuncioCheckWrap').hide();
+        $('#pubAnuncio').prop('checked', false);
+    }
 }
 
 function confirmarPublicar() {
@@ -170,6 +188,7 @@ function confirmarPublicar() {
     var seccion = $('#pubSeccion').val();
     var tipo = $('#pubTipo').val();
     var destId = tipo !== 'todos' ? parseInt($('#pubDestinatario').val()) : null;
+    var anuncio = $('#pubAnuncio').is(':checked') ? 1 : 0;
 
     showLoading();
     $.ajax({
@@ -181,6 +200,7 @@ function confirmarPublicar() {
             seccion: seccion,
             destinatario_tipo: tipo,
             destinatario_id: destId,
+            anuncio: anuncio,
         }),
         dataType: 'json',
         success: function(response) {
@@ -189,6 +209,7 @@ function confirmarPublicar() {
                 $('#modalPublicar').modal('hide');
                 Swal.fire({ icon: 'success', title: 'Publicado', text: 'El contenido se publico en ' + seccion, timer: 1500, showConfirmButton: false });
                 cargarBorradores();
+                verificarNotificaciones();
             } else {
                 Swal.fire('Error', response.message, 'error');
             }

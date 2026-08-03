@@ -70,11 +70,6 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <label class="form-label">Anuncio del Navbar <small class="text-muted">(ej: Manana es feriado)</small></label>
-                        <input type="text" class="form-control" id="anuncio" value="" maxlength="255" placeholder="Ej: Manana es feriado">
-                    </div>
-
                     <div class="mt-4 d-flex gap-2">
                         <button type="button" class="btn btn-primary-custom" onclick="guardarColores()">
                             <i class="bi bi-check-lg"></i> Guardar Cambios

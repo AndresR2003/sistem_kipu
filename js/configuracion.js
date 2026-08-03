@@ -66,9 +66,6 @@ function cargarColores() {
                     actualizarPreview(c, data[c]);
                 }
             });
-            if (data.anuncio) {
-                $('#anuncio').val(data.anuncio);
-            }
         }
     });
 }
@@ -83,7 +80,6 @@ function guardarColores() {
         primary_color: $('#primary_color_text').val(),
         content_bg: $('#content_bg_text').val(),
         card_bg: $('#card_bg_text').val(),
-        anuncio: $('#anuncio').val(),
     };
 
     showLoading();
@@ -136,7 +132,6 @@ function restaurarColores() {
                 content_bg: '#0f0f1a',
                 card_bg: '#1a1a2e',
             };
-            $('#anuncio').val('');
             Object.keys(defaults).forEach(function(c) {
                 var val = defaults[c];
                 if (/^#[0-9a-f]{6}$/i.test(val)) {
