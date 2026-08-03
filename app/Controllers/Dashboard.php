@@ -6,7 +6,6 @@ use App\Models\PagoModel;
 use App\Models\EntregaModel;
 use App\Models\BorradorModel;
 use App\Models\RecordatorioModel;
-use App\Models\MarcadorModel;
 use App\Models\EventoModel;
 use App\Models\ColaboradorModel;
 
@@ -25,7 +24,6 @@ class Dashboard extends BaseController
         $entregaModel = new EntregaModel();
         $borradorModel = new BorradorModel();
         $recordatorioModel = new RecordatorioModel();
-        $marcadorModel = new MarcadorModel();
         $eventoModel = new EventoModel();
         $colaboradorModel = new ColaboradorModel();
 
@@ -34,7 +32,7 @@ class Dashboard extends BaseController
             'tareas_done'     => $entregaModel->ContarRegistradasHoy($hoy),
             'noticias'        => $borradorModel->ContarPublicados('noticias', $usuarioId, $departamentoId, $rol),
             'recordatorios'   => $recordatorioModel->ContarPendientes('recordatorio', $usuarioId),
-            'marcadores'      => $marcadorModel->ContarTodos(),
+            'marcadores'      => $recordatorioModel->ContarTodos('marcador', $usuarioId),
             'eventos'         => $eventoModel->ContarProximos($hoy),
             'colaboradores'   => $colaboradorModel->countAllResults(),
         ];
