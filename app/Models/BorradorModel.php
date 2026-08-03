@@ -36,7 +36,7 @@ class BorradorModel extends Model
         return $this->find($id);
     }
 
-    public function ObtenerPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): array
+    public function ObtenerPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado', ?int $limite = null): array
     {
         $this->select('borradores.*, u.nombre AS usuario_nombre');
         $this->join('admin_usuarios u', 'u.id = borradores.usuario_id', 'left');
@@ -53,6 +53,10 @@ class BorradorModel extends Model
                 $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
             }
             $this->groupEnd();
+        }
+
+        if ($limite !== null) {
+            $this->limit($limite);
         }
 
         return $this->orderBy('fijado DESC, updated_at DESC')->findAll();

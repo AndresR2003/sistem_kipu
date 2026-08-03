@@ -46,7 +46,7 @@ class Api extends BaseController
         // Validar token
         $usuario = $this->usuarioModel->BuscarPorToken($token);
         if (!$usuario) {
-            return view('errors/html/error_404');
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
         // Generar deudas automaticas

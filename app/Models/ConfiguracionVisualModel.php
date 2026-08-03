@@ -20,12 +20,18 @@ class ConfiguracionVisualModel extends Model
 
     public function Obtener(): array
     {
+        $cache = service('cache');
+        $cached = $cache->get('config_visual');
+        if (is_array($cached)) {
+            return $cached;
+        }
+
         $data = $this->find(1);
         if (!$data) {
             $this->db->table($this->table)->insert(['id' => 1]);
             $data = $this->find(1);
         }
-        return $data ?? [
+        $data = $data ?? [
             'sidebar_bg'        => '#13131f',
             'sidebar_text'      => 'rgba(255,255,255,0.55)',
             'sidebar_active_bg' => '#4669FA',
@@ -35,10 +41,14 @@ class ConfiguracionVisualModel extends Model
             'content_bg'        => '#0f0f1a',
             'card_bg'           => '#1a1a2e',
         ];
+
+        $cache->save('config_visual', $data, 60);
+        return $data;
     }
 
     public function Guardar(array $datos): bool
     {
+        service('cache')->delete('config_visual');
         $datos['id'] = 1;
         return $this->replace($datos) ? true : false;
     }

@@ -134,7 +134,7 @@ class Borradores extends BaseController
     public function destinatarios()
     {
         $db = \Config\Database::connect();
-        $usuarios = $db->table('usuarios')->where('activo', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
+        $usuarios = $db->table('admin_usuarios')->where('activo', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
         $deptoModel = new DepartamentoModel();
         $deptos = $deptoModel->ObtenerTodos();
 

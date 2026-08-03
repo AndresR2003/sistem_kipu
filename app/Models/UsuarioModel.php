@@ -10,7 +10,7 @@ use CodeIgniter\Model;
  */
 class UsuarioModel extends Model
 {
-    protected $table            = 'admin_usuarios';
+    protected $table            = 'usuarios';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

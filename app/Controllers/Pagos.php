@@ -59,7 +59,7 @@ class Pagos extends BaseController
 
         $usuario = $this->usuarioModel->BuscarPorId($idUsuario);
         if (!$usuario) {
-            return view('errors/html/error_404');
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
         $historial = $this->pagoModel->HistorialUsuario($idUsuario);

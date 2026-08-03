@@ -21,32 +21,39 @@ class Dashboard extends BaseController
         $rol = session()->get('admin_rol') ?? 'empleado';
         $departamentoId = session()->get('id_departamento') ? (int) session()->get('id_departamento') : null;
 
-        $entregaModel = new EntregaModel();
-        $borradorModel = new BorradorModel();
-        $recordatorioModel = new RecordatorioModel();
-        $eventoModel = new EventoModel();
-        $colaboradorModel = new ColaboradorModel();
+        $cacheKey = 'dashboard_data_' . $rol . '_' . $usuarioId . '_' . $departamentoId . '_' . $hoy;
+        $cache = service('cache');
+        $data = $cache->get($cacheKey);
 
-        $stats = [
-            'tareas_hoy'      => $entregaModel->ContarActivas($hoy, $usuarioId, $departamentoId, $rol),
-            'tareas_done'     => $entregaModel->ContarRegistradasHoy($hoy),
-            'noticias'        => $borradorModel->ContarPublicados('noticias', $usuarioId, $departamentoId, $rol),
-            'recordatorios'   => $recordatorioModel->ContarPendientes('recordatorio', $usuarioId),
-            'marcadores'      => $recordatorioModel->ContarTodos('marcador', $usuarioId),
-            'eventos'         => $eventoModel->ContarProximos($hoy),
-            'colaboradores'   => $colaboradorModel->countAllResults(),
-        ];
+        if ($data === null) {
+            $entregaModel = new EntregaModel();
+            $borradorModel = new BorradorModel();
+            $recordatorioModel = new RecordatorioModel();
+            $eventoModel = new EventoModel();
+            $colaboradorModel = new ColaboradorModel();
 
-        $eventos = $eventoModel->ObtenerProximos($hoy, 5);
-        $noticias = $borradorModel->ObtenerPublicados('noticias', $usuarioId, $departamentoId, $rol);
-        $noticias = array_slice($noticias, 0, 5);
+            $stats = [
+                'tareas_hoy'      => $entregaModel->ContarActivas($hoy, $usuarioId, $departamentoId, $rol),
+                'tareas_done'     => $entregaModel->ContarRegistradasHoy($hoy),
+                'noticias'        => $borradorModel->ContarPublicados('noticias', $usuarioId, $departamentoId, $rol),
+                'recordatorios'   => $recordatorioModel->ContarPendientes('recordatorio', $usuarioId),
+                'marcadores'      => $recordatorioModel->ContarTodos('marcador', $usuarioId),
+                'eventos'         => $eventoModel->ContarProximos($hoy),
+                'colaboradores'   => $colaboradorModel->countAllResults(),
+            ];
 
-        $data = [
-            'titulo'    => 'Dashboard',
-            'stats'     => $stats,
-            'eventos'   => $eventos,
-            'noticias'  => $noticias,
-        ];
+            $eventos = $eventoModel->ObtenerProximos($hoy, 5);
+            $noticias = $borradorModel->ObtenerPublicados('noticias', $usuarioId, $departamentoId, $rol, 5);
+
+            $data = [
+                'titulo'    => 'Dashboard',
+                'stats'     => $stats,
+                'eventos'   => $eventos,
+                'noticias'  => $noticias,
+            ];
+
+            $cache->save($cacheKey, $data, 60);
+        }
 
         return view('layout', [
             'contenido'  => view('dashboard', $data),
