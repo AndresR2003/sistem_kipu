@@ -248,6 +248,14 @@ function toggleComentariosEnt(id) {
     if (!visible) cargarComentariosEnt(id);
 }
 
+function avatarComentario(c, nombre) {
+    if (c.autor_foto) {
+        return '<img src="' + BASE_URL + c.autor_foto + '" alt="">';
+    }
+    var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
+    return '<span>' + escHtml(inicial) + '</span>';
+}
+
 function cargarComentariosEnt(id) {
     var lista = $('#comentarios-ent-' + id + ' .comentarios-lista');
     $.ajax({
@@ -265,8 +273,11 @@ function cargarComentariosEnt(id) {
                 var fecha  = c.created_at ? formatearFechaHora(c.created_at) : '';
                 lista.append(
                     '<div class="comentario-item">' +
+                    '<div class="comentario-avatar">' + avatarComentario(c, nombre) + '</div>' +
+                    '<div class="comentario-body">' +
                     '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtml(c.comentario) + '</div>' +
+                    '</div>' +
                     '</div>'
                 );
             });
@@ -328,8 +339,11 @@ function cargarComentarios(id) {
                 var fecha  = c.created_at ? formatearFechaHora(c.created_at) : '';
                 lista.append(
                     '<div class="comentario-item">' +
+                    '<div class="comentario-avatar">' + avatarComentario(c, nombre) + '</div>' +
+                    '<div class="comentario-body">' +
                     '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtml(c.comentario) + '</div>' +
+                    '</div>' +
                     '</div>'
                 );
             });

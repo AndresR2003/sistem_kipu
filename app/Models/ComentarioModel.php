@@ -18,7 +18,7 @@ class ComentarioModel extends Model
 
     public function ObtenerPorBorrador(int $borradorId): array
     {
-        return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre')
+        return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre, admin_usuarios.foto as autor_foto')
                     ->join('admin_usuarios', 'admin_usuarios.id = comentarios.usuario_id', 'left')
                     ->where('comentarios.borrador_id', $borradorId)
                     ->orderBy('comentarios.created_at', 'ASC')
@@ -27,7 +27,7 @@ class ComentarioModel extends Model
 
     public function ObtenerPorEntrega(int $entregaId): array
     {
-        return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre')
+        return $this->select('comentarios.*, admin_usuarios.nombre as autor_nombre, admin_usuarios.foto as autor_foto')
                     ->join('admin_usuarios', 'admin_usuarios.id = comentarios.usuario_id', 'left')
                     ->where('comentarios.entrega_id', $entregaId)
                     ->orderBy('comentarios.created_at', 'ASC')

@@ -26,8 +26,11 @@
 .pub-card.diaria{border-left:3px solid #22c55e;}
 .comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;}
 .comentarios-lista{max-height:260px;overflow-y:auto;}
-.comentario-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:0.78rem;}
+.comentario-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.78rem;}
 .comentario-item:last-child{border-bottom:none;}
+.comentario-avatar{flex-shrink:0;width:28px;height:28px;border-radius:50%;overflow:hidden;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff;}
+.comentario-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.comentario-body{flex:1;min-width:0;}
 .comentario-autor{font-weight:600;color:var(--text);font-size:0.72rem;}
 .comentario-fecha{font-weight:400;color:var(--text-muted);margin-left:6px;font-size:0.65rem;}
 .comentario-texto{color:var(--text);margin-top:2px;line-height:1.4;white-space:pre-line;}
