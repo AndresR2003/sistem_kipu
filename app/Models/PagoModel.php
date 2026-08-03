@@ -38,34 +38,64 @@ class PagoModel extends Model
     ];
 
     /**
-     * Generar deudas automaticas para el mes actual
-     * Se ejecuta en cada peticion para asegurar que todos tengan registro del mes vigente
+     * Generar deudas automaticas para el mes actual.
+     * Se ejecuta una vez por hora por mes para no repetir trabajo en cada peticion.
      */
     public function GenerarDeudasAutomaticas(): void
     {
-        $usuarioModel = new \App\Models\UsuarioModel();
-        $usuarios = $usuarioModel->ObtenerActivos();
-
-        $mesActual = (int) date('m');
+        $mesActual  = (int) date('m');
         $anioActual = (int) date('Y');
 
-        foreach ($usuarios as $usuario) {
-            // Verificar si ya existe registro para este mes
-            $existe = $this->where('id_usuario', $usuario['id'])
-                            ->where('mes', $mesActual)
-                            ->where('anio', $anioActual)
-                            ->countAllResults();
+        $clave = 'deudas_' . $anioActual . '_' . $mesActual;
+        try {
+            if (cache($clave) !== null) {
+                return;
+            }
+        } catch (\Throwable $e) {
+            // Si el cache no esta disponible, se continua con la generacion
+        }
 
-            // Si no existe, crear registro NO_PAGADO
-            if ($existe === 0) {
-                $this->insert([
+        $usuarioModel = new \App\Models\UsuarioModel();
+        $usuarios = $usuarioModel->ObtenerActivos();
+        if (empty($usuarios)) {
+            return;
+        }
+
+        $ids = array_column($usuarios, 'id');
+
+        // Una sola consulta: usuarios que ya tienen registro del mes vigente
+        $db = \Config\Database::connect();
+        $existentes = [];
+        foreach ($db->table('pagos')
+                    ->select('id_usuario')
+                    ->whereIn('id_usuario', $ids)
+                    ->where('mes', $mesActual)
+                    ->where('anio', $anioActual)
+                    ->get()
+                    ->getResultArray() as $fila) {
+            $existentes[$fila['id_usuario']] = true;
+        }
+
+        $faltantes = [];
+        foreach ($usuarios as $usuario) {
+            if (!isset($existentes[$usuario['id']])) {
+                $faltantes[] = [
                     'id_usuario' => $usuario['id'],
                     'mes'        => $mesActual,
                     'anio'       => $anioActual,
                     'monto'      => $usuario['monto'] ?? 12.00,
                     'estado'     => 'NO_PAGADO',
-                ]);
+                ];
             }
+        }
+
+        if (!empty($faltantes)) {
+            $db->table('pagos')->insertBatch($faltantes);
+        }
+
+        try {
+            cache()->save($clave, time(), 3600);
+        } catch (\Throwable $e) {
         }
     }
 
@@ -427,9 +457,9 @@ class PagoModel extends Model
         ');
         $result = $builder->get()->getRowArray();
 
-        // Con deuda: meses con deuda aplicando filtros activos
+        // Con deuda: cuenta y monto de meses con deuda aplicando filtros activos
         $builderDeuda = $db->table('pagos');
-        $builderDeuda->select('COUNT(*) as total');
+        $builderDeuda->select('COUNT(*) as total, COALESCE(SUM(monto), 0) as monto');
         if ($idUsuario !== null) {
             $builderDeuda->where('id_usuario', $idUsuario);
         }
@@ -447,28 +477,7 @@ class PagoModel extends Model
             // Si el usuario filtra por un estado específico, ese sobreescribe la deuda
             $builderDeuda->where('estado', $estado);
         }
-        $conDeudaResult = $builderDeuda->get()->getRowArray();
-
-        // Deuda total: SUMA de montos de meses con deuda (NO_PAGADO o RECHAZADO)
-        $builderDeudaMonto = $db->table('pagos');
-        $builderDeudaMonto->select('COALESCE(SUM(monto), 0) as total');
-        if ($idUsuario !== null) {
-            $builderDeudaMonto->where('id_usuario', $idUsuario);
-        }
-        if ($mes !== null) {
-            $builderDeudaMonto->where('mes', $mes);
-        }
-        if ($anio !== null) {
-            $builderDeudaMonto->where('anio', $anio);
-        }
-        $builderDeudaMonto->groupStart();
-        $builderDeudaMonto->where('estado', 'NO_PAGADO');
-        $builderDeudaMonto->orWhere('estado', 'RECHAZADO');
-        $builderDeudaMonto->groupEnd();
-        if ($estado !== null) {
-            $builderDeudaMonto->where('estado', $estado);
-        }
-        $deudaMontoResult = $builderDeudaMonto->get()->getRowArray();
+        $deudaResult = $builderDeuda->get()->getRowArray();
 
         $usuarioModel = new UsuarioModel();
         $totalUsuarios = $usuarioModel->ContarActivos();
@@ -477,9 +486,9 @@ class PagoModel extends Model
             'totalUsuarios' => $totalUsuarios,
             'pagaronMes'    => (int) ($result['pagados'] ?? 0),
             'pendientes'    => (int) ($result['pendientes'] ?? 0),
-            'conDeuda'      => (int) ($conDeudaResult['total'] ?? 0),
+            'conDeuda'      => (int) ($deudaResult['total'] ?? 0),
             'recaudadoMes'  => number_format((float) ($result['recaudado'] ?? 0), 2),
-            'deuda'         => number_format((float) ($deudaMontoResult['total'] ?? 0), 2),
+            'deuda'         => number_format((float) ($deudaResult['monto'] ?? 0), 2),
         ];
     }
 

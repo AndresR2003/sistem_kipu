@@ -78,7 +78,7 @@ function cargarColaboradores() {
 
       tablaColaboradores = $("#tablaColaboradores").DataTable({
         language: {
-          url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json",
+          url: BASE_URL + 'js/datatables_es-ES.json',
         },
         pageLength: 25,
         order: [[1, "asc"]],

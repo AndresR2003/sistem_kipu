@@ -159,13 +159,21 @@ class Api extends BaseController
         $mesActual = (int) date('m');
         $anioActual = (int) date('Y');
 
+        // Una sola consulta para el estado de pago de todos los usuarios
+        $pagos = $this->pagoModel->where('mes', $mesActual)
+                                  ->where('anio', $anioActual)
+                                  ->orderBy('id', 'ASC')
+                                  ->findAll();
+        $estadoPorUsuario = [];
+        foreach ($pagos as $pago) {
+            if (!isset($estadoPorUsuario[$pago['id_usuario']])) {
+                $estadoPorUsuario[$pago['id_usuario']] = $pago['estado'];
+            }
+        }
+
         foreach ($usuarios as &$usuario) {
-            $pago = $this->pagoModel->where('id_usuario', $usuario['id'])
-                                     ->where('mes', $mesActual)
-                                     ->where('anio', $anioActual)
-                                     ->first();
-            $usuario['estado_pago'] = $pago ? $pago['estado'] : 'SIN REGISTRO';
-            $usuario['token_url'] = site_url('pago/' . $usuario['token']);
+            $usuario['estado_pago'] = $estadoPorUsuario[$usuario['id']] ?? 'SIN REGISTRO';
+            $usuario['token_url'] = site_url('pago/' . ($usuario['token'] ?? ''));
         }
 
         return $this->RespuestaJson(true, 'Usuarios listados', $usuarios);
