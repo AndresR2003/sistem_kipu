@@ -21,9 +21,8 @@ class Calendario extends BaseController
             'descripcion'    => 'Gestiona tus eventos y fechas importantes.',
         ];
 
-        $pageScripts = '<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">'
-                     . '<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>'
-                     . '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
+        $pageScripts = '<script src="' . base_url('assets/js/fullcalendar.global.min.js') . '"></script>'
+                     . '<script src="' . base_url('assets/js/sweetalert2.min.js') . '"></script>'
                      . '<script src="' . base_url('js/calendario.js') . '?v=' . filemtime(FCPATH . 'js/calendario.js') . '"></script>';
 
         return view('layout', [
