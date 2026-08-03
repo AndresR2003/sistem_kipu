@@ -366,6 +366,9 @@ try {
             border: 1px solid var(--border);
             box-shadow: 0 10px 30px rgba(0,0,0,0.35);
             max-height: 420px;
+        }
+
+        .notif-panel.show {
             display: flex;
             flex-direction: column;
         }
