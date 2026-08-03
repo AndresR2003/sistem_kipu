@@ -883,20 +883,6 @@ try {
                     <span>Colaboradores / Personal</span>
                 </a>
             </div>
-            <?php if (in_array(session('admin_rol'), ['admin', 'superadmin'])): ?>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'usuarios' ? 'active' : '' ?>" href="<?= site_url('usuarios') ?>">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Usuarios</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'pagos' ? 'active' : '' ?>" href="<?= site_url('pagos') ?>">
-                    <i class="bi bi-credit-card-fill"></i>
-                    <span>Pagos</span>
-                </a>
-            </div>
-            <?php endif; ?>
             <div class="nav-item">
                 <a class="nav-link <?= uri_string() === 'soporte' ? 'active' : '' ?>" href="<?= site_url('soporte') ?>">
                     <i class="bi bi-question-circle-fill"></i>
