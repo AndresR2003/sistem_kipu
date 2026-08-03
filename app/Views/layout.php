@@ -1080,12 +1080,86 @@ try {
             }
         });
 
+        var loadingTimer = null;
+
         function showLoading() {
             document.getElementById('loadingOverlay').classList.add('show');
+            clearTimeout(loadingTimer);
+            loadingTimer = setTimeout(hideLoading, 15000);
         }
         function hideLoading() {
+            clearTimeout(loadingTimer);
             document.getElementById('loadingOverlay').classList.remove('show');
         }
+
+        // ===== Cierre de sesion por inactividad =====
+        (function() {
+            var INACTIVIDAD_MS = 10 * 60 * 1000;
+            var AVISO_MS = 60 * 1000;
+            var temporizador = null;
+            var timerAviso = null;
+            var logoutEnCurso = false;
+
+            function reiniciarTemporizador() {
+                clearTimeout(temporizador);
+                clearTimeout(timerAviso);
+                if (logoutEnCurso) return;
+                timerAviso = setTimeout(mostrarAviso, INACTIVIDAD_MS - AVISO_MS);
+                temporizador = setTimeout(cerrarSesion, INACTIVIDAD_MS);
+            }
+
+            function mostrarAviso() {
+                if (logoutEnCurso) return;
+                var segundos = Math.floor(AVISO_MS / 1000);
+                var timerId = null;
+
+                Swal.fire({
+                    title: 'Sesion por vencer',
+                    html: 'Por inactividad, tu sesion se cerrara en <b id="avisoSeg">' + segundos + '</b> segundos.',
+                    icon: 'warning',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Continuar sesion',
+                    cancelButtonText: 'Cerrar sesion',
+                    confirmButtonColor: '#4669FA',
+                    cancelButtonColor: '#6c757d',
+                    didOpen: function() {
+                        timerId = setInterval(function() {
+                            segundos--;
+                            var el = document.getElementById('avisoSeg');
+                            if (el) el.textContent = segundos;
+                            if (segundos <= 0) {
+                                clearInterval(timerId);
+                                cerrarSesion();
+                            }
+                        }, 1000);
+                    },
+                    willClose: function() {
+                        clearInterval(timerId);
+                    }
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        reiniciarTemporizador();
+                    } else if (result.dismiss) {
+                        cerrarSesion();
+                    }
+                });
+            }
+
+            function cerrarSesion() {
+                if (logoutEnCurso) return;
+                logoutEnCurso = true;
+                Swal.close();
+                window.location.href = BASE_URL + 'logout';
+            }
+
+            ['click', 'keydown', 'mousemove', 'mousedown', 'scroll', 'touchstart'].forEach(function(ev) {
+                document.addEventListener(ev, reiniciarTemporizador, { passive: true });
+            });
+
+            reiniciarTemporizador();
+        })();
 
         function verificarNotificaciones() {
             $.ajax({
