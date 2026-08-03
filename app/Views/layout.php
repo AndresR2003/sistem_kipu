@@ -292,6 +292,26 @@ try {
             color: var(--topbar-text, var(--text));
         }
 
+        .topbar-anuncio {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 10px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: color-mix(in srgb, var(--primary) 18%, transparent);
+            color: var(--topbar-text, var(--text));
+            border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+            white-space: nowrap;
+            max-width: 340px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-anuncio i { color: var(--warning); }
+
         .topbar-actions {
             display: flex;
             align-items: center;
@@ -905,6 +925,9 @@ try {
                     <i class="bi bi-list"></i>
                 </button>
                 <h6 class="mb-0"><?= esc($titulo ?? 'Dashboard') ?></h6>
+                <?php if (!empty($cfg['anuncio'])): ?>
+                <span class="topbar-anuncio"><i class="bi bi-megaphone-fill"></i> <?= esc($cfg['anuncio']) ?></span>
+                <?php endif; ?>
             </div>
             <div class="topbar-actions">
                 <button class="topbar-btn" id="themeToggle" title="Cambiar tema">

@@ -16,6 +16,7 @@ class ConfiguracionVisualModel extends Model
     protected $allowedFields = [
         'sidebar_bg', 'sidebar_text', 'sidebar_active_bg',
         'topbar_bg', 'topbar_text', 'primary_color', 'content_bg', 'card_bg',
+        'anuncio',
     ];
 
     public function Obtener(): array
