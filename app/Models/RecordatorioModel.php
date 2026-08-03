@@ -45,6 +45,15 @@ class RecordatorioModel extends Model
         return $this->find($id);
     }
 
+    public function ContarPendientes(string $tipo = 'recordatorio', ?int $usuarioId = null): int
+    {
+        $db = \Config\Database::connect();
+        $sql = "SELECT COUNT(*) AS total FROM recordatorios WHERE tipo = ? AND completado = 0 AND (usuario_id = ? OR usuario_id IS NULL)";
+        $query = $db->query($sql, [$tipo, $usuarioId]);
+        $row = $query->getRowArray();
+        return (int) ($row['total'] ?? 0);
+    }
+
     public function Guardar(array $datos): bool
     {
         if (!isset($datos['tipo'])) {

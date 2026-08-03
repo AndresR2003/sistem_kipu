@@ -38,6 +38,8 @@ class BorradorModel extends Model
 
     public function ObtenerPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): array
     {
+        $this->select('borradores.*, u.nombre AS usuario_nombre');
+        $this->join('admin_usuarios u', 'u.id = borradores.usuario_id', 'left');
         $this->where('publicado', 1)->where('seccion_destino', $seccion);
 
         // Admin y superadmin ven todas las publicaciones
@@ -54,6 +56,25 @@ class BorradorModel extends Model
         }
 
         return $this->orderBy('fijado DESC, updated_at DESC')->findAll();
+    }
+
+    public function ContarPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): int
+    {
+        $this->where('publicado', 1)->where('seccion_destino', $seccion);
+
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            $this->groupStart();
+            $this->where('destinatario_tipo', 'todos');
+            if ($usuarioId) {
+                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
+            }
+            if ($departamentoId) {
+                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
+            }
+            $this->groupEnd();
+        }
+
+        return (int) $this->countAllResults();
     }
 
     public function Guardar(array $datos): bool

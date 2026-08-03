@@ -73,6 +73,26 @@ class EventoModel extends Model
     }
 
     /**
+     * Contar eventos a partir de una fecha (hoy en adelante)
+     */
+    public function ContarProximos(string $fecha): int
+    {
+        return (int) $this->where('fecha_inicio >=', $fecha)
+                         ->countAllResults();
+    }
+
+    /**
+     * Obtener los proximos eventos (limite)
+     */
+    public function ObtenerProximos(string $fecha, int $limite = 5): array
+    {
+        return $this->where('fecha_inicio >=', $fecha)
+                    ->orderBy('fecha_inicio', 'ASC')
+                    ->limit($limite)
+                    ->findAll();
+    }
+
+    /**
      * Obtener evento por ID
      */
     public function ObtenerPorId(int $id): ?array

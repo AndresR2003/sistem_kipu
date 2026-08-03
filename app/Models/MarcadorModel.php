@@ -27,6 +27,11 @@ class MarcadorModel extends Model
         return $this->find($id);
     }
 
+    public function ContarTodos(): int
+    {
+        return (int) $this->countAllResults();
+    }
+
     public function Guardar(array $datos): bool
     {
         if (!empty($datos['id'])) {

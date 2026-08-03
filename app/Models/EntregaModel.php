@@ -85,6 +85,36 @@ class EntregaModel extends Model
         return $this->orderBy('repetir_diario DESC, id ASC')->findAll();
     }
 
+    public function ContarActivas(string $fecha, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): int
+    {
+        $this->where('publicado', 1);
+        $this->where('fecha_inicio <=', $fecha);
+        $this->groupStart();
+        $this->where('fecha_fin IS NULL');
+        $this->orWhere('fecha_fin >=', $fecha);
+        $this->groupEnd();
+
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            $this->groupStart();
+            $this->where('destinatario_tipo', 'todos');
+            if ($usuarioId) {
+                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
+            }
+            if ($departamentoId) {
+                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
+            }
+            $this->groupEnd();
+        }
+
+        return (int) $this->countAllResults();
+    }
+
+    public function ContarRegistradasHoy(string $fecha): int
+    {
+        $db = \Config\Database::connect();
+        return (int) $db->table('entrega_registros')->where('fecha', $fecha)->countAllResults();
+    }
+
     public function Guardar(array $datos): bool
     {
         if (!empty($datos['id'])) {
