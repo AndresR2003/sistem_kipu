@@ -12,6 +12,7 @@
 .pub-acciones button.rec:hover{color:var(--warning);}
 .pub-acciones button.mar:hover{color:var(--primary);}
 .pub-acciones button.com:hover{color:var(--success);}
+.pub-acciones button .com-count{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 4px;margin-left:3px;border-radius:8px;background:var(--success);color:#fff;font-size:0.6rem;font-weight:700;line-height:1;}
 .pub-check{display:flex;align-items:flex-start;gap:12px;}
 .pub-check .form-check-input{margin-top:3px;cursor:pointer;width:18px;height:18px;flex-shrink:0;}
 .pub-check .form-check-input:checked{background-color:var(--success);border-color:var(--success);}

@@ -34,6 +34,48 @@ class ComentarioModel extends Model
                     ->findAll();
     }
 
+    public function ContarPorEntregas(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $filas = $db->table('comentarios')
+                    ->select('entrega_id, COUNT(*) as total')
+                    ->whereIn('entrega_id', $ids)
+                    ->groupBy('entrega_id')
+                    ->get()
+                    ->getResultArray();
+
+        $resultado = [];
+        foreach ($filas as $f) {
+            $resultado[$f['entrega_id']] = (int) $f['total'];
+        }
+        return $resultado;
+    }
+
+    public function ContarPorBorradores(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $filas = $db->table('comentarios')
+                    ->select('borrador_id, COUNT(*) as total')
+                    ->whereIn('borrador_id', $ids)
+                    ->groupBy('borrador_id')
+                    ->get()
+                    ->getResultArray();
+
+        $resultado = [];
+        foreach ($filas as $f) {
+            $resultado[$f['borrador_id']] = (int) $f['total'];
+        }
+        return $resultado;
+    }
+
     public function Guardar(array $datos): bool
     {
         return $this->insert($datos) ? true : false;

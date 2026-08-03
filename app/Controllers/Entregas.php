@@ -63,6 +63,12 @@ class Entregas extends BaseController
             }
         }
 
+        $ids = array_column($tareas, 'id');
+        $counts = empty($ids) ? [] : (new ComentarioModel())->ContarPorEntregas($ids);
+        foreach ($tareas as &$t) {
+            $t['comentarios_count'] = $counts[$t['id']] ?? 0;
+        }
+
         return $this->response->setJSON(['fecha' => $fecha, 'tareas' => $tareas]);
     }
 

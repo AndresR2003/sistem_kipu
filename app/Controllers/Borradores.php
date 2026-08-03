@@ -151,6 +151,13 @@ class Borradores extends BaseController
         $rol = session()->get('admin_rol') ?? 'empleado';
         $departamentoId = (int) (session()->get('id_departamento') ?? 0);
         $data  = $model->ObtenerPublicados($seccion, $usuarioId, $departamentoId ?: null, $rol);
+
+        $ids = array_column($data, 'id');
+        $counts = empty($ids) ? [] : (new ComentarioModel())->ContarPorBorradores($ids);
+        foreach ($data as &$d) {
+            $d['comentarios_count'] = $counts[$d['id']] ?? 0;
+        }
+
         return $this->response->setJSON($data);
     }
 

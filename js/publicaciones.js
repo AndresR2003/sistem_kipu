@@ -1,3 +1,16 @@
+function comButton(count, onclick) {
+    return '<button class="com" onclick="' + onclick + '" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' + (count > 0 ? '<span class="com-count">' + count + '</span>' : '') + '</button>';
+}
+
+function setComentariosCount(wrapId, count) {
+    var btn = $('#' + wrapId).closest('.pub-card').find('.com');
+    if (!btn.length) return;
+    btn.find('.com-count').remove();
+    if (count > 0) {
+        btn.append('<span class="com-count">' + count + '</span>');
+    }
+}
+
 function cargarPublicaciones(seccion) {
     var c = $('#publicacionesContainer');
     c.html('<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm"></div> Cargando...</div>');
@@ -74,7 +87,7 @@ function cargarBorradoresPublicados(seccion) {
                     '<div class="pub-acciones">' +
                     '<button class="rec" onclick="agregarRecordatorio(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                     '<button class="mar" onclick="agregarMarcador(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-                    '<button class="com" onclick="toggleComentarios(' + p.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios</button>' +
+                    comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
                     '</div>' +
                     '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
                     '<div class="comentarios-lista"></div>' +
@@ -139,7 +152,7 @@ function cargarTareasDiarias(initial) {
                         '<div class="pub-acciones">' +
                         '<button class="rec" onclick="agregarRecordatorio(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                         '<button class="mar" onclick="agregarMarcador(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-                        '<button class="com" onclick="toggleComentariosEnt(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios</button>' +
+                        comButton(t.comentarios_count || 0, 'toggleComentariosEnt(' + t.id + ')') +
                         '</div>' +
                         '<div class="comentarios-wrap" id="comentarios-ent-' + t.id + '" style="display:none;">' +
                         '<div class="comentarios-lista"></div>' +
@@ -184,7 +197,7 @@ function tareaPublicadaCard(p) {
         '<div class="pub-acciones">' +
         '<button class="rec" onclick="agregarRecordatorio(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="agregarMarcador(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-        '<button class="com" onclick="toggleComentarios(' + p.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios</button>' +
+        comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
         '</div>' +
         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
         '<div class="comentarios-lista"></div>' +
@@ -264,6 +277,7 @@ function cargarComentariosEnt(id) {
         dataType: 'json',
         success: function(data) {
             lista.empty();
+            setComentariosCount('comentarios-ent-' + id, data ? data.length : 0);
             if (!data || data.length === 0) {
                 lista.html('<div class="comentario-vacio">Sin comentarios</div>');
                 return;
@@ -330,6 +344,7 @@ function cargarComentarios(id) {
         dataType: 'json',
         success: function(data) {
             lista.empty();
+            setComentariosCount('comentarios-' + id, data ? data.length : 0);
             if (!data || data.length === 0) {
                 lista.html('<div class="comentario-vacio">Sin comentarios</div>');
                 return;
