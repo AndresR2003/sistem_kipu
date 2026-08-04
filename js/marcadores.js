@@ -23,9 +23,9 @@ function cargarMarcadores() {
             data.forEach(function(m) {
                 var fecha = m.created_at ? formatearFecha(m.created_at) : '';
                 var card = '<div class="marcador-item">' +
-                    '<div style="flex:1;min-width:0;">' +
+                    '<div class="marc-cuerpo" style="flex:1;min-width:0;">' +
                     '<div class="marc-titulo">' + escHtml(m.titulo) + '</div>' +
-                    (m.descripcion ? '<div class="marc-contenido">' + escHtml(m.descripcion.length > 200 ? m.descripcion.slice(0, 200) + '...' : m.descripcion) + '</div>' : '') +
+                    (m.descripcion ? '<div class="marc-contenido">' + escHtml(m.descripcion) + '</div>' : '') +
                     '<div class="marc-fecha"><i class="bi bi-clock"></i> ' + fecha + '</div>' +
                     '</div>' +
                     '<div class="marcador-acciones">' +

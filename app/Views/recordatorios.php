@@ -4,24 +4,28 @@
 .rec-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
 .rec-empty i{font-size:2.5rem;display:block;margin-bottom:12px;opacity:0.3;}
 .rec-empty p{margin:0;font-size:0.85rem;}
-.rec-table{width:100%;border-collapse:collapse;}
-.rec-table thead th{padding:10px 16px;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);border-bottom:1px solid var(--border);text-align:left;background:var(--bg-card);}
-.rec-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s;}
-.rec-table tbody tr:hover{background:var(--bg-input);}
-.rec-table tbody tr.completado{opacity:0.45;}
-.rec-table tbody td{padding:12px 16px;font-size:0.82rem;vertical-align:middle;}
-.rec-table .rec-check{width:32px;}
-.rec-table .rec-titulo{font-weight:500;color:var(--text);}
-.rec-table .rec-desc{font-size:0.75rem;color:var(--text-muted);margin-top:4px;white-space:pre-line;line-height:1.4;max-width:420px;}
-.rec-table .rec-fecha{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
-.rec-table .rec-prio{text-align:center;}
+
+/* ===== Tarjetas tipo publicacion ===== */
+.rec-lista{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.rec-card{background:var(--bg-card);border-bottom:1px solid var(--border);padding:16px 20px;transition:background 0.15s;}
+.rec-card:last-child{border-bottom:none;}
+.rec-card:hover{background:var(--bg-input);}
+.rec-card.completado{opacity:0.5;}
+.rec-card.completado .rec-titulo{text-decoration:line-through;color:var(--text-muted);}
+.rec-check{display:flex;align-items:flex-start;gap:12px;}
+.rec-check .form-check-input{margin-top:3px;cursor:pointer;width:18px;height:18px;flex-shrink:0;}
+.rec-check .form-check-input:checked{background-color:var(--success);border-color:var(--success);}
+.rec-cuerpo{flex:1;min-width:0;}
+.rec-titulo{font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:4px;}
+.rec-desc{font-size:0.8rem;color:var(--text-muted);white-space:pre-line;line-height:1.4;}
+.rec-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:0.7rem;color:var(--text-muted);}
 .badge-prio{display:inline-block;padding:2px 10px;border-radius:10px;font-size:0.65rem;font-weight:600;}
 .badge-prio.alta{background:rgba(239,68,68,0.12);color:#ef4444;}
 .badge-prio.media{background:rgba(234,179,8,0.12);color:#eab308;}
 .badge-prio.baja{background:rgba(107,114,128,0.12);color:#6b7280;}
-.rec-table .rec-acciones{text-align:right;white-space:nowrap;}
-.rec-table .rec-acciones button{background:none;border:none;padding:4px 8px;border-radius:4px;color:var(--text-muted);transition:all 0.12s;}
-.rec-table .rec-acciones button:hover{background:var(--bg-input);color:var(--danger);}
+.rec-acciones{display:flex;gap:4px;}
+.rec-acciones button{background:transparent;border:none;padding:4px 8px;border-radius:5px;color:var(--text-muted);font-size:0.7rem;transition:all 0.12s;}
+.rec-acciones button:hover{background:var(--bg-input);color:var(--danger);}
 </style>
 
 <div class="table-container" style="padding:0;overflow:hidden;">
@@ -34,17 +38,6 @@
         <p>No hay recordatorios.<br>Los recordatorios se crean desde las publicaciones.</p>
     </div>
     <div id="listaRecordatoriosWrap">
-        <table class="rec-table" id="recTable">
-            <thead>
-                <tr>
-                    <th class="rec-check"></th>
-                    <th>Titulo</th>
-                    <th>Fecha</th>
-                    <th class="rec-prio">Prioridad</th>
-                    <th class="rec-acciones"></th>
-                </tr>
-            </thead>
-            <tbody id="recTbody"></tbody>
-        </table>
+        <div class="rec-lista" id="recTbody"></div>
     </div>
 </div>

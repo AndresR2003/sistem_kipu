@@ -26,6 +26,9 @@ function cargarRecordatorios() {
       var tbody = $("#recTbody");
       tbody.empty();
 
+      var listaWrap = $("#recTbody");
+      listaWrap.find(".rec-card").remove();
+
       data.forEach(function (r) {
         var fecha = r.fecha ? r.fecha.split(" ")[0] : "";
         var hora = r.fecha ? r.fecha.split(" ")[1]?.slice(0, 5) : "";
@@ -46,36 +49,40 @@ function cargarRecordatorios() {
           ? '<div class="rec-desc">' + escHtml(r.descripcion) + "</div>"
           : "";
         var completadoClass = r.completado ? "completado" : "";
+        var checked = r.completado ? "checked" : "";
 
-        var tr =
-          '<tr class="' +
+        var card =
+          '<div class="rec-card ' +
           completadoClass +
           '">' +
-          '<td class="rec-check"><input type="checkbox" class="form-check-input" ' +
-          (r.completado ? "checked" : "") +
+          '<div class="rec-check">' +
+          '<input type="checkbox" class="form-check-input" ' +
+          checked +
           ' onchange="toggleCompletado(' +
           r.id +
-          ', this)"></td>' +
-          '<td><div class="rec-titulo">' +
+          ', this)">' +
+          '<div class="rec-cuerpo">' +
+          '<div class="rec-titulo">' +
           escHtml(r.titulo) +
           "</div>" +
           descHtml +
-          "</td>" +
-          '<td class="rec-fecha"><i class="bi bi-clock" style="margin-right:4px;"></i>' +
+          '<div class="rec-meta">' +
+          '<span><i class="bi bi-clock" style="margin-right:4px;"></i>' +
           fecha +
           (hora ? ' <span style="opacity:0.6;">' + hora + "</span>" : "") +
-          "</td>" +
-          '<td class="rec-prio">' +
+          "</span>" +
           badgePrio +
-          "</td>" +
-          '<td class="rec-acciones">' +
+          '<span class="rec-acciones">' +
           '<button onclick="eliminarRecordatorio(' +
           r.id +
-          ')" title="Eliminar"><i class="bi bi-trash"></i></button>' +
-          "</td>" +
-          "</tr>";
+          ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
+          "</span>" +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          "</div>";
 
-        tbody.append(tr);
+        tbody.append(card);
       });
 
       hideLoading();
