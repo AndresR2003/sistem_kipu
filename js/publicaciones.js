@@ -80,7 +80,7 @@ function cargarBorradoresPublicados(seccion) {
                     : '<div class="pub-titulo">' + escHtml(p.titulo) + '</div>' +
                       '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>';
 
-                var card = '<div class="pub-card ' + completado + '" id="' + cardId + '">' +
+                var card = '<div class="pub-card ' + completado + '" id="' + cardId + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
                     badge +
                     bodyContent +
                     '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
@@ -140,7 +140,7 @@ function cargarTareasDiarias(initial) {
                     });
                     var completado = t.hecho_por_mi ? 'completada' : '';
                     var checked = t.hecho_por_mi ? 'checked' : '';
-                    html += '<div class="pub-card diaria ' + completado + '" id="pub-ent-' + t.id + '">' +
+                    html += '<div class="pub-card diaria ' + completado + '" id="pub-ent-' + t.id + '" data-origen="entrega" data-origen-id="' + t.id + '" data-seccion="tareas_diarias">' +
                         '<div class="pub-check">' +
                         '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTareaEntregas(' + t.id + ', this)">' +
                         '<div class="flex-grow-1">' +
@@ -430,11 +430,17 @@ function guardarComo(tipo, id, btn) {
     var card = $(btn).closest('.pub-card');
     var titulo = $.trim(card.find('.pub-titulo').first().text());
     var contenido = $.trim(card.find('.pub-contenido').first().text());
+    var origenTipo = card.data('origen') || 'borrador';
+    var origenId = card.data('origen-id');
+    var seccion = card.data('seccion') || '';
 
     var data = {
         titulo: titulo,
         descripcion: contenido,
         tipo: tipo === 'marcador' ? 'marcador' : 'recordatorio',
+        origen_tipo: origenTipo,
+        origen_id: origenId,
+        seccion: seccion,
     };
 
     if (tipo === 'recordatorio') {

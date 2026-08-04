@@ -18,6 +18,7 @@ class RecordatorioModel extends Model
 
     protected $allowedFields = [
         'titulo', 'descripcion', 'fecha', 'prioridad', 'completado', 'usuario_id', 'tipo',
+        'origen_id', 'origen_tipo', 'seccion',
     ];
 
     protected $validationRules = [

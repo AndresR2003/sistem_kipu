@@ -29,6 +29,20 @@ class Recordatorio extends BaseController
         $tipo = $this->request->getGet('tipo') ?? 'recordatorio';
         $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
         $data = $this->model->ObtenerTodos($tipo, $usuarioId);
+
+        $db = \Config\Database::connect();
+        foreach ($data as &$item) {
+            $item['comentarios_count'] = 0;
+            if (!empty($item['origen_id'])) {
+                if ($item['origen_tipo'] === 'entrega') {
+                    $cnt = $db->table('comentarios')->where('entrega_id', (int) $item['origen_id'])->countAllResults();
+                } else {
+                    $cnt = $db->table('comentarios')->where('borrador_id', (int) $item['origen_id'])->countAllResults();
+                }
+                $item['comentarios_count'] = (int) $cnt;
+            }
+        }
+
         return $this->response->setJSON($data);
     }
 
@@ -61,6 +75,9 @@ class Recordatorio extends BaseController
             'fecha'       => $json['fecha'] ?? null,
             'prioridad'   => $json['prioridad'] ?? 'media',
             'tipo'        => $tipo,
+            'origen_id'   => !empty($json['origen_id']) ? (int) $json['origen_id'] : null,
+            'origen_tipo' => $json['origen_tipo'] ?? null,
+            'seccion'     => $json['seccion'] ?? null,
             'usuario_id'  => (int) (session()->get('usuario_id') ?? session()->get('admin_id')),
         ];
 
