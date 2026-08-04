@@ -60,21 +60,21 @@ try {
         }
 
         [data-theme="light"] {
-            --bg-body: #f1f5f9;
+            --bg-body: #eef2f7;
             --bg-sidebar: #ffffff;
             --bg-card: #ffffff;
-            --bg-card-alt: #f8fafc;
-            --bg-table: rgba(255,255,255,0.8);
+            --bg-card-alt: #f3f6fb;
+            --bg-table: rgba(255,255,255,0.9);
             --bg-input: #f1f5f9;
             --bg-input-hover: #e2e8f0;
             --bg-topbar: rgba(255,255,255,0.95);
             --text: #1e293b;
-            --text-muted: rgba(0,0,0,0.38);
-            --text-nav: rgba(0,0,0,0.5);
-            --border: rgba(0,0,0,0.06);
-            --border-light: rgba(0,0,0,0.1);
-            --shadow: 0 1px 3px rgba(0,0,0,0.04);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.06);
+            --text-muted: rgba(0,0,0,0.42);
+            --text-nav: rgba(0,0,0,0.55);
+            --border: rgba(15,23,42,0.10);
+            --border-light: rgba(15,23,42,0.18);
+            --shadow: 0 2px 6px rgba(15,23,42,0.06);
+            --shadow-lg: 0 10px 28px rgba(15,23,42,0.10);
             --modal-bg: #ffffff;
             --swal-bg: #ffffff;
         }
