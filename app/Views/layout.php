@@ -1,26 +1,18 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark" style="
+<html lang="es" data-theme="dark">
 <?php
 try {
     $cfg = model('App\Models\ConfiguracionVisualModel')->Obtener();
-    if (!empty($cfg['sidebar_bg']))        echo '--bg-sidebar:' . $cfg['sidebar_bg'] . ';';
-    if (!empty($cfg['sidebar_text']))      echo '--text-nav:' . $cfg['sidebar_text'] . ';';
-    if (!empty($cfg['sidebar_active_bg'])) echo '--active-bg:' . $cfg['sidebar_active_bg'] . ';';
-    if (!empty($cfg['topbar_bg']))          echo '--bg-topbar:' . $cfg['topbar_bg'] . ';';
-    if (!empty($cfg['topbar_text']))        echo '--topbar-text:' . $cfg['topbar_text'] . ';';
-    if (!empty($cfg['primary_color']))      echo '--primary:' . $cfg['primary_color'] . ';';
-    if (!empty($cfg['content_bg']))         echo '--bg-body:' . $cfg['content_bg'] . ';';
-    if (!empty($cfg['card_bg']))            echo '--bg-card:' . $cfg['card_bg'] . ';';
     $anuncioActivo = service('cache')->get('ultimo_anuncio');
     if ($anuncioActivo === null) {
         $anuncioActivo = model('App\Models\BorradorModel')->ObtenerUltimoAnuncio();
         service('cache')->save('ultimo_anuncio', $anuncioActivo, 60);
     }
 } catch (\Throwable $e) {
+    $cfg = [];
     $anuncioActivo = null;
 }
 ?>
-">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,6 +77,17 @@ try {
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.06);
             --modal-bg: #ffffff;
             --swal-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            <?php if (!empty($cfg['sidebar_bg']))        echo '--bg-sidebar:' . $cfg['sidebar_bg'] . ';'; ?>
+            <?php if (!empty($cfg['sidebar_text']))      echo '--text-nav:' . $cfg['sidebar_text'] . ';'; ?>
+            <?php if (!empty($cfg['sidebar_active_bg'])) echo '--active-bg:' . $cfg['sidebar_active_bg'] . ';'; ?>
+            <?php if (!empty($cfg['topbar_bg']))          echo '--bg-topbar:' . $cfg['topbar_bg'] . ';'; ?>
+            <?php if (!empty($cfg['topbar_text']))        echo '--topbar-text:' . $cfg['topbar_text'] . ';'; ?>
+            <?php if (!empty($cfg['primary_color']))      echo '--primary:' . $cfg['primary_color'] . ';'; ?>
+            <?php if (!empty($cfg['content_bg']))         echo '--bg-body:' . $cfg['content_bg'] . ';'; ?>
+            <?php if (!empty($cfg['card_bg']))            echo '--bg-card:' . $cfg['card_bg'] . ';'; ?>
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
