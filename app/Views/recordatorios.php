@@ -12,7 +12,7 @@
 .rec-table tbody td{padding:12px 16px;font-size:0.82rem;vertical-align:middle;}
 .rec-table .rec-check{width:32px;}
 .rec-table .rec-titulo{font-weight:500;color:var(--text);}
-.rec-table .rec-desc{font-size:0.75rem;color:var(--text-muted);margin-top:2px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rec-table .rec-desc{font-size:0.75rem;color:var(--text-muted);margin-top:4px;white-space:pre-line;line-height:1.4;max-width:420px;}
 .rec-table .rec-fecha{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
 .rec-table .rec-prio{text-align:center;}
 .badge-prio{display:inline-block;padding:2px 10px;border-radius:10px;font-size:0.65rem;font-weight:600;}

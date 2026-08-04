@@ -25,7 +25,7 @@ function cargarMarcadores() {
                 var card = '<div class="marcador-item">' +
                     '<div style="flex:1;min-width:0;">' +
                     '<div class="marc-titulo">' + escHtml(m.titulo) + '</div>' +
-                    (m.contenido ? '<div class="marc-contenido">' + escHtml(m.contenido.length > 200 ? m.contenido.slice(0, 200) + '...' : m.contenido) + '</div>' : '') +
+                    (m.descripcion ? '<div class="marc-contenido">' + escHtml(m.descripcion.length > 200 ? m.descripcion.slice(0, 200) + '...' : m.descripcion) + '</div>' : '') +
                     '<div class="marc-fecha"><i class="bi bi-clock"></i> ' + fecha + '</div>' +
                     '</div>' +
                     '<div class="marcador-acciones">' +

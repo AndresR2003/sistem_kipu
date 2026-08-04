@@ -85,8 +85,8 @@ function cargarBorradoresPublicados(seccion) {
                     bodyContent +
                     '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
                     '<div class="pub-acciones">' +
-                    '<button class="rec" onclick="agregarRecordatorio(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
-                    '<button class="mar" onclick="agregarMarcador(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+                    '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+                    '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
                     comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
                     '</div>' +
                     '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
@@ -150,8 +150,8 @@ function cargarTareasDiarias(initial) {
                         '</div></div>' +
                         (hechoPor ? '<div class="ent-hechos">' + hechoPor + '</div>' : '') +
                         '<div class="pub-acciones">' +
-                        '<button class="rec" onclick="agregarRecordatorio(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
-                        '<button class="mar" onclick="agregarMarcador(' + t.id + ',\'' + escHtml(t.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+                        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + t.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+                        '<button class="mar" onclick="guardarComo(\'marcador\',' + t.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
                         comButton(t.comentarios_count || 0, 'toggleComentariosEnt(' + t.id + ')') +
                         '</div>' +
                         '<div class="comentarios-wrap" id="comentarios-ent-' + t.id + '" style="display:none;">' +
@@ -195,8 +195,8 @@ function tareaPublicadaCard(p) {
         '<span class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</span></div>' +
         '</div></div>' +
         '<div class="pub-acciones">' +
-        '<button class="rec" onclick="agregarRecordatorio(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
-        '<button class="mar" onclick="agregarMarcador(' + p.id + ',\'' + escHtml(p.titulo).replace(/'/g, "\\'") + '\')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+        '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
         '</div>' +
         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
@@ -426,80 +426,51 @@ function escHtml(s) {
     return $('<div>').text(s).html();
 }
 
-function agregarRecordatorio(id, titulo) {
+function guardarComo(tipo, id, btn) {
+    var card = $(btn).closest('.pub-card');
+    var titulo = $.trim(card.find('.pub-titulo').first().text());
+    var contenido = $.trim(card.find('.pub-contenido').first().text());
+
+    var data = {
+        titulo: titulo,
+        descripcion: contenido,
+        tipo: tipo === 'marcador' ? 'marcador' : 'recordatorio',
+    };
+
+    if (tipo === 'recordatorio') {
+        data.fecha = new Date().toISOString().slice(0, 10);
+        data.prioridad = 'media';
+    }
+
     Swal.fire({
-        title: 'Agregar a Recordatorio',
-        html:
-            '<input class="swal2-input" id="recFecha" type="date" value="' + new Date().toISOString().slice(0, 10) + '">' +
-            '<select class="swal2-input" id="recPrioridad">' +
-            '<option value="baja">Baja</option>' +
-            '<option value="media" selected>Media</option>' +
-            '<option value="alta">Alta</option>' +
-            '</select>',
+        title: tipo === 'marcador' ? 'Agregar a Marcadores' : 'Agregar a Recordatorio',
+        text: 'Se guardara el post completo.',
+        icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         cancelButtonText: 'Cancelar',
-        preConfirm: function() {
-            return {
-                fecha: document.getElementById('recFecha').value,
-                prioridad: document.getElementById('recPrioridad').value,
-            };
-        }
     }).then(function(result) {
-        if (result.isConfirmed) {
-            showLoading();
-            $.ajax({
-                url: BASE_URL + 'recordatorio/guardar',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    titulo: titulo,
-                    descripcion: 'Desde publicacion',
-                    fecha: result.value.fecha,
-                    prioridad: result.value.prioridad,
-                }),
-                dataType: 'json',
-                success: function(response) {
-                    hideLoading();
-                    if (response.success) {
-                        Swal.fire({ icon: 'success', title: 'Recordatorio agregado', timer: 1500, showConfirmButton: false });
-                    } else {
-                        Swal.fire('Error', response.message, 'error');
-                    }
-                },
-                error: function() {
-                    hideLoading();
-                    Swal.fire('Error', 'Error de conexion.', 'error');
+        if (!result.isConfirmed) return;
+        showLoading();
+        $.ajax({
+            url: BASE_URL + 'recordatorio/guardar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
                 }
-            });
-        }
-    });
-}
-
-function agregarMarcador(id, titulo) {
-    showLoading();
-    $.ajax({
-        url: BASE_URL + 'recordatorio/guardar',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
-            titulo: titulo,
-            descripcion: 'Desde publicacion #' + id,
-            tipo: 'marcador',
-        }),
-        dataType: 'json',
-        success: function(response) {
-            hideLoading();
-            if (response.success) {
-                Swal.fire({ icon: 'success', title: 'Marcador agregado', timer: 1500, showConfirmButton: false });
-            } else {
-                Swal.fire('Error', response.message, 'error');
+            },
+            error: function() {
+                hideLoading();
+                Swal.fire('Error', 'Error de conexion.', 'error');
             }
-        },
-        error: function() {
-            hideLoading();
-            Swal.fire('Error', 'Error de conexion.', 'error');
-        }
+        });
     });
 }
 
