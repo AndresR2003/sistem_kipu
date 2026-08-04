@@ -22,31 +22,19 @@ $(document).ready(function() {
 });
 
 function actualizarPreview(campo, valor) {
-    switch (campo) {
-        case 'sidebar_bg':
-            $('#previewSidebar').css('background', valor);
-            break;
-        case 'sidebar_text':
-            $('#previewSidebarIcon1, #previewSidebarIcon2').css('color', valor);
-            break;
-        case 'sidebar_active_bg':
-            $('#previewSidebarActive').css('background', valor);
-            break;
-        case 'topbar_bg':
-            $('#previewTopbar').css('background', valor);
-            break;
-        case 'topbar_text':
-            $('#previewTopbarText, #previewTopbarIcon').css('color', valor);
-            break;
-        case 'primary_color':
-            $('#previewLogo, #previewAvatar').css('background', valor);
-            break;
-        case 'content_bg':
-            $('#previewContent, #previewShell').css('background', valor);
-            break;
-        case 'card_bg':
-            $('.preview-card').css('background', valor);
-            break;
+    var shell = document.getElementById('previewShell');
+    var cssVar = {
+        sidebar_bg: '--pv-sidebar',
+        sidebar_text: '--pv-sidebar-text',
+        sidebar_active_bg: '--pv-sidebar-active',
+        topbar_bg: '--pv-topbar',
+        topbar_text: '--pv-topbar-text',
+        primary_color: '--pv-primary',
+        content_bg: '--pv-body',
+        card_bg: '--pv-card',
+    }[campo];
+    if (shell && cssVar) {
+        shell.style.setProperty(cssVar, valor);
     }
 }
 
