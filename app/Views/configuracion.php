@@ -100,10 +100,37 @@
                         overflow: hidden;
                         background: var(--pv-body);
                     }
+                    .pv-body { display: flex; align-items: stretch; }
+                    .pv-sidebar {
+                        width: 108px; flex-shrink: 0; padding: 10px 9px; display: flex; flex-direction: column;
+                        gap: 7px; background: var(--pv-sidebar); border-right: 1px solid var(--border);
+                        align-self: stretch;
+                    }
+                    .pv-brand {
+                        display: flex; align-items: center; gap: 7px; padding-bottom: 8px;
+                        border-bottom: 1px solid var(--border); margin-bottom: 4px;
+                    }
+                    .pv-logo {
+                        width: 22px; height: 22px; border-radius: 4px; flex-shrink: 0;
+                        background: linear-gradient(135deg, var(--pv-primary) 0%, #3651d4 100%);
+                        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.6rem;
+                    }
+                    .pv-brand-txt { min-width: 0; }
+                    .pv-brand-txt b { display: block; font-size: 0.62rem; font-weight: 800; color: var(--text); line-height: 1.1; }
+                    .pv-brand-txt small { display: block; font-size: 0.4rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+                    .pv-nav {
+                        display: flex; align-items: center; gap: 7px; padding: 5px 6px; border-radius: 5px;
+                        color: var(--pv-sidebar-text); font-size: 0.58rem; line-height: 1; white-space: nowrap;
+                    }
+                    .pv-nav i { font-size: 0.68rem; flex-shrink: 0; width: 14px; text-align: center; }
+                    .pv-nav.active {
+                        background: var(--pv-sidebar-active); color: #fff; font-weight: 600;
+                    }
+                    .pv-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
                     .pv-topbar {
                         display: flex; justify-content: space-between; align-items: center;
                         background: var(--pv-topbar); padding: 8px 12px;
-                        border-bottom: 1px solid var(--border);
+                        border-bottom: 1px solid var(--border); flex-shrink: 0;
                     }
                     .pv-topbar-title { color: var(--pv-topbar-text); font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
                     .pv-topbar-actions { display: flex; align-items: center; gap: 8px; }
@@ -113,21 +140,6 @@
                         background: linear-gradient(135deg, var(--pv-primary) 0%, #3651d4 100%);
                         color: #fff; font-size: 0.55rem; font-weight: 700;
                         display: inline-flex; align-items: center; justify-content: center;
-                    }
-                    .pv-body { display: flex; }
-                    .pv-sidebar {
-                        width: 42px; padding: 10px 7px; display: flex; flex-direction: column;
-                        align-items: center; gap: 9px; background: var(--pv-sidebar); border-right: 1px solid var(--border);
-                    }
-                    .pv-logo {
-                        width: 22px; height: 22px; border-radius: 5px;
-                        background: linear-gradient(135deg, var(--pv-primary) 0%, #3651d4 100%);
-                        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.6rem;
-                    }
-                    .pv-nav { color: var(--pv-sidebar-text); font-size: 0.72rem; line-height: 1; }
-                    .pv-nav.active {
-                        width: 100%; border-radius: 5px; background: var(--pv-sidebar-active);
-                        display: flex; align-items: center; justify-content: center; padding: 5px; color: #fff; font-size: 0.72rem;
                     }
                     .pv-content { flex: 1; padding: 10px; min-width: 0; }
                     .pv-hero {
@@ -160,21 +172,25 @@
                     .pv-witem .wd { font-size: 0.45rem; color: var(--text-muted); background: var(--bg-input); padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
                 </style>
                 <div id="previewShell">
-                    <div id="previewTopbar" class="pv-topbar">
-                        <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - Litio</span>
-                        <span class="pv-topbar-actions">
-                            <span id="previewTopbarIcon" class="pv-bell"><i class="bi bi-bell-fill"></i></span>
-                            <span id="previewAvatar" class="pv-avatar">A</span>
-                        </span>
-                    </div>
                     <div class="pv-body">
                         <div id="previewSidebar" class="pv-sidebar">
-                            <div id="previewLogo" class="pv-logo"><i class="bi bi-lightning-fill"></i></div>
-                            <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i></div>
-                            <div id="previewSidebarIcon2" class="pv-nav"><i class="bi bi-bell-fill"></i></div>
-                            <div id="previewSidebarActive" class="pv-nav active"><i class="bi bi-newspaper"></i></div>
+                            <div class="pv-brand">
+                                <div id="previewLogo" class="pv-logo"><i class="bi bi-lightning-fill"></i></div>
+                                <div class="pv-brand-txt"><b>Litio</b><small>Gestion</small></div>
+                            </div>
+                            <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i> Inicio</div>
+                            <div id="previewSidebarIcon2" class="pv-nav"><i class="bi bi-newspaper"></i> Noticias</div>
+                            <div id="previewSidebarActive" class="pv-nav active"><i class="bi bi-check2-square"></i> Tareas</div>
                         </div>
-                        <div id="previewContent" class="pv-content">
+                        <div class="pv-main">
+                            <div id="previewTopbar" class="pv-topbar">
+                                <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - Litio</span>
+                                <span class="pv-topbar-actions">
+                                    <span id="previewTopbarIcon" class="pv-bell"><i class="bi bi-bell-fill"></i></span>
+                                    <span id="previewAvatar" class="pv-avatar">A</span>
+                                </span>
+                            </div>
+                            <div id="previewContent" class="pv-content">
                             <div class="pv-hero">
                                 <div class="pv-hero-label">Sistema de Gestion Hotel Litio</div>
                                 <div class="pv-hero-title">Bienvenido, Usuario</div>
@@ -210,6 +226,7 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
