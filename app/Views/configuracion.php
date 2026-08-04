@@ -142,6 +142,12 @@
                         display: inline-flex; align-items: center; justify-content: center;
                     }
                     .pv-content { flex: 1; padding: 10px; min-width: 0; }
+                    .pv-section-t {
+                        display: flex; align-items: center; gap: 5px; margin: 12px 0 7px;
+                        font-size: 0.6rem; font-weight: 700; color: var(--text);
+                    }
+                    .pv-section-t i { color: var(--pv-primary); }
+                    .pv-section-t .ln { flex: 1; height: 1px; background: var(--border); }
                     .pv-hero {
                         border-radius: 8px; padding: 12px 14px; color: #fff; margin-bottom: 10px;
                         background: linear-gradient(135deg, var(--pv-primary) 0%, #3651d4 55%, #5a2ea6 100%);
@@ -158,18 +164,6 @@
                     .pv-q { background: var(--pv-card); border: 1px solid var(--border); border-radius: 7px; padding: 7px 4px; text-align: center; }
                     .pv-q i { display: block; font-size: 0.75rem; color: var(--pv-primary); margin-bottom: 3px; }
                     .pv-q span { font-size: 0.5rem; color: var(--text); font-weight: 600; }
-                    .pv-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-                    .pv-widget { background: var(--pv-card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
-                    .pv-whead { padding: 6px 8px; border-bottom: 1px solid var(--border); font-size: 0.55rem; font-weight: 700; display: flex; align-items: center; gap: 5px; color: var(--text); }
-                    .pv-whead i { color: var(--pv-primary); }
-                    .pv-wbody { padding: 5px 8px; }
-                    .pv-witem { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
-                    .pv-witem:last-child { border-bottom: none; }
-                    .pv-witem .wi { width: 18px; height: 18px; border-radius: 5px; background: color-mix(in srgb, var(--pv-primary) 12%, transparent); color: var(--pv-primary); display: flex; align-items: center; justify-content: center; font-size: 0.55rem; flex-shrink: 0; }
-                    .pv-witem .wt { flex: 1; min-width: 0; }
-                    .pv-witem .wt b { display: block; font-size: 0.52rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                    .pv-witem .wt small { font-size: 0.45rem; color: var(--text-muted); }
-                    .pv-witem .wd { font-size: 0.45rem; color: var(--text-muted); background: var(--bg-input); padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
                 </style>
                 <div id="previewShell">
                     <div class="pv-body">
@@ -204,27 +198,12 @@
                                 <div class="pv-stat"><div class="si" style="background:rgba(168,85,247,0.14);color:#a855f7;"><i class="bi bi-bookmark-fill"></i></div><div class="sv">2</div><div class="sl">Marc.</div></div>
                                 <div class="pv-stat"><div class="si" style="background:rgba(239,68,68,0.12);color:var(--danger);"><i class="bi bi-calendar-event"></i></div><div class="sv">1</div><div class="sl">Eventos</div></div>
                             </div>
+                            <div class="pv-section-t"><i class="bi bi-grid-1x2-fill"></i> Accesos rapidos <span class="ln"></span></div>
                             <div class="pv-quick">
                                 <div class="pv-q"><i class="bi bi-newspaper"></i><span>Noticias</span></div>
                                 <div class="pv-q"><i class="bi bi-check2-square"></i><span>Tareas</span></div>
                                 <div class="pv-q"><i class="bi bi-bell-fill"></i><span>Record.</span></div>
                                 <div class="pv-q"><i class="bi bi-calendar-fill"></i><span>Calend.</span></div>
-                            </div>
-                            <div class="pv-widgets">
-                                <div class="pv-widget">
-                                    <div class="pv-whead"><i class="bi bi-newspaper"></i> Ultimas noticias</div>
-                                    <div class="pv-wbody">
-                                        <div class="pv-witem"><div class="wi"><i class="bi bi-file-text"></i></div><div class="wt"><b>Titulo de la noticia</b><small>Por Usuario</small></div><span class="wd">02 ago</span></div>
-                                        <div class="pv-witem"><div class="wi"><i class="bi bi-file-text"></i></div><div class="wt"><b>Otra noticia</b><small>Por Staff</small></div><span class="wd">01 ago</span></div>
-                                    </div>
-                                </div>
-                                <div class="pv-widget">
-                                    <div class="pv-whead"><i class="bi bi-calendar-event"></i> Proximos eventos</div>
-                                    <div class="pv-wbody">
-                                        <div class="pv-witem"><div class="wi"><i class="bi bi-calendar-check"></i></div><div class="wt"><b>Evento proximo</b><small>Descripcion</small></div><span class="wd">05 ago</span></div>
-                                        <div class="pv-witem"><div class="wi"><i class="bi bi-calendar-check"></i></div><div class="wt"><b>Otro evento</b><small>Detalle</small></div><span class="wd">08 ago</span></div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         </div>
