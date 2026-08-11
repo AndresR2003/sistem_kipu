@@ -45,7 +45,7 @@ $RECYCLE.BIN/
 .vagrant
 Vagrantfile
 
-# .htaccess difiere entre local (RewriteBase /sistem_lito/)
+# .htaccess difiere entre local (RewriteBase /sistem_kipu/)
 # y produccion (RewriteBase / + HTTPS). Cada entorno lo mantiene propio.
 .htaccess
 

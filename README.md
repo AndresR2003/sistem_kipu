@@ -26,8 +26,8 @@ Sistema de gestion interna para el hotel Kipucloud, desarrollado con **CodeIgnit
 1. **Clonar el repositorio**
 
    ```bash
-   git clone https://github.com/AndresR2003/sistem_lito.git
-   cd sistem_lito
+   git clone https://github.com/AndresR2003/sistem_kipu.git
+   cd sistem_kipu
    ```
 
 2. **Instalar dependencias**
@@ -70,9 +70,9 @@ Sistema de gestion interna para el hotel Kipucloud, desarrollado con **CodeIgnit
 
 5. **Levantar el sistema**
 
-   - Copiar la carpeta a `C:\xampp\htdocs\sistem_lito` (si no se clono ahi directamente)
+   - Copiar la carpeta a `C:\xampp\htdocs\sistem_kipu` (si no se clono ahi directamente)
    - Iniciar **Apache** y **MySQL** en el panel de XAMPP
-   - Abrir en el navegador: `http://localhost/sistem_lito`
+   - Abrir en el navegador: `http://localhost/sistem_kipu`
 
 6. **Usuarios de acceso**
 
