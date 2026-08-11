@@ -391,7 +391,7 @@ function exportarExcel() {
                     { wch: 20 },
                 ];
 
-                XLSX.writeFile(wb, "pagos_litio_" + new Date().toISOString().slice(0,10) + ".xlsx");
+                XLSX.writeFile(wb, "pagos_Kipucloud_" + new Date().toISOString().slice(0,10) + ".xlsx");
                 Swal.fire('Exito', 'Archivo Excel generado correctamente', 'success');
             } else {
                 Swal.fire('Info', 'No hay datos para exportar', 'info');
@@ -417,7 +417,7 @@ function exportarPdf() {
 
                 doc.setFontSize(18);
                 doc.setTextColor(229, 9, 20);
-                doc.text("Reporte de Pagos - Litio", 14, 20);
+                doc.text("Reporte de Pagos - Kipucloud", 14, 20);
 
                 doc.setFontSize(10);
                 doc.setTextColor(128, 128, 128);
@@ -446,7 +446,7 @@ function exportarPdf() {
                     },
                 });
 
-                doc.save("pagos_litio_" + new Date().toISOString().slice(0,10) + ".pdf");
+                doc.save("pagos_Kipucloud_" + new Date().toISOString().slice(0,10) + ".pdf");
                 Swal.fire('Exito', 'Archivo PDF generado correctamente', 'success');
             } else {
                 Swal.fire('Info', 'No hay datos para exportar', 'info');

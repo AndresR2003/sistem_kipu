@@ -170,7 +170,7 @@
                         <div id="previewSidebar" class="pv-sidebar">
                             <div class="pv-brand">
                                 <div id="previewLogo" class="pv-logo"><i class="bi bi-lightning-fill"></i></div>
-                                <div class="pv-brand-txt"><b>Litio</b><small>Gestion</small></div>
+                                <div class="pv-brand-txt"><b>Kipucloud</b><small>Gestion</small></div>
                             </div>
                             <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i> Inicio</div>
                             <div id="previewSidebarIcon2" class="pv-nav"><i class="bi bi-newspaper"></i> Noticias</div>
@@ -178,7 +178,7 @@
                         </div>
                         <div class="pv-main">
                             <div id="previewTopbar" class="pv-topbar">
-                                <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - Litio</span>
+                                <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - Kipucloud</span>
                                 <span class="pv-topbar-actions">
                                     <span id="previewTopbarIcon" class="pv-bell"><i class="bi bi-bell-fill"></i></span>
                                     <span id="previewAvatar" class="pv-avatar">A</span>
@@ -186,7 +186,7 @@
                             </div>
                             <div id="previewContent" class="pv-content">
                             <div class="pv-hero">
-                                <div class="pv-hero-label">Sistema de Gestion Hotel Litio</div>
+                                <div class="pv-hero-label">Sistema de Gestion Hotel Kipucloud</div>
                                 <div class="pv-hero-title">Bienvenido, Usuario</div>
                                 <div class="pv-hero-sub">Esto es lo que esta pasando hoy en tu cuenta</div>
                             </div>

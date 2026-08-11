@@ -8,7 +8,7 @@ class Noticias extends BaseController
     {
         return view('layout', [
             'contenido'  => view('seccion_publicaciones', ['seccion' => 'noticias']),
-            'titulo'     => 'Noticias - Litio',
+            'titulo'     => 'Noticias - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/publicaciones.js') . '?v=' . filemtime(FCPATH . 'js/publicaciones.js') . '"></script>',
         ]);
     }

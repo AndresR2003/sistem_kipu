@@ -45,7 +45,7 @@ class Pagos extends BaseController
 
         return view('layout', [
             'contenido'  => view('pagos', $data),
-            'titulo'     => 'Pagos - Litio',
+            'titulo'     => 'Pagos - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

@@ -19,7 +19,7 @@ class Configuracion extends BaseController
 
         return view('layout', [
             'contenido'   => view('configuracion'),
-            'titulo'      => 'Configuracion - Litio',
+            'titulo'      => 'Configuracion - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

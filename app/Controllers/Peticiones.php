@@ -14,7 +14,7 @@ class Peticiones extends BaseController
 
         return view('layout', [
             'contenido'  => view('seccion', $data),
-            'titulo'     => 'Peticiones - Litio',
+            'titulo'     => 'Peticiones - Kipucloud',
             'pageScripts' => '',
         ]);
     }

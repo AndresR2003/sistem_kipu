@@ -13,7 +13,7 @@ class Colaboradores extends BaseController
     {
         return view('layout', [
             'contenido'   => view('colaboradores'),
-            'titulo'      => 'Personal - Litio',
+            'titulo'      => 'Personal - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/colaboradores.js') . '?v=' . filemtime(FCPATH . 'js/colaboradores.js') . '"></script>',
         ]);
     }

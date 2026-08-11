@@ -1,6 +1,6 @@
-# Sistema de Gestion Litio
+# Sistema de Gestion Kipucloud
 
-Sistema de gestion interna para el hotel Litio, desarrollado con **CodeIgniter 4** y **Bootstrap 5**.
+Sistema de gestion interna para el hotel Kipucloud, desarrollado con **CodeIgniter 4** y **Bootstrap 5**.
 
 ## Funcionalidades
 

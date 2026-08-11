@@ -1,7 +1,7 @@
 -- =====================================================
--- Litio - Control de Pagos - Database Schema
+-- Kipucloud - Control de Pagos - Database Schema
 -- =====================================================
--- Base de datos: litio_pagos
+-- Base de datos: Kipucloud_pagos
 -- Motor: InnoDB
 -- Charset: utf8mb4
 -- =====================================================

@@ -189,7 +189,7 @@ function exportarExcel() {
                 var ws = XLSX.utils.json_to_sheet(response.data);
                 var wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Pagos");
-                XLSX.writeFile(wb, "pagos_litio.xlsx");
+                XLSX.writeFile(wb, "pagos_Kipucloud.xlsx");
                 Swal.fire('Exito', 'Archivo Excel generado', 'success');
             }
         }
@@ -203,11 +203,11 @@ function exportarPdf() {
             if (response.success) {
                 const { jsPDF } = window.jspdf;
                 var doc = new jsPDF();
-                doc.setFontSize(18); doc.text("Reporte de Pagos - Litio", 14, 22);
+                doc.setFontSize(18); doc.text("Reporte de Pagos - Kipucloud", 14, 22);
                 doc.setFontSize(11); doc.text("Fecha: " + new Date().toLocaleDateString('es-PE'), 14, 30);
                 var columns = [{ header: 'Usuario', dataKey: 'Usuario' }, { header: 'Mes', dataKey: 'Mes' }, { header: 'Anio', dataKey: 'Anio' }, { header: 'Monto', dataKey: 'Monto' }, { header: 'Estado', dataKey: 'Estado' }];
                 doc.autoTable({ columns: columns, body: response.data, startY: 35, styles: { fontSize: 9 }, headStyles: { fillColor: [229, 9, 20] } });
-                doc.save("pagos_litio.pdf");
+                doc.save("pagos_Kipucloud.pdf");
                 Swal.fire('Exito', 'Archivo PDF generado', 'success');
             }
         }

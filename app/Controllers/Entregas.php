@@ -26,7 +26,7 @@ class Entregas extends BaseController
 
         return view('layout', [
             'contenido'   => view('entregas'),
-            'titulo'      => 'Entregas / Pases de turno - Litio',
+            'titulo'      => 'Entregas / Pases de turno - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

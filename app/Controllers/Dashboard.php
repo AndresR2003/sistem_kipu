@@ -57,7 +57,7 @@ class Dashboard extends BaseController
 
         return view('layout', [
             'contenido'  => view('dashboard', $data),
-            'titulo'     => 'Dashboard - Litio',
+            'titulo'     => 'Dashboard - Kipucloud',
             'pageScripts' => '',
         ]);
     }

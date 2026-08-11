@@ -8,7 +8,7 @@ class Manual extends BaseController
     {
         return view('layout', [
             'contenido'  => view('seccion_publicaciones', ['seccion' => 'manual']),
-            'titulo'     => 'Manual - Litio',
+            'titulo'     => 'Manual - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/publicaciones.js') . '?v=' . filemtime(FCPATH . 'js/publicaciones.js') . '"></script>',
         ]);
     }

@@ -8,7 +8,7 @@ class Ideas extends BaseController
     {
         return view('layout', [
             'contenido'  => view('seccion_publicaciones', ['seccion' => 'ideas']),
-            'titulo'     => 'Ideas - Litio',
+            'titulo'     => 'Ideas - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/publicaciones.js') . '?v=' . filemtime(FCPATH . 'js/publicaciones.js') . '"></script>',
         ]);
     }

@@ -14,7 +14,7 @@ class Soporte extends BaseController
 
         return view('layout', [
             'contenido'  => view('seccion', $data),
-            'titulo'     => 'Soporte - Litio',
+            'titulo'     => 'Soporte - Kipucloud',
             'pageScripts' => '',
         ]);
     }

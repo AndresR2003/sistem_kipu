@@ -31,7 +31,7 @@ class Usuarios extends BaseController
 
         return view('layout', [
             'contenido'  => view('usuarios', $data),
-            'titulo'     => 'Usuarios - Litio',
+            'titulo'     => 'Usuarios - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

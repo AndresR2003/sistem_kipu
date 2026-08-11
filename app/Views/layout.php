@@ -16,7 +16,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($titulo ?? 'Litio') ?></title>
+    <title><?= esc($titulo ?? 'Kipucloud') ?></title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/dataTables.bootstrap5.min.css') ?>" rel="stylesheet">
@@ -878,7 +878,7 @@ try {
         <div class="sidebar-brand">
             <span class="brand-icon"><i class="bi bi-lightning-fill"></i></span>
             <div class="brand-text">
-                <h5>Litio</h5>
+                <h5>Kipucloud</h5>
                 <small>Gestion de Asignaciones</small>
             </div>
             <button class="sidebar-toggle-btn" id="sidebarToggle" title="Minimizar sidebar">

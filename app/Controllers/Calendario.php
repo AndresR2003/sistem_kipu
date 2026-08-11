@@ -27,7 +27,7 @@ class Calendario extends BaseController
 
         return view('layout', [
             'contenido'   => view('calendario', $data),
-            'titulo'      => 'Calendario - Litio',
+            'titulo'      => 'Calendario - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

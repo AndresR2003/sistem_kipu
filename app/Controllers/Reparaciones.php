@@ -14,7 +14,7 @@ class Reparaciones extends BaseController
 
         return view('layout', [
             'contenido'  => view('seccion', $data),
-            'titulo'     => 'Reparaciones - Litio',
+            'titulo'     => 'Reparaciones - Kipucloud',
             'pageScripts' => '',
         ]);
     }

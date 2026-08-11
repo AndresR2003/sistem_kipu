@@ -19,7 +19,7 @@ class Recordatorio extends BaseController
 
         return view('layout', [
             'contenido'   => view('recordatorios'),
-            'titulo'      => 'Recordatorio - Litio',
+            'titulo'      => 'Recordatorio - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }

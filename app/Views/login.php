@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion - Litio</title>
+    <title>Iniciar Sesion - Kipucloud</title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
@@ -120,7 +120,7 @@
         <div class="login-card">
             <div class="login-brand">
                 <div class="brand-icon"><i class="bi bi-lightning-fill"></i></div>
-                <h2>Litio</h2>
+                <h2>Kipucloud</h2>
                 <small>Control de Pagos</small>
             </div>
 

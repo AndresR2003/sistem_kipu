@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Pago - Litio</title>
+    <title>Mi Pago - Kipucloud</title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
@@ -288,7 +288,7 @@
         <!-- Header -->
         <div class="card-header-custom">
                 <h2><i class="bi bi-lightning-fill"></i> Hola, <?= esc($usuario['nombre']) ?></h2>
-            <p>Mi pago de Litio</p>
+            <p>Mi pago de Kipucloud</p>
         </div>
 
         <!-- Body -->
@@ -425,7 +425,7 @@
         </div>
 
         <div class="footer-text">
-            Litio Payment Control &copy; <?= date('Y') ?>
+            Kipucloud Payment Control &copy; <?= date('Y') ?>
         </div>
     </div>
 

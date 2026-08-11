@@ -13,7 +13,7 @@ class Perfil extends BaseController
     {
         return view('layout', [
             'contenido'   => view('perfil'),
-            'titulo'      => 'Mi Perfil - Litio',
+            'titulo'      => 'Mi Perfil - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/perfil.js') . '?v=' . filemtime(FCPATH . 'js/perfil.js') . '"></script>',
         ]);
     }
