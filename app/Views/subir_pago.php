@@ -287,7 +287,7 @@
     <div class="main-card">
         <!-- Header -->
         <div class="card-header-custom">
-                <h2><i class="bi bi-lightning-fill"></i> Hola, <?= esc($usuario['nombre']) ?></h2>
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-3px;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg> Hola, <?= esc($usuario['nombre']) ?></h2>
             <p>Mi pago de Kipucloud</p>
         </div>
 

@@ -169,7 +169,7 @@
                     <div class="pv-body">
                         <div id="previewSidebar" class="pv-sidebar">
                             <div class="pv-brand">
-                                <div id="previewLogo" class="pv-logo"><i class="bi bi-lightning-fill"></i></div>
+                                <div id="previewLogo" class="pv-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></div>
                                 <div class="pv-brand-txt"><b>Kipucloud</b><small>Gestion</small></div>
                             </div>
                             <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i> Inicio</div>
