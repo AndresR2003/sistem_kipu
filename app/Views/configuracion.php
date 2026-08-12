@@ -1,4 +1,5 @@
 <div class="table-container">
+    <?php $puedeConfigSesion = in_array(session('admin_rol') ?? 'admin', ['admin', 'superadmin'], true); ?>
     <style>
         .configuracion-tabs { border-bottom: 1px solid var(--border) !important; }
         .configuracion-tabs .nav-link {
@@ -38,11 +39,13 @@
                             <i class="bi bi-briefcase-fill"></i> Marca de la Empresa
                         </button>
                     </li>
+                    <?php if ($puedeConfigSesion): ?>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSesion" type="button" role="tab">
                             <i class="bi bi-hourglass-split"></i> Sesion
                         </button>
                     </li>
+                    <?php endif; ?>
                 </ul>
 
                 <div class="tab-content">
@@ -151,6 +154,7 @@
                         </form>
                     </div>
 
+                    <?php if ($puedeConfigSesion): ?>
                     <div class="tab-pane fade" id="tabSesion" role="tabpanel">
                         <h6 class="mb-3"><i class="bi bi-hourglass-split"></i> Cierre por Inactividad</h6>
 
@@ -164,7 +168,7 @@
                                     <option value="240">4 horas</option>
                                     <option value="480">8 horas</option>
                                 </select>
-                                <small class="d-block mt-1" style="color:var(--text-muted);">Solo aplica al usuario administrador. Los demas roles siguen con el cierre fijo de 3 horas.</small>
+                                <small class="d-block mt-1" style="color:var(--text-muted);">Solo el usuario administrador puede modificarlo y se aplica a todos los usuarios.</small>
                             </div>
 
                             <div class="mt-4">
@@ -174,6 +178,7 @@
                             </div>
                         </form>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
