@@ -48,7 +48,9 @@ try {
         background:rgba(255,255,255,0.16);backdrop-filter:blur(6px);
         padding:6px 14px;border-radius:50px;font-size:0.75rem;font-weight:600;
         border:1px solid rgba(255,255,255,0.25);
+        color:#fff;text-decoration:none;cursor:pointer;
     }
+    .dash-hero .hero-date:hover{opacity:0.9;text-decoration:none;}
 
     .dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px;}
     .dash-stat{
@@ -173,7 +175,7 @@ try {
         <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestión Hotelera <?= esc($marcaNombre) ?></div>
         <h2>Bienvenido, <?= esc(session()->get('admin_nombre') ?? 'Usuario') ?></h2>
         <p>Esto es lo que está pasando hoy en tu cuenta.</p>
-        <div class="hero-date"><i class="bi bi-calendar3"></i> <?= esc(fecha_es('now', 'largo')) ?></div>
+        <a class="hero-date" href="<?= site_url('calendario') ?>"><i class="bi bi-calendar3"></i> <?= esc(fecha_es('now', 'largo')) ?></a>
     </div>
 </div>
 
