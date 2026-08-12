@@ -164,7 +164,7 @@
                                     <option value="240">4 horas</option>
                                     <option value="480">8 horas</option>
                                 </select>
-                                <small class="d-block mt-1" style="color:var(--text-muted);">Solo aplica al usuario administrador. Los demas roles siguen con el cierre fijo actual.</small>
+                                <small class="d-block mt-1" style="color:var(--text-muted);">Solo aplica al usuario administrador. Los demas roles siguen con el cierre fijo de 3 horas.</small>
                             </div>
 
                             <div class="mt-4">

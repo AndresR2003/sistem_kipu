@@ -19,7 +19,7 @@ $marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['mar
 $rolActual = session('admin_rol') ?? 'admin';
 $idleMinutes = in_array($rolActual, ['admin', 'superadmin'], true)
     ? max(1, (int) ($cfg['session_idle_minutes'] ?? 10))
-    : 10;
+    : 180;
 ?>
 <head>
     <meta charset="UTF-8">
