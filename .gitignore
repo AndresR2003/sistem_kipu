@@ -52,6 +52,9 @@ Vagrantfile
 #-------------------------
 # Sensitive / Local Data
 #-------------------------
+
+# Zip de deploy (contenido redundante del proyecto)
+/zip_para_subir/
 # Sesiones de CI mal ubicadas
 /null/
 
