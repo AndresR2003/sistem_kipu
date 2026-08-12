@@ -38,6 +38,11 @@
                             <i class="bi bi-briefcase-fill"></i> Marca de la Empresa
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSesion" type="button" role="tab">
+                            <i class="bi bi-hourglass-split"></i> Sesion
+                        </button>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -140,6 +145,30 @@
 
                             <div class="mt-4">
                                 <button type="button" class="btn btn-primary-custom" onclick="guardarMarca()">
+                                    <i class="bi bi-check-lg"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="tabSesion" role="tabpanel">
+                        <h6 class="mb-3"><i class="bi bi-hourglass-split"></i> Cierre por Inactividad</h6>
+
+                        <form id="formSesion">
+                            <div class="mb-3">
+                                <label class="form-label">Tiempo de inactividad permitido</label>
+                                <select class="form-select" id="session_idle_minutes">
+                                    <option value="15">15 minutos</option>
+                                    <option value="30">30 minutos</option>
+                                    <option value="60">1 hora</option>
+                                    <option value="240">4 horas</option>
+                                    <option value="480">8 horas</option>
+                                </select>
+                                <small class="d-block mt-1" style="color:var(--text-muted);">Solo aplica al usuario administrador. Los demas roles siguen con el cierre fijo actual.</small>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-primary-custom" onclick="guardarSesion()">
                                     <i class="bi bi-check-lg"></i> Guardar Cambios
                                 </button>
                             </div>

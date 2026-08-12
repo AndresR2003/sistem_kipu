@@ -16,6 +16,10 @@ try {
 $marcaActiva = !empty($cfg['marca_activa']);
 $marcaNombre = ($marcaActiva && !empty($cfg['marca_nombre'])) ? $cfg['marca_nombre'] : 'Kipucloud';
 $marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['marca_logo']) : '';
+$rolActual = session('admin_rol') ?? 'admin';
+$idleMinutes = in_array($rolActual, ['admin', 'superadmin'], true)
+    ? max(1, (int) ($cfg['session_idle_minutes'] ?? 10))
+    : 10;
 ?>
 <head>
     <meta charset="UTF-8">
@@ -1103,9 +1107,11 @@ $marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['mar
             document.getElementById('loadingOverlay').classList.remove('show');
         }
 
+        var SESSION_IDLE_MINUTES = <?= (int) $idleMinutes ?>;
+
         // ===== Cierre de sesion por inactividad =====
         (function() {
-            var INACTIVIDAD_MS = 10 * 60 * 1000;
+            var INACTIVIDAD_MS = SESSION_IDLE_MINUTES * 60 * 1000;
             var temporizador = null;
             var logoutEnCurso = false;
 

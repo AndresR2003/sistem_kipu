@@ -17,6 +17,7 @@ class ConfiguracionVisualModel extends Model
         'sidebar_bg', 'sidebar_text', 'sidebar_active_bg',
         'topbar_bg', 'topbar_text', 'primary_color', 'content_bg', 'card_bg',
         'marca_activa', 'marca_nombre', 'marca_logo',
+        'session_idle_minutes',
         'anuncio',
     ];
 
@@ -45,6 +46,7 @@ class ConfiguracionVisualModel extends Model
             'marca_activa'      => 0,
             'marca_nombre'      => '',
             'marca_logo'        => '',
+            'session_idle_minutes' => 10,
         ];
 
         $cache->save('config_visual', $data, 60);

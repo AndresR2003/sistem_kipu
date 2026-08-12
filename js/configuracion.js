@@ -1,6 +1,7 @@
 $(document).ready(function() {
     cargarColores();
     cargarMarca();
+    cargarSesion();
 
     $('#marca_nombre').on('input', function() {
         actualizarPreviewMarca();
@@ -160,6 +161,17 @@ function cargarMarca() {
     });
 }
 
+function cargarSesion() {
+    $.ajax({
+        url: BASE_URL + 'configuracion/obtener',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#session_idle_minutes').val(data.session_idle_minutes || 10);
+        }
+    });
+}
+
 function subirLogo(file) {
     var fd = new FormData();
     fd.append('logo', file);
@@ -204,6 +216,39 @@ function guardarMarca() {
         marca_activa: (nombre || logo) ? 1 : 0,
         marca_nombre: nombre,
         marca_logo: logo,
+    };
+
+    showLoading();
+    $.ajax({
+        url: BASE_URL + 'configuracion/guardar',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(datos),
+        dataType: 'json',
+        success: function(response) {
+            hideLoading();
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Guardado',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        }
+    });
+}
+
+function guardarSesion() {
+    var datos = {
+        session_idle_minutes: parseInt($('#session_idle_minutes').val() || '10', 10),
     };
 
     showLoading();
