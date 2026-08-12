@@ -1,5 +1,21 @@
 $(document).ready(function() {
     cargarColores();
+    cargarMarca();
+
+    $('#marca_activa').on('change', function() {
+        $('#marcaCampos').toggle(this.checked);
+        actualizarPreviewMarca();
+    });
+
+    $('#marca_nombre').on('input', function() {
+        actualizarPreviewMarca();
+    });
+
+    $('#logo_input').on('change', function() {
+        if (this.files && this.files[0]) {
+            subirLogo(this.files[0]);
+        }
+    });
 
     $('input[type="color"]').each(function() {
         var textId = this.id + '_text';
@@ -68,6 +84,9 @@ function guardarColores() {
         primary_color: $('#primary_color_text').val(),
         content_bg: $('#content_bg_text').val(),
         card_bg: $('#card_bg_text').val(),
+        marca_activa: $('#marca_activa').is(':checked') ? 1 : 0,
+        marca_nombre: $('#marca_nombre').val() || '',
+        marca_logo: $('#marca_logo').val() || '',
     };
 
     showLoading();
@@ -131,4 +150,80 @@ function restaurarColores() {
             guardarColores();
         }
     });
+}
+
+function cargarMarca() {
+    $.ajax({
+        url: BASE_URL + 'configuracion/obtener',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            if (parseInt(data.marca_activa) === 1) {
+                $('#marca_activa').prop('checked', true);
+            } else {
+                $('#marca_activa').prop('checked', false);
+            }
+            $('#marca_nombre').val(data.marca_nombre || '');
+            $('#marca_logo').val(data.marca_logo || '');
+            if (data.marca_logo) {
+                $('#logoPreview').html('<img src="' + BASE_URL + data.marca_logo + '" alt="logo" style="width:100%;height:100%;object-fit:contain;padding:4px;">');
+            }
+            $('#marcaCampos').toggle($('#marca_activa').is(':checked'));
+            actualizarPreviewMarca();
+        }
+    });
+}
+
+function subirLogo(file) {
+    var fd = new FormData();
+    fd.append('logo', file);
+
+    showLoading();
+    $.ajax({
+        url: BASE_URL + 'configuracion/subirLogo',
+        type: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(response) {
+            hideLoading();
+            if (response.success) {
+                $('#marca_logo').val(response.logo);
+                $('#logoPreview').html('<img src="' + BASE_URL + response.logo + '" alt="logo" style="width:100%;height:100%;object-fit:contain;padding:4px;">');
+                actualizarPreviewMarca();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logo subido',
+                    text: response.message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        }
+    });
+}
+
+function actualizarPreviewMarca() {
+    var activa = $('#marca_activa').is(':checked');
+    var nombre = ($('#marca_nombre').val() || '').trim();
+    var logo = $('#marca_logo').val() || '';
+
+    var nombreMostrar = (activa && nombre) ? nombre : 'Kipucloud';
+
+    $('#previewBrandName').text(nombreMostrar);
+    $('#previewTopbarName').text(nombreMostrar);
+    $('#previewHeroLabel').text('Sistema de Gestion Hotel ' + nombreMostrar);
+
+    if (activa && logo) {
+        $('#previewLogo').html('<img src="' + BASE_URL + logo + '" alt="logo" style="width:18px;height:18px;border-radius:4px;object-fit:contain;">');
+    } else {
+        $('#previewLogo').html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg>');
+    }
 }

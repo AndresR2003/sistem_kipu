@@ -80,6 +80,39 @@
                     </div>
                 </form>
             </div>
+
+            <div class="card mt-4" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+                <h6 class="mb-3"><i class="bi bi-briefcase-fill"></i> Marca de la Empresa Cliente</h6>
+
+                <form id="formMarca">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="marca_activa" role="switch" style="cursor:pointer;border-color:var(--border-light);">
+                        <label class="form-check-label" style="color:var(--text);font-size:0.85rem;cursor:pointer;" for="marca_activa">
+                            Permitir reemplazar el logo y el nombre "KipuCloud" por el logo y/o nombre de la empresa cliente.
+                        </label>
+                    </div>
+
+                    <div id="marcaCampos" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la empresa</label>
+                            <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Logo de la empresa</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="logoPreview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--bg-input);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--text-muted);flex-shrink:0;">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" class="form-control" id="logo_input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                                    <input type="hidden" id="marca_logo">
+                                    <small class="d-block mt-1" style="color:var(--text-muted);">PNG, JPG, WebP o SVG. Max 2MB.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="col-lg-5">
@@ -170,7 +203,7 @@
                         <div id="previewSidebar" class="pv-sidebar">
                             <div class="pv-brand">
                                 <div id="previewLogo" class="pv-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></div>
-                                <div class="pv-brand-txt"><b>Kipucloud</b><small>Gestion</small></div>
+                                <div class="pv-brand-txt"><b id="previewBrandName">Kipucloud</b><small id="previewBrandSub">Gestion</small></div>
                             </div>
                             <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i> Inicio</div>
                             <div id="previewSidebarIcon2" class="pv-nav"><i class="bi bi-newspaper"></i> Noticias</div>
@@ -178,7 +211,7 @@
                         </div>
                         <div class="pv-main">
                             <div id="previewTopbar" class="pv-topbar">
-                                <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - Kipucloud</span>
+                                <span id="previewTopbarText" class="pv-topbar-title"><i class="bi bi-house-fill"></i> Dashboard - <span id="previewTopbarName">Kipucloud</span></span>
                                 <span class="pv-topbar-actions">
                                     <span id="previewTopbarIcon" class="pv-bell"><i class="bi bi-bell-fill"></i></span>
                                     <span id="previewAvatar" class="pv-avatar">A</span>
@@ -186,7 +219,7 @@
                             </div>
                             <div id="previewContent" class="pv-content">
                             <div class="pv-hero">
-                                <div class="pv-hero-label">Sistema de Gestion Hotel Kipucloud</div>
+                                <div class="pv-hero-label" id="previewHeroLabel">Sistema de Gestion Hotel Kipucloud</div>
                                 <div class="pv-hero-title">Bienvenido, Usuario</div>
                                 <div class="pv-hero-sub">Esto es lo que esta pasando hoy en tu cuenta</div>
                             </div>

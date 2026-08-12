@@ -16,6 +16,7 @@ class ConfiguracionVisualModel extends Model
     protected $allowedFields = [
         'sidebar_bg', 'sidebar_text', 'sidebar_active_bg',
         'topbar_bg', 'topbar_text', 'primary_color', 'content_bg', 'card_bg',
+        'marca_activa', 'marca_nombre', 'marca_logo',
         'anuncio',
     ];
 
@@ -41,6 +42,9 @@ class ConfiguracionVisualModel extends Model
             'primary_color'     => '#4669FA',
             'content_bg'        => '#0f0f1a',
             'card_bg'           => '#1a1a2e',
+            'marca_activa'      => 0,
+            'marca_nombre'      => '',
+            'marca_logo'        => '',
         ];
 
         $cache->save('config_visual', $data, 60);

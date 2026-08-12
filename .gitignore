@@ -65,6 +65,9 @@ Vagrantfile
 # Fotos de perfil subidas
 /public/uploads/perfil/*
 
+# Logos de marca de la empresa cliente
+/public/uploads/marca/*
+
 #-------------------------
 # Temporary Files
 #-------------------------

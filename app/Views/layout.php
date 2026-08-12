@@ -12,11 +12,15 @@ try {
     $cfg = [];
     $anuncioActivo = null;
 }
+
+$marcaActiva = !empty($cfg['marca_activa']);
+$marcaNombre = ($marcaActiva && !empty($cfg['marca_nombre'])) ? $cfg['marca_nombre'] : 'Kipucloud';
+$marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['marca_logo']) : '';
 ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($titulo ?? 'Kipucloud') ?></title>
+    <title><?= esc(str_replace('Kipucloud', $marcaNombre, $titulo ?? 'Kipucloud')) ?></title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/dataTables.bootstrap5.min.css') ?>" rel="stylesheet">
@@ -876,9 +880,13 @@ try {
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <span class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></span>
+            <?php if ($marcaActiva && $marcaLigo): ?>
+                <span class="brand-icon" style="overflow:hidden;background:transparent;"><img src="<?= esc($marcaLigo) ?>" alt="logo" style="width:100%;height:100%;object-fit:contain;padding:4px;"></span>
+            <?php else: ?>
+                <span class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></span>
+            <?php endif; ?>
             <div class="brand-text">
-                <h5>Kipucloud</h5>
+                <h5><?= esc($marcaNombre) ?></h5>
                 <small>Gestion de Asignaciones</small>
             </div>
             <button class="sidebar-toggle-btn" id="sidebarToggle" title="Minimizar sidebar">
@@ -999,7 +1007,7 @@ try {
                 <button class="mobile-toggle" id="mobileToggle">
                     <i class="bi bi-list"></i>
                 </button>
-                <h6 class="mb-0"><?= esc($titulo ?? 'Dashboard') ?></h6>
+                <h6 class="mb-0"><?= esc(str_replace('Kipucloud', $marcaNombre, $titulo ?? 'Dashboard')) ?></h6>
                 <?php if (!empty($anuncioActivo['titulo'])): ?>
                 <span class="topbar-anuncio"><i class="bi bi-megaphone-fill"></i> <?= esc($anuncioActivo['titulo']) ?></span>
                 <?php endif; ?>

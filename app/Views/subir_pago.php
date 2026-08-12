@@ -1,9 +1,22 @@
+<?php
+$cfgMarca = [];
+$marcaActiva = false;
+$marcaNombre = 'Kipucloud';
+$marcaLigo = '';
+try {
+    $cfgMarca = model('App\Models\ConfiguracionVisualModel')->Obtener();
+    $marcaActiva = !empty($cfgMarca['marca_activa']);
+    $marcaNombre = ($marcaActiva && !empty($cfgMarca['marca_nombre'])) ? $cfgMarca['marca_nombre'] : 'Kipucloud';
+    $marcaLigo = ($marcaActiva && !empty($cfgMarca['marca_logo'])) ? base_url($cfgMarca['marca_logo']) : '';
+} catch (\Throwable $e) {
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Pago - Kipucloud</title>
+    <title>Mi Pago - <?= esc($marcaNombre) ?></title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
@@ -287,8 +300,8 @@
     <div class="main-card">
         <!-- Header -->
         <div class="card-header-custom">
-                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-3px;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg> Hola, <?= esc($usuario['nombre']) ?></h2>
-            <p>Mi pago de Kipucloud</p>
+                <h2><?php if ($marcaActiva && $marcaLigo): ?><img src="<?= esc($marcaLigo) ?>" alt="logo" style="width:20px;height:20px;object-fit:contain;vertical-align:-3px;border-radius:4px;"><?php else: ?><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-3px;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg><?php endif; ?> Hola, <?= esc($usuario['nombre']) ?></h2>
+            <p>Mi pago de <?= esc($marcaNombre) ?></p>
         </div>
 
         <!-- Body -->
@@ -425,7 +438,7 @@
         </div>
 
         <div class="footer-text">
-            Kipucloud Payment Control &copy; <?= date('Y') ?>
+            <?= esc($marcaNombre) ?> Payment Control &copy; <?= date('Y') ?>
         </div>
     </div>
 

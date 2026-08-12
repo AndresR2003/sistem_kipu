@@ -1,3 +1,14 @@
+<?php
+$marcaNombre = 'Kipucloud';
+try {
+    $cfgMarca = model('App\Models\ConfiguracionVisualModel')->Obtener();
+    if (!empty($cfgMarca['marca_activa']) && !empty($cfgMarca['marca_nombre'])) {
+        $marcaNombre = $cfgMarca['marca_nombre'];
+    }
+} catch (\Throwable $e) {
+    $marcaNombre = 'Kipucloud';
+}
+?>
 <style>
     .dash-hero{
         position:relative;
@@ -109,7 +120,7 @@
 
 <div class="dash-hero">
     <div style="position:relative;z-index:1;">
-        <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestion Hotel Kipucloud</div>
+        <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestion Hotel <?= esc($marcaNombre) ?></div>
         <h2>Bienvenido, <?= esc(session()->get('admin_nombre') ?? 'Usuario') ?></h2>
         <p>Esto es lo que esta pasando hoy en tu cuenta.</p>
         <div class="hero-date"><i class="bi bi-calendar3"></i> <?= esc(date('l, d F Y')) ?></div>

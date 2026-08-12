@@ -1,9 +1,22 @@
+<?php
+$cfgMarca = [];
+$marcaActiva = false;
+$marcaNombre = 'Kipucloud';
+$marcaLigo = '';
+try {
+    $cfgMarca = model('App\Models\ConfiguracionVisualModel')->Obtener();
+    $marcaActiva = !empty($cfgMarca['marca_activa']);
+    $marcaNombre = ($marcaActiva && !empty($cfgMarca['marca_nombre'])) ? $cfgMarca['marca_nombre'] : 'Kipucloud';
+    $marcaLigo = ($marcaActiva && !empty($cfgMarca['marca_logo'])) ? base_url($cfgMarca['marca_logo']) : '';
+} catch (\Throwable $e) {
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion - Kipucloud</title>
+    <title>Iniciar Sesion - <?= esc($marcaNombre) ?></title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
@@ -119,8 +132,12 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-brand">
-                <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></div>
-                <h2>Kipucloud</h2>
+                <?php if ($marcaActiva && $marcaLigo): ?>
+                    <div style="width:72px;height:72px;margin:0 auto 12px;border-radius:14px;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;"><img src="<?= esc($marcaLigo) ?>" alt="logo" style="width:100%;height:100%;object-fit:contain;padding:6px;"></div>
+                <?php else: ?>
+                    <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></div>
+                <?php endif; ?>
+                <h2><?= esc($marcaNombre) ?></h2>
                 <small>Control de Pagos</small>
             </div>
 

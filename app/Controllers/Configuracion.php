@@ -51,4 +51,46 @@ class Configuracion extends BaseController
             'message' => 'Error al guardar.',
         ]);
     }
+
+    public function subirLogo()
+    {
+        $file = $this->request->getFile('logo');
+        if (!$file || !$file->isValid()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No se recibio una imagen valida.',
+            ]);
+        }
+
+        if ($file->getSize() > 2 * 1024 * 1024) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'La imagen debe ser menor a 2MB.',
+            ]);
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+        if (!in_array($file->getMimeType(), $allowedTypes)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Solo se permiten JPG, PNG, WebP o SVG.',
+            ]);
+        }
+
+        $ext = $file->getExtension();
+        $nombre = 'marca_' . time() . '.' . $ext;
+
+        $uploadPath = FCPATH . 'uploads/marca';
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0775, true);
+        }
+
+        $file->move($uploadPath, $nombre);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Logo subido.',
+            'logo'    => 'uploads/marca/' . $nombre,
+        ]);
+    }
 }
