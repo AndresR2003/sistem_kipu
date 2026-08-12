@@ -84,9 +84,6 @@ function guardarColores() {
         primary_color: $('#primary_color_text').val(),
         content_bg: $('#content_bg_text').val(),
         card_bg: $('#card_bg_text').val(),
-        marca_activa: $('#marca_activa').is(':checked') ? 1 : 0,
-        marca_nombre: $('#marca_nombre').val() || '',
-        marca_logo: $('#marca_logo').val() || '',
     };
 
     showLoading();
@@ -197,6 +194,41 @@ function subirLogo(file) {
                     title: 'Logo subido',
                     text: response.message,
                     timer: 1500,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        }
+    });
+}
+
+function guardarMarca() {
+    var datos = {
+        marca_activa: $('#marca_activa').is(':checked') ? 1 : 0,
+        marca_nombre: $('#marca_nombre').val() || '',
+        marca_logo: $('#marca_logo').val() || '',
+    };
+
+    showLoading();
+    $.ajax({
+        url: BASE_URL + 'configuracion/guardar',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(datos),
+        dataType: 'json',
+        success: function(response) {
+            hideLoading();
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Guardado',
+                    text: response.message,
+                    timer: 2000,
                     showConfirmButton: false,
                 });
             } else {

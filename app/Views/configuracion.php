@@ -1,4 +1,23 @@
 <div class="table-container">
+    <style>
+        .configuracion-tabs { border-bottom: 1px solid var(--border) !important; }
+        .configuracion-tabs .nav-link {
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 16px;
+        }
+        .configuracion-tabs .nav-link:hover { color: var(--text); border-color: var(--border-light); }
+        .configuracion-tabs .nav-link.active {
+            color: var(--primary);
+            background: transparent;
+            border-color: var(--border-light) var(--border-light) var(--bg-card);
+            border-bottom-color: var(--bg-card);
+            font-weight: 600;
+        }
+    </style>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">
             <i class="bi bi-gear-fill"></i> Configuracion Visual
@@ -7,111 +26,134 @@
 
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-                <h6 class="mb-3"><i class="bi bi-palette-fill"></i> Colores del Sistema</h6>
-
-                <form id="formColores">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Fondo del Sidebar</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="sidebar_bg" value="#13131f" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="sidebar_bg_text" value="#13131f" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Texto del Sidebar</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="sidebar_text" value="rgba(255,255,255,0.55)" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="sidebar_text_text" value="rgba(255,255,255,0.55)" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fondo Activo Sidebar</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="sidebar_active_bg" value="#4669FA" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="sidebar_active_bg_text" value="#4669FA" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Color Principal</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="primary_color" value="#4669FA" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="primary_color_text" value="#4669FA" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fondo del Topbar</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="topbar_bg" value="rgba(15,15,26,0.92)" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="topbar_bg_text" value="rgba(15,15,26,0.92)" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Texto del Topbar</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="topbar_text" value="#e2e8f0" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="topbar_text_text" value="#e2e8f0" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fondo del Contenido</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="content_bg" value="#0f0f1a" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="content_bg_text" value="#0f0f1a" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fondo de Tarjetas</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="color" class="form-control form-control-color" id="card_bg" value="#1a1a2e" style="width:50px;height:38px;padding:2px;">
-                                <input type="text" class="form-control" id="card_bg_text" value="#1a1a2e" maxlength="20">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 d-flex gap-2">
-                        <button type="button" class="btn btn-primary-custom" onclick="guardarColores()">
-                            <i class="bi bi-check-lg"></i> Guardar Cambios
+            <div class="card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 24px 24px;">
+                <ul class="nav nav-tabs configuracion-tabs mt-2 mb-3" style="border-bottom:1px solid var(--border);gap:2px;" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabColores" type="button" role="tab">
+                            <i class="bi bi-palette-fill"></i> Colores
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="restaurarColores()">
-                            <i class="bi bi-arrow-counterclockwise"></i> Restaurar Default
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMarca" type="button" role="tab">
+                            <i class="bi bi-briefcase-fill"></i> Marca de la Empresa
                         </button>
-                    </div>
-                </form>
-            </div>
+                    </li>
+                </ul>
 
-            <div class="card mt-4" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-                <h6 class="mb-3"><i class="bi bi-briefcase-fill"></i> Marca de la Empresa Cliente</h6>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tabColores" role="tabpanel">
+                        <h6 class="mb-3"><i class="bi bi-palette-fill"></i> Colores del Sistema</h6>
 
-                <form id="formMarca">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="marca_activa" role="switch" style="cursor:pointer;border-color:var(--border-light);">
-                        <label class="form-check-label" style="color:var(--text);font-size:0.85rem;cursor:pointer;" for="marca_activa">
-                            Permitir reemplazar el logo y el nombre "KipuCloud" por el logo y/o nombre de la empresa cliente.
-                        </label>
-                    </div>
-
-                    <div id="marcaCampos" style="display:none;">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre de la empresa</label>
-                            <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Logo de la empresa</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <div id="logoPreview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--bg-input);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--text-muted);flex-shrink:0;">
-                                    <i class="bi bi-image"></i>
+                        <form id="formColores">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Fondo del Sidebar</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="sidebar_bg" value="#13131f" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="sidebar_bg_text" value="#13131f" maxlength="20">
+                                    </div>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <input type="file" class="form-control" id="logo_input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-                                    <input type="hidden" id="marca_logo">
-                                    <small class="d-block mt-1" style="color:var(--text-muted);">PNG, JPG, WebP o SVG. Max 2MB.</small>
+                                <div class="col-md-6">
+                                    <label class="form-label">Texto del Sidebar</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="sidebar_text" value="rgba(255,255,255,0.55)" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="sidebar_text_text" value="rgba(255,255,255,0.55)" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fondo Activo Sidebar</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="sidebar_active_bg" value="#4669FA" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="sidebar_active_bg_text" value="#4669FA" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Color Principal</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="primary_color" value="#4669FA" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="primary_color_text" value="#4669FA" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fondo del Topbar</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="topbar_bg" value="rgba(15,15,26,0.92)" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="topbar_bg_text" value="rgba(15,15,26,0.92)" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Texto del Topbar</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="topbar_text" value="#e2e8f0" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="topbar_text_text" value="#e2e8f0" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fondo del Contenido</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="content_bg" value="#0f0f1a" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="content_bg_text" value="#0f0f1a" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fondo de Tarjetas</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="color" class="form-control form-control-color" id="card_bg" value="#1a1a2e" style="width:50px;height:38px;padding:2px;">
+                                        <input type="text" class="form-control" id="card_bg_text" value="#1a1a2e" maxlength="20">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="mt-4 d-flex gap-2">
+                                <button type="button" class="btn btn-primary-custom" onclick="guardarColores()">
+                                    <i class="bi bi-check-lg"></i> Guardar Cambios
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="restaurarColores()">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Restaurar Default
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+
+                    <div class="tab-pane fade" id="tabMarca" role="tabpanel">
+                        <h6 class="mb-3"><i class="bi bi-briefcase-fill"></i> Marca de la Empresa Cliente</h6>
+
+                        <form id="formMarca">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="marca_activa" role="switch" style="cursor:pointer;border-color:var(--border-light);">
+                                <label class="form-check-label" style="color:var(--text);font-size:0.85rem;cursor:pointer;" for="marca_activa">
+                                    Permitir reemplazar el logo y el nombre "KipuCloud" por el logo y/o nombre de la empresa cliente.
+                                </label>
+                            </div>
+
+                            <div id="marcaCampos" style="display:none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre de la empresa</label>
+                                    <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Logo de la empresa</label>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div id="logoPreview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--bg-input);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--text-muted);flex-shrink:0;">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <input type="file" class="form-control" id="logo_input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                                            <input type="hidden" id="marca_logo">
+                                            <small class="d-block mt-1" style="color:var(--text-muted);">PNG, JPG, WebP o SVG. Max 2MB.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-primary-custom" onclick="guardarMarca()">
+                                    <i class="bi bi-check-lg"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
