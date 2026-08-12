@@ -119,29 +119,21 @@
                         <h6 class="mb-3"><i class="bi bi-briefcase-fill"></i> Marca de la Empresa Cliente</h6>
 
                         <form id="formMarca">
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="marca_activa" role="switch" style="cursor:pointer;border-color:var(--border-light);">
-                                <label class="form-check-label" style="color:var(--text);font-size:0.85rem;cursor:pointer;" for="marca_activa">
-                                    Permitir reemplazar el logo y el nombre "KipuCloud" por el logo y/o nombre de la empresa cliente.
-                                </label>
+                            <div class="mb-3">
+                                <label class="form-label">Nombre de la empresa</label>
+                                <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
+                                <small class="d-block mt-1" style="color:var(--text-muted);">Si lo dejas vacio, se usara "KipuCloud".</small>
                             </div>
-
-                            <div id="marcaCampos" style="display:none;">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombre de la empresa</label>
-                                    <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Logo de la empresa</label>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div id="logoPreview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--bg-input);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--text-muted);flex-shrink:0;">
-                                            <i class="bi bi-image"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <input type="file" class="form-control" id="logo_input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-                                            <input type="hidden" id="marca_logo">
-                                            <small class="d-block mt-1" style="color:var(--text-muted);">PNG, JPG, WebP o SVG. Max 2MB.</small>
-                                        </div>
+                            <div class="mb-3">
+                                <label class="form-label">Logo de la empresa</label>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div id="logoPreview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--bg-input);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--text-muted);flex-shrink:0;">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="file" class="form-control" id="logo_input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                                        <input type="hidden" id="marca_logo">
+                                        <small class="d-block mt-1" style="color:var(--text-muted);">PNG, JPG, WebP o SVG. Max 2MB.</small>
                                     </div>
                                 </div>
                             </div>

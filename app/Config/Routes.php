@@ -132,5 +132,6 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('configuracion', 'Configuracion::index');
     $routes->get('configuracion/obtener', 'Configuracion::obtener');
     $routes->post('configuracion/guardar', 'Configuracion::guardar');
+    $routes->post('configuracion/subir-logo', 'Configuracion::subirLogo');
     $routes->get('soporte', 'Soporte::index');
 });

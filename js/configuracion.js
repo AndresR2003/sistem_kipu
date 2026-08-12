@@ -2,11 +2,6 @@ $(document).ready(function() {
     cargarColores();
     cargarMarca();
 
-    $('#marca_activa').on('change', function() {
-        $('#marcaCampos').toggle(this.checked);
-        actualizarPreviewMarca();
-    });
-
     $('#marca_nombre').on('input', function() {
         actualizarPreviewMarca();
     });
@@ -155,17 +150,11 @@ function cargarMarca() {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            if (parseInt(data.marca_activa) === 1) {
-                $('#marca_activa').prop('checked', true);
-            } else {
-                $('#marca_activa').prop('checked', false);
-            }
             $('#marca_nombre').val(data.marca_nombre || '');
             $('#marca_logo').val(data.marca_logo || '');
             if (data.marca_logo) {
                 $('#logoPreview').html('<img src="' + BASE_URL + data.marca_logo + '" alt="logo" style="width:100%;height:100%;object-fit:contain;padding:4px;">');
             }
-            $('#marcaCampos').toggle($('#marca_activa').is(':checked'));
             actualizarPreviewMarca();
         }
     });
@@ -177,7 +166,7 @@ function subirLogo(file) {
 
     showLoading();
     $.ajax({
-        url: BASE_URL + 'configuracion/subirLogo',
+        url: BASE_URL + 'configuracion/subir-logo',
         type: 'POST',
         data: fd,
         processData: false,
@@ -208,10 +197,12 @@ function subirLogo(file) {
 }
 
 function guardarMarca() {
+    var nombre = ($('#marca_nombre').val() || '').trim();
+    var logo = $('#marca_logo').val() || '';
     var datos = {
-        marca_activa: $('#marca_activa').is(':checked') ? 1 : 0,
-        marca_nombre: $('#marca_nombre').val() || '',
-        marca_logo: $('#marca_logo').val() || '',
+        marca_activa: (nombre || logo) ? 1 : 0,
+        marca_nombre: nombre,
+        marca_logo: logo,
     };
 
     showLoading();
@@ -243,9 +234,9 @@ function guardarMarca() {
 }
 
 function actualizarPreviewMarca() {
-    var activa = $('#marca_activa').is(':checked');
     var nombre = ($('#marca_nombre').val() || '').trim();
     var logo = $('#marca_logo').val() || '';
+    var activa = (nombre || logo) ? true : false;
 
     var nombreMostrar = (activa && nombre) ? nombre : 'Kipucloud';
 
