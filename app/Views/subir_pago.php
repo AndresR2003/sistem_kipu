@@ -403,7 +403,7 @@ try {
                         case 'RECHAZADO': $badgeClass = 'badge-rechazado'; break;
                         default: $badgeClass = 'badge-no-pagado';
                     }
-                    $fechaEnvio = $pago['fecha_envio'] ? date('d/m/Y H:i', strtotime($pago['fecha_envio'])) : '';
+                    $fechaEnvio = $pago['fecha_envio'] ? fecha_es($pago['fecha_envio'], 'corto') : '';
                 ?>
                 <div class="historial-card" data-anio="<?= esc($pago['anio']) ?>">
                     <?php if (!empty($pago['captura'])): ?>

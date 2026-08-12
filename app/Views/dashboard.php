@@ -123,7 +123,7 @@ try {
         <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestion Hotel <?= esc($marcaNombre) ?></div>
         <h2>Bienvenido, <?= esc(session()->get('admin_nombre') ?? 'Usuario') ?></h2>
         <p>Esto es lo que esta pasando hoy en tu cuenta.</p>
-        <div class="hero-date"><i class="bi bi-calendar3"></i> <?= esc(date('l, d F Y')) ?></div>
+        <div class="hero-date"><i class="bi bi-calendar3"></i> <?= esc(fecha_es('now', 'largo')) ?></div>
     </div>
 </div>
 
@@ -230,7 +230,7 @@ try {
                         <b><?= esc($n['titulo'] ?? '') ?></b>
                         <small><?= esc($n['etiqueta'] ?? '') ?><?= !empty($n['etiqueta']) ? ' • ' : '' ?>Por <?= esc($n['usuario_nombre'] ?? 'Staff') ?></small>
                     </div>
-                    <span class="dw-date"><?= !empty($n['updated_at']) ? esc(date('d M', strtotime($n['updated_at']))) : '' ?></span>
+                    <span class="dw-date"><?= !empty($n['updated_at']) ? esc(fecha_es($n['updated_at'], 'abreviado')) : '' ?></span>
                 </div>
                 <?php endforeach; ?>
             <?php endif; ?>
@@ -252,7 +252,7 @@ try {
                         <b><?= esc($ev['titulo'] ?? '') ?></b>
                         <small><?= esc($ev['descripcion'] ?? '') ?></small>
                     </div>
-                    <span class="dw-date"><?= !empty($ev['fecha_inicio']) ? esc(date('d M', strtotime($ev['fecha_inicio']))) : '' ?></span>
+                    <span class="dw-date"><?= !empty($ev['fecha_inicio']) ? esc(fecha_es($ev['fecha_inicio'], 'abreviado')) : '' ?></span>
                 </div>
                 <?php endforeach; ?>
             <?php endif; ?>

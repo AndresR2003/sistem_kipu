@@ -80,8 +80,8 @@
                     <td><?= esc($item['anio']) ?></td>
                     <td>S/ <?= number_format($item['monto'], 2) ?></td>
                     <td><span class="badge-estado <?= $estadoClass ?>"><?= esc($item['estado']) ?></span></td>
-                    <td><?= $item['fecha_envio'] ?? '-' ?></td>
-                    <td><?= $item['fecha_aprobacion'] ?? '-' ?></td>
+                    <td><?= !empty($item['fecha_envio']) ? esc(fecha_es($item['fecha_envio'], 'corto')) : '-' ?></td>
+                    <td><?= !empty($item['fecha_aprobacion']) ? esc(fecha_es($item['fecha_aprobacion'], 'corto')) : '-' ?></td>
                     <td><?= esc($item['observacion'] ?? '-') ?></td>
                     <td class="text-center">
                         <?php if ($item['captura']): ?>
