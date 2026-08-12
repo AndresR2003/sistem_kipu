@@ -24,7 +24,7 @@ class Usuarios extends BaseController
     public function index(): string
     {
         $data = [
-            'titulo' => 'Gestion de Usuarios',
+            'titulo' => 'Gestión de Usuarios',
         ];
 
         $pageScripts = '<script src="' . base_url('js/usuarios.js') . '?v=' . filemtime(FCPATH . 'js/usuarios.js') . '"></script>';

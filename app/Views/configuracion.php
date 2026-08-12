@@ -21,7 +21,7 @@
     </style>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">
-            <i class="bi bi-gear-fill"></i> Configuracion Visual
+            <i class="bi bi-gear-fill"></i> Configuración Visual
         </h5>
     </div>
 
@@ -42,7 +42,7 @@
                     <?php if ($puedeConfigSesion): ?>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSesion" type="button" role="tab">
-                            <i class="bi bi-hourglass-split"></i> Sesion
+                            <i class="bi bi-hourglass-split"></i> Sesión
                         </button>
                     </li>
                     <?php endif; ?>
@@ -130,7 +130,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Nombre de la empresa</label>
                                 <input type="text" class="form-control" id="marca_nombre" placeholder="Ej: Hotel Gran Palma" maxlength="120">
-                                <small class="d-block mt-1" style="color:var(--text-muted);">Si lo dejas vacio, se usara "KipuCloud".</small>
+                                <small class="d-block mt-1" style="color:var(--text-muted);">Si lo dejas vacío, se usará "KipuCloud".</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Logo de la empresa</label>
@@ -271,7 +271,7 @@
                         <div id="previewSidebar" class="pv-sidebar">
                             <div class="pv-brand">
                                 <div id="previewLogo" class="pv-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;" aria-hidden="true"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg></div>
-                                <div class="pv-brand-txt"><b id="previewBrandName">Kipucloud</b><small id="previewBrandSub">Gestion</small></div>
+                                <div class="pv-brand-txt"><b id="previewBrandName">Kipucloud</b><small id="previewBrandSub">Gestión</small></div>
                             </div>
                             <div id="previewSidebarIcon1" class="pv-nav"><i class="bi bi-house-fill"></i> Inicio</div>
                             <div id="previewSidebarIcon2" class="pv-nav"><i class="bi bi-newspaper"></i> Noticias</div>
@@ -287,7 +287,7 @@
                             </div>
                             <div id="previewContent" class="pv-content">
                             <div class="pv-hero">
-                                <div class="pv-hero-label" id="previewHeroLabel">Sistema de Gestion Hotel Kipucloud</div>
+                                <div class="pv-hero-label" id="previewHeroLabel">Sistema de Gestión Hotelera Kipucloud</div>
                                 <div class="pv-hero-title">Bienvenido, Usuario</div>
                                 <div class="pv-hero-sub">Esto es lo que esta pasando hoy en tu cuenta</div>
                             </div>

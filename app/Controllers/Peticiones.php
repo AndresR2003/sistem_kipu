@@ -7,9 +7,9 @@ class Peticiones extends BaseController
     public function index(): string
     {
         $data = [
-            'titulo_seccion' => 'Peticiones de huespedes',
+            'titulo_seccion' => 'Peticiones de huéspedes',
             'icono'          => 'bi bi-chat-dots-fill',
-            'descripcion'    => 'Gestion de peticiones y solicitudes de huespedes.',
+            'descripcion'    => 'Gestión de peticiones y solicitudes de huéspedes.',
         ];
 
         return view('layout', [

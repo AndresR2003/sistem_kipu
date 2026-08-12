@@ -55,7 +55,7 @@
                     <th>Estado</th>
                     <th>Fecha Envio</th>
                     <th>Fecha Aprobacion</th>
-                    <th>Observacion</th>
+                    <th>Observación</th>
                     <th class="text-center">Comprobante</th>
                 </tr>
             </thead>
@@ -123,4 +123,3 @@
         </div>
     </div>
 </div>
-

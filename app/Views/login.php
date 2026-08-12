@@ -16,7 +16,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion - <?= esc($marcaNombre) ?></title>
+    <title>Iniciar sesión - <?= esc($marcaNombre) ?></title>
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
@@ -168,11 +168,11 @@ try {
                     <label class="form-label">Contrasena</label>
                     <div class="input-icon">
                         <i class="bi bi-lock-fill"></i>
-                        <input type="password" name="password" class="form-control" placeholder="Ingresa tu contrasena" required>
+                        <input type="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required>
                     </div>
                 </div>
                 <button type="submit" class="btn-login">
-                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesion
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
                 </button>
             </form>
         </div>

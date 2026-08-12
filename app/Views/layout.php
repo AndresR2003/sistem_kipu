@@ -888,7 +888,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             <?php endif; ?>
             <div class="brand-text">
                 <h5><?= esc($marcaNombre) ?></h5>
-                <small>Gestion de Asignaciones</small>
+                <small>Gestión de Asignaciones</small>
             </div>
             <button class="sidebar-toggle-btn" id="sidebarToggle" title="Minimizar sidebar">
                 <i class="bi bi-chevron-left"></i>
@@ -969,16 +969,16 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             <div class="nav-item">
                 <a class="nav-link <?= uri_string() === 'peticiones' ? 'active' : '' ?>" href="<?= site_url('peticiones') ?>">
                     <i class="bi bi-chat-dots-fill"></i>
-                    <span>Peticiones de huespedes</span>
+                    <span>Peticiones de huéspedes</span>
                 </a>
             </div>
 
             <div class="nav-divider"></div>
-            <div class="nav-label">Mas</div>
+            <div class="nav-label">Más</div>
             <div class="nav-item">
                 <a class="nav-link <?= uri_string() === 'configuracion' ? 'active' : '' ?>" href="<?= site_url('configuracion') ?>">
                     <i class="bi bi-gear-fill"></i>
-                    <span>Configuracion</span>
+                    <span>Configuración</span>
                 </a>
             </div>
             <div class="nav-item">
@@ -996,7 +996,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             <div class="nav-item">
                 <a class="nav-link" href="<?= site_url('logout') ?>">
                     <i class="bi bi-box-arrow-left"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </nav>
@@ -1058,7 +1058,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                             <i class="bi bi-person-gear"></i> Mi Perfil
                         </a>
                         <a class="dropdown-item" href="<?= site_url('logout') ?>">
-                            <i class="bi bi-box-arrow-left"></i> Cerrar Sesion
+                            <i class="bi bi-box-arrow-left"></i> Cerrar sesión
                         </a>
                     </div>
                 </div>
@@ -1179,12 +1179,12 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                     }
 
                     if (!html) {
-                        html = '<div class="notif-vacio"><i class="bi bi-inbox"></i>Sin notificaciones</div>';
+                        html = '<div class="notif-vacio"><i class="bi bi-inbox"></i> Sin notificaciones</div>';
                     }
                     $('#notifLista').html(html);
                 },
                 error: function() {
-                    $('#notifLista').html('<div class="notif-vacio"><i class="bi bi-exclamation-triangle"></i>Error al cargar</div>');
+                    $('#notifLista').html('<div class="notif-vacio"><i class="bi bi-exclamation-triangle"></i> Error al cargar</div>');
                 }
             });
         }

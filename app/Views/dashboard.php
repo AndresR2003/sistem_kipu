@@ -170,9 +170,9 @@ try {
 
 <div class="dash-hero">
     <div style="position:relative;z-index:1;">
-        <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestion Hotel <?= esc($marcaNombre) ?></div>
+        <div class="hero-welcome"><i class="bi bi-building"></i> Sistema de Gestión Hotelera <?= esc($marcaNombre) ?></div>
         <h2>Bienvenido, <?= esc(session()->get('admin_nombre') ?? 'Usuario') ?></h2>
-        <p>Esto es lo que esta pasando hoy en tu cuenta.</p>
+        <p>Esto es lo que está pasando hoy en tu cuenta.</p>
         <div class="hero-date"><i class="bi bi-calendar3"></i> <?= esc(fecha_es('now', 'largo')) ?></div>
     </div>
 </div>
@@ -259,7 +259,7 @@ try {
 </div>
 
 <div class="dash-section-title">
-    <i class="bi bi-exclamation-triangle-fill" style="color:#f87171;"></i> Requiere atencion
+    <i class="bi bi-exclamation-triangle-fill" style="color:#f87171;"></i> Requiere atención
     <span class="line"></span>
 </div>
 
@@ -313,7 +313,7 @@ try {
 <div class="dash-widgets">
     <div class="dash-widget">
         <div class="dw-head">
-            <b><i class="bi bi-newspaper"></i> Ultimas noticias</b>
+            <b><i class="bi bi-newspaper"></i> Últimas noticias</b>
             <a href="<?= site_url('noticias') ?>">Ver todo <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="dw-body">
@@ -335,7 +335,7 @@ try {
     </div>
     <div class="dash-widget">
         <div class="dw-head">
-            <b><i class="bi bi-calendar-event"></i> Proximos eventos</b>
+            <b><i class="bi bi-calendar-event"></i> Próximos eventos</b>
             <a href="<?= site_url('calendario') ?>">Ver todo <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="dw-body">

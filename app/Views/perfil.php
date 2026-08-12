@@ -39,7 +39,7 @@
                     </div>
                     <hr style="border-color:var(--border);">
                     <div class="mb-2">
-                        <label class="form-label small">Nueva contrasena <span class="text-muted">(dejar vacio para mantener)</span></label>
+                        <label class="form-label small">Nueva contraseña <span class="text-muted">(dejar vacío para mantener)</span></label>
                         <input type="password" class="form-control" id="perfilPassword" placeholder="••••••">
                     </div>
                 </div>

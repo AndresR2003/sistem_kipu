@@ -20,7 +20,7 @@ class Login extends BaseController
         $password = $this->request->getPost('password');
 
         if (!$username || !$password) {
-            return redirect()->back()->withInput()->with('error', 'Ingresa usuario y contrasena');
+            return redirect()->back()->withInput()->with('error', 'Ingresa usuario y contraseña');
         }
 
         $adminModel = new AdminModel();
@@ -46,6 +46,6 @@ class Login extends BaseController
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/login')->with('success', 'Sesion cerrada correctamente');
+        return redirect()->to('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }

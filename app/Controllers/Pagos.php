@@ -34,7 +34,7 @@ class Pagos extends BaseController
         ];
 
         $data = [
-            'titulo' => 'Gestion de Pagos',
+            'titulo' => 'Gestión de Pagos',
             'meses'  => $meses,
         ];
 

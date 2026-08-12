@@ -14,7 +14,7 @@
         <div class="d-flex justify-content-between align-items-center w-100">
             <div>
                 <h5 class="mb-0"><i class="bi bi-person-badge-fill"></i> Personal / Empleados</h5>
-                <small class="text-muted">Gestion de empleados del sistema</small>
+                <small class="text-muted">Gestión de empleados del sistema</small>
             </div>
             <button class="btn btn-primary-custom btn-sm" onclick="nuevoColaborador()">
                 <i class="bi bi-plus-lg"></i> Nuevo
@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-2">
-                            <label class="form-label small">Password <span id="passLabel" class="text-muted">(dejar vacio para generar)</span></label>
+                            <label class="form-label small">Contraseña <span id="passLabel" class="text-muted">(dejar vacío para generar)</span></label>
                             <input type="password" class="form-control" id="colPassword" placeholder="••••••">
                         </div>
                     </div>
