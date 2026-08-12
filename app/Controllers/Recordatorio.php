@@ -33,11 +33,26 @@ class Recordatorio extends BaseController
         $db = \Config\Database::connect();
         foreach ($data as &$item) {
             $item['comentarios_count'] = 0;
+            $item['origen_titulo'] = null;
+            $item['origen_contenido'] = null;
+            $item['origen_meta'] = null;
             if (!empty($item['origen_id'])) {
                 if ($item['origen_tipo'] === 'entrega') {
                     $cnt = $db->table('comentarios')->where('entrega_id', (int) $item['origen_id'])->countAllResults();
+                    $origen = $db->table('entregas')->select('titulo, descripcion, created_at, updated_at')->where('id', (int) $item['origen_id'])->get()->getRowArray();
+                    if ($origen) {
+                        $item['origen_titulo'] = $origen['titulo'] ?? null;
+                        $item['origen_contenido'] = $origen['descripcion'] ?? null;
+                        $item['origen_meta'] = !empty($origen['updated_at']) ? $origen['updated_at'] : ($origen['created_at'] ?? null);
+                    }
                 } else {
                     $cnt = $db->table('comentarios')->where('borrador_id', (int) $item['origen_id'])->countAllResults();
+                    $origen = $db->table('borradores')->select('titulo, contenido, updated_at')->where('id', (int) $item['origen_id'])->get()->getRowArray();
+                    if ($origen) {
+                        $item['origen_titulo'] = $origen['titulo'] ?? null;
+                        $item['origen_contenido'] = $origen['contenido'] ?? null;
+                        $item['origen_meta'] = $origen['updated_at'] ?? null;
+                    }
                 }
                 $item['comentarios_count'] = (int) $cnt;
             }

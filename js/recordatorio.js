@@ -90,6 +90,9 @@ function renderCardRec(r) {
   var descHtml = r.descripcion
     ? '<div class="pub-contenido">' + escHtml(r.descripcion) + "</div>"
     : "";
+  var origenTitulo = r.origen_titulo ? escHtml(r.origen_titulo) : '';
+  var origenContenido = r.origen_contenido ? escHtml((r.origen_contenido || '').replace(/<[^>]*>/g, '').slice(0, 180)) : '';
+  var origenMeta = r.origen_meta ? formatearFechaHora(r.origen_meta) : '';
   var completadoClass = r.completado ? "completado" : "";
   var checked = r.completado ? "checked" : "";
   var secTitulo = r.seccion ? badgeSeccion(r) : "";
@@ -104,11 +107,16 @@ function renderCardRec(r) {
     (r.origen_tipo === "entrega" ? "entrega" : "borrador") +
     '" data-origen-id="' +
     (r.origen_id || "") +
-    '">' +
+    '" role="button" tabindex="0" onclick="abrirOrigenRec(' + r.id + ')">' +
     secTitulo +
     '<div class="pub-titulo">' +
     escHtml(r.titulo) +
     "</div>" +
+    (origenTitulo ? '<div class="pub-meta" style="margin-top:0;">' +
+      '<i class="bi bi-link-45deg"></i> <strong>Origen:</strong> ' + origenTitulo +
+      '</div>' : '') +
+    (origenContenido ? '<div class="pub-contenido" style="margin-top:6px;">' + origenContenido + '</div>' : '') +
+    (origenMeta ? '<div class="pub-meta"><i class="bi bi-clock"></i> ' + origenMeta + '</div>' : '') +
     descHtml +
     '<div class="pub-meta"><i class="bi bi-clock"></i> ' +
     fecha +
@@ -119,11 +127,11 @@ function renderCardRec(r) {
     badgePrio +
     "</div>" +
     '<div class="pub-acciones">' +
-    '<button class="del" onclick="eliminarRecordatorio(' +
+    '<button type="button" class="del" onclick="event.stopPropagation(); eliminarRecordatorio(' +
     r.id +
     ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
     (r.origen_id
-      ? comButtonRec(r.comentarios_count || 0, r)
+    ? comButtonRec(r.comentarios_count || 0, r)
       : "") +
     "</div>" +
     (r.origen_id
@@ -135,16 +143,27 @@ function renderCardRec(r) {
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
         '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentarioRec(' +
         r.id +
-        ', this)">Enviar</button>' +
+        ', this, event)">Enviar</button>' +
         "</div></div>"
       : "") +
-    "</div>"
+    '</div>'
   );
 }
 
+function abrirOrigenRec(id) {
+  var card = $('#rec-' + id);
+  var origenTipo = card.data('origen') || 'borrador';
+  var origenId = card.data('origen-id');
+  if (!origenId) return;
+  var url = origenTipo === 'entrega'
+    ? BASE_URL + 'entregas?select=' + origenId
+    : BASE_URL + 'borradores?select=' + origenId;
+  window.location.href = url;
+}
+
 function comButtonRec(count, r) {
-  return (
-    '<button class="com" onclick="toggleComentariosRec(' +
+    return (
+    '<button type="button" class="com" onclick="event.stopPropagation(); toggleComentariosRec(' +
     r.id +
     ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' +
     (count > 0 ? '<span class="com-count">' + count + "</span>" : "") +
@@ -213,7 +232,7 @@ function avatarComentarioRec(c, nombre) {
   return "<span>" + escHtml(inicial) + "</span>";
 }
 
-function guardarComentarioRec(id, btn) {
+function guardarComentarioRec(id, btn, ev) {
   var wrap = $("#comentarios-rec-" + id);
   var ta = wrap.find("textarea");
   var texto = ta.val().trim();
@@ -227,6 +246,7 @@ function guardarComentarioRec(id, btn) {
     : { borrador_id: origenId, comentario: texto };
   var url = BASE_URL + (origenTipo === "entrega" ? "entregas/comentario" : "borradores/guardar-comentario");
 
+  if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
   $(btn).prop("disabled", true);
   $.ajax({
     url: url,
