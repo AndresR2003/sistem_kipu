@@ -138,7 +138,7 @@ try {
         margin-top:auto;font-size:0.72rem;font-weight:600;text-decoration:none;
         color:var(--alert-color);display:inline-flex;align-items:center;gap:4px;transition:gap 0.2s;
     }
-    .alert-card .ac-link:hover{gap:8px;text-decoration:underline;}
+    .alert-card .ac-link:hover{gap:8px;text-decoration:none;opacity:0.85;}
 
     .alert-card--tareas  { --alert-color:#f87171; --alert-bg:#2a1518; --alert-border:#7f1d1d7f; --alert-icon-bg:#450a0a66; }
     .alert-card--repar   { --alert-color:#fb923c; --alert-bg:#291c12; --alert-border:#7c2d127f; --alert-icon-bg:#43140766; }
@@ -201,53 +201,6 @@ try {
 </div>
 
 <div class="dash-section-title">
-    <i class="bi bi-exclamation-triangle-fill" style="color:#f87171;"></i> Requiere atencion
-    <span class="line"></span>
-</div>
-
-<div class="alert-row">
-    <a class="alert-card alert-card--tareas" href="<?= site_url('entregas') ?>">
-        <div class="ac-top">
-            <div class="ac-icon"><i class="bi bi-arrow-repeat"></i></div>
-            <span class="ac-badge">Tareas</span>
-        </div>
-        <div class="ac-num"><?= (int)($stats['tareas_vencidas'] ?? 0) ?></div>
-        <div class="ac-label">Tareas vencidas</div>
-        <span class="ac-link">Ver tareas <i class="bi bi-arrow-right"></i></span>
-    </a>
-
-    <a class="alert-card alert-card--repar" href="<?= site_url('reparaciones') ?>">
-        <div class="ac-top">
-            <div class="ac-icon"><i class="bi bi-tools"></i></div>
-            <span class="ac-badge">Mantenimiento</span>
-        </div>
-        <div class="ac-num"><?= (int)($stats['reparaciones_pendientes'] ?? 0) ?></div>
-        <div class="ac-label">Reparaciones pendientes</div>
-        <span class="ac-link">Ver reparaciones <i class="bi bi-arrow-right"></i></span>
-    </a>
-
-    <a class="alert-card alert-card--petic" href="<?= site_url('peticiones') ?>">
-        <div class="ac-top">
-            <div class="ac-icon"><i class="bi bi-chat-dots-fill"></i></div>
-            <span class="ac-badge">Comunicacion</span>
-        </div>
-        <div class="ac-num"><?= (int)($stats['peticiones_pendientes'] ?? 0) ?></div>
-        <div class="ac-label">Peticiones sin responder</div>
-        <span class="ac-link">Ver peticiones <i class="bi bi-arrow-right"></i></span>
-    </a>
-
-    <a class="alert-card alert-card--turnos" href="<?= site_url('entregas') ?>">
-        <div class="ac-top">
-            <div class="ac-icon"><i class="bi bi-arrow-left-right"></i></div>
-            <span class="ac-badge">Operaciones</span>
-        </div>
-        <div class="ac-num"><?= (int)($stats['pases_pendientes'] ?? 0) ?></div>
-        <div class="ac-label">Pases de turno pendientes</div>
-        <span class="ac-link">Ver pases de turno <i class="bi bi-arrow-right"></i></span>
-    </a>
-</div>
-
-<div class="dash-section-title">
     <i class="bi bi-grid-1x2-fill"></i> Accesos rapidos
     <span class="line"></span>
 </div>
@@ -292,6 +245,53 @@ try {
         <div class="q-icon"><i class="bi bi-tools"></i></div>
         <span>Reparaciones</span>
         <small>Mantenimiento</small>
+    </a>
+</div>
+
+<div class="dash-section-title">
+    <i class="bi bi-exclamation-triangle-fill" style="color:#f87171;"></i> Requiere atencion
+    <span class="line"></span>
+</div>
+
+<div class="alert-row">
+    <a class="alert-card alert-card--tareas" href="<?= site_url('entregas') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-arrow-repeat"></i></div>
+            <span class="ac-badge">Tareas</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['tareas_vencidas'] ?? 0) ?></div>
+        <div class="ac-label">Tareas vencidas</div>
+        <span class="ac-link">Ver tareas <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--repar" href="<?= site_url('reparaciones') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-tools"></i></div>
+            <span class="ac-badge">Mantenimiento</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['reparaciones_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Reparaciones pendientes</div>
+        <span class="ac-link">Ver reparaciones <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--petic" href="<?= site_url('peticiones') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-chat-dots-fill"></i></div>
+            <span class="ac-badge">Comunicacion</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['peticiones_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Peticiones sin responder</div>
+        <span class="ac-link">Ver peticiones <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--turnos" href="<?= site_url('entregas') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-arrow-left-right"></i></div>
+            <span class="ac-badge">Operaciones</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['pases_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Pases de turno pendientes</div>
+        <span class="ac-link">Ver pases de turno <i class="bi bi-arrow-right"></i></span>
     </a>
 </div>
 
