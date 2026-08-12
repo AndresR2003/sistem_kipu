@@ -163,6 +163,7 @@ function cargarMarca() {
 function subirLogo(file) {
     var fd = new FormData();
     fd.append('logo', file);
+    fd.append('csrf_token', CSRF_TOKEN);
 
     showLoading();
     $.ajax({
