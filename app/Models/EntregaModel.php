@@ -115,6 +115,14 @@ class EntregaModel extends Model
         return (int) $db->table('entrega_registros')->where('fecha', $fecha)->countAllResults();
     }
 
+    public function ContarVencidas(string $fecha): int
+    {
+        $this->where('publicado', 1);
+        $this->where('fecha_fin IS NOT NULL');
+        $this->where('fecha_fin <', $fecha);
+        return (int) $this->countAllResults();
+    }
+
     public function Guardar(array $datos): bool
     {
         if (!empty($datos['id'])) {

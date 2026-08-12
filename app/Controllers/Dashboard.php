@@ -40,6 +40,7 @@ class Dashboard extends BaseController
                 'marcadores'      => $recordatorioModel->ContarTodos('marcador', $usuarioId),
                 'eventos'         => $eventoModel->ContarProximos($hoy),
                 'colaboradores'   => $colaboradorModel->countAllResults(),
+                'tareas_vencidas' => $entregaModel->ContarVencidas($hoy),
             ];
 
             $eventos = $eventoModel->ObtenerProximos($hoy, 5);

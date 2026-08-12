@@ -112,6 +112,46 @@ try {
     }
     .dw-empty{color:var(--text-muted);font-size:0.78rem;padding:16px 0;text-align:center;}
 
+    /* ===== Requiere atencion ===== */
+    .alert-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+    .alert-card{
+        position:relative;overflow:hidden;border-radius:var(--radius);
+        padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;
+        border:1px solid var(--alert-border,#ffffff14);
+        transition:transform 0.2s,box-shadow 0.2s;
+        background:var(--alert-bg);
+    }
+    .alert-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+    .alert-card .ac-top{display:flex;align-items:center;justify-content:space-between;}
+    .alert-card .ac-icon{
+        width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+        font-size:1.15rem;color:var(--alert-color);background:var(--alert-icon-bg);flex-shrink:0;
+    }
+    .alert-card .ac-badge{
+        font-size:0.62rem;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;
+        padding:4px 10px;border-radius:20px;color:var(--alert-color);
+        background:var(--alert-icon-bg);
+    }
+    .alert-card .ac-num{font-size:2rem;font-weight:800;line-height:1;letter-spacing:-1px;color:var(--alert-color);}
+    .alert-card .ac-label{font-size:0.82rem;font-weight:600;color:var(--text);line-height:1.3;}
+    .alert-card .ac-link{
+        margin-top:auto;font-size:0.72rem;font-weight:600;text-decoration:none;
+        color:var(--alert-color);display:inline-flex;align-items:center;gap:4px;transition:gap 0.2s;
+    }
+    .alert-card .ac-link:hover{gap:8px;text-decoration:underline;}
+
+    .alert-card--tareas  { --alert-color:#f87171; --alert-bg:#2a1518; --alert-border:#7f1d1d7f; --alert-icon-bg:#450a0a66; }
+    .alert-card--repar   { --alert-color:#fb923c; --alert-bg:#291c12; --alert-border:#7c2d127f; --alert-icon-bg:#43140766; }
+    .alert-card--petic   { --alert-color:#fbbf24; --alert-bg:#2a2410; --alert-border:#78350f7f; --alert-icon-bg:#451a0366; }
+    .alert-card--turnos  { --alert-color:#60a5fa; --alert-bg:#101c2e; --alert-border:#1e3a5f7f; --alert-icon-bg:#17255466; }
+
+    @media (max-width: 992px){
+        .alert-row{grid-template-columns:repeat(2,1fr);}
+    }
+    @media (max-width: 576px){
+        .alert-row{grid-template-columns:1fr;}
+    }
+
     @media (max-width: 768px){
         .dash-widgets{grid-template-columns:1fr;}
         .dash-hero{padding:22px 20px;}
@@ -158,6 +198,53 @@ try {
         <div class="ds-value"><?= (int)($stats['eventos'] ?? 0) ?></div>
         <div class="ds-label">Eventos proximos</div>
     </div>
+</div>
+
+<div class="dash-section-title">
+    <i class="bi bi-exclamation-triangle-fill" style="color:#f87171;"></i> Requiere atencion
+    <span class="line"></span>
+</div>
+
+<div class="alert-row">
+    <a class="alert-card alert-card--tareas" href="<?= site_url('entregas') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-arrow-repeat"></i></div>
+            <span class="ac-badge">Tareas</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['tareas_vencidas'] ?? 0) ?></div>
+        <div class="ac-label">Tareas vencidas</div>
+        <span class="ac-link">Ver tareas <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--repar" href="<?= site_url('reparaciones') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-tools"></i></div>
+            <span class="ac-badge">Mantenimiento</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['reparaciones_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Reparaciones pendientes</div>
+        <span class="ac-link">Ver reparaciones <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--petic" href="<?= site_url('peticiones') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-chat-dots-fill"></i></div>
+            <span class="ac-badge">Comunicacion</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['peticiones_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Peticiones sin responder</div>
+        <span class="ac-link">Ver peticiones <i class="bi bi-arrow-right"></i></span>
+    </a>
+
+    <a class="alert-card alert-card--turnos" href="<?= site_url('entregas') ?>">
+        <div class="ac-top">
+            <div class="ac-icon"><i class="bi bi-arrow-left-right"></i></div>
+            <span class="ac-badge">Operaciones</span>
+        </div>
+        <div class="ac-num"><?= (int)($stats['pases_pendientes'] ?? 0) ?></div>
+        <div class="ac-label">Pases de turno pendientes</div>
+        <span class="ac-link">Ver pases de turno <i class="bi bi-arrow-right"></i></span>
+    </a>
 </div>
 
 <div class="dash-section-title">
