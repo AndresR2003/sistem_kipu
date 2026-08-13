@@ -93,6 +93,21 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('ideas', 'Ideas::index');
     $routes->get('manual', 'Manual::index');
     $routes->get('tareas', 'Tareas::index');
+
+    // API AJAX - Tareas
+    $routes->post('tareas/listar', 'Tareas::listar');
+    $routes->post('tareas/obtener/(:num)', 'Tareas::obtener/$1');
+    $routes->post('tareas/guardar', 'Tareas::guardar');
+    $routes->post('tareas/eliminar/(:num)', 'Tareas::eliminar/$1');
+    $routes->post('tareas/publicar/(:num)', 'Tareas::publicar/$1');
+    $routes->post('tareas/despublicar/(:num)', 'Tareas::despublicar/$1');
+    $routes->post('tareas/completar/(:num)', 'Tareas::completar/$1');
+    $routes->post('tareas/descompletar/(:num)', 'Tareas::descompletar/$1');
+    $routes->post('tareas/asignar', 'Tareas::asignar');
+    $routes->post('tareas/listar-asignaciones/(:num)', 'Tareas::listarAsignaciones/$1');
+    $routes->post('tareas/listar-comentarios/(:num)', 'Tareas::listarComentarios/$1');
+    $routes->post('tareas/guardar-comentario', 'Tareas::guardarComentario');
+    $routes->post('tareas/departamentos', 'Tareas::departamentos');
     $routes->get('calendario', 'Calendario::index');
 
     // API AJAX - Calendario / Eventos

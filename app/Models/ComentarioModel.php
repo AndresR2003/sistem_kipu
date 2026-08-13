@@ -13,7 +13,7 @@ class ComentarioModel extends Model
     protected $createdField  = 'created_at';
 
     protected $allowedFields = [
-        'borrador_id', 'entrega_id', 'usuario_id', 'comentario',
+        'borrador_id', 'entrega_id', 'tarea_id', 'usuario_id', 'comentario',
     ];
 
     public function ObtenerPorBorrador(int $borradorId): array
