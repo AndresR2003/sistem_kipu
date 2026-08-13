@@ -134,4 +134,10 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->post('configuracion/guardar', 'Configuracion::guardar');
     $routes->post('configuracion/subir-logo', 'Configuracion::subirLogo');
     $routes->get('soporte', 'Soporte::index');
+    $routes->get('soporte/centro-ayuda', 'Soporte::centroAyuda');
+    $routes->get('soporte/contactar', 'Soporte::contactar');
+    $routes->get('soporte/reportar', 'Soporte::reportar');
+    $routes->get('soporte/terminos', 'Soporte::terminos');
+    $routes->get('soporte/privacidad', 'Soporte::privacidad');
+    $routes->get('soporte/reclamaciones', 'Soporte::reclamaciones');
 });
