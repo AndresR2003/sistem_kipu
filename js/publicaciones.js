@@ -445,10 +445,10 @@ function guardarComo(tipo, id, btn) {
         origen_tipo: origenTipo,
         origen_id: origenId,
         seccion: seccion,
+        fecha: new Date().toISOString().slice(0, 10),
     };
 
     if (tipo === 'recordatorio') {
-        data.fecha = new Date().toISOString().slice(0, 10);
         data.prioridad = 'media';
     }
 

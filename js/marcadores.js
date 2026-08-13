@@ -73,7 +73,10 @@ function renderCardMarcador(m) {
   var descHtml = m.descripcion
     ? '<div class="pub-contenido">' + escHtml(m.descripcion) + "</div>"
     : "";
-  var secTitulo = m.seccion ? badgeSeccion(m) : "";
+  var seccion = m.seccion || "";
+  if (seccion === "tareas_diarias") seccion = "tareas";
+  var destinoUrl = seccion && m.origen_id ? (BASE_URL + seccion + "?select=" + m.origen_id) : "";
+  var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: m.origen_tipo }) : "";
 
   return (
     '<div class="pub-card" id="rec-' +
@@ -82,7 +85,11 @@ function renderCardMarcador(m) {
     (m.origen_tipo === "entrega" ? "entrega" : "borrador") +
     '" data-origen-id="' +
     (m.origen_id || "") +
-    '">' +
+    '" data-seccion="' +
+    seccion +
+    '" role="button" tabindex="0" data-url="' +
+    escHtml(destinoUrl) +
+    '" onclick="abrirOrigenMarcador(' + m.id + ')">' +
     secTitulo +
     '<div class="pub-titulo">' +
     escHtml(m.titulo) +
@@ -92,7 +99,7 @@ function renderCardMarcador(m) {
     fecha +
     "</div>" +
     '<div class="pub-acciones">' +
-    '<button class="del" onclick="eliminarMarcador(' +
+    '<button class="del" onclick="event.stopPropagation(); eliminarMarcador(' +
     m.id +
     ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
     (m.origen_id ? comButtonMarcador(m.comentarios_count || 0, m) : "") +
@@ -115,7 +122,7 @@ function renderCardMarcador(m) {
 
 function comButtonMarcador(count, m) {
   return (
-    '<button class="com" onclick="toggleComentariosRec(' +
+    '<button class="com" onclick="event.stopPropagation(); toggleComentariosRec(' +
     m.id +
     ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' +
     (count > 0 ? '<span class="com-count">' + count + "</span>" : "") +
@@ -276,4 +283,14 @@ function formatearFechaHora(f) {
 function escHtml(s) {
   if (!s) return "";
   return $("<div>").text(s).html();
+}
+
+function abrirOrigenMarcador(id) {
+  var card = $("#rec-" + id);
+  var url = card.data("url") || "";
+  if (!url) {
+    Swal.fire("Sin destino", "Este marcador no tiene una seccion asociada.", "info");
+    return;
+  }
+  window.location.href = url;
 }
