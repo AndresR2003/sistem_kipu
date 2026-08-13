@@ -109,22 +109,16 @@ class Recordatorio extends BaseController
         }
 
         if ($this->model->Guardar($datos)) {
-            $saved = $this->model->ObtenerPorId($this->model->insertID());
             return $this->response->setJSON([
                 'success' => true,
                 'message' => $tipo === 'marcador' ? 'Marcador guardado.' : 'Recordatorio guardado.',
-                'debug' => ['enviado' => $datos, 'guardado' => $saved],
             ]);
         }
 
         $errors = $this->model->errors();
-        $dbErrors = \Config\Database::connect()->error();
         return $this->response->setJSON([
             'success' => false,
             'message' => !empty($errors) ? implode(', ', $errors) : 'Error al guardar.',
-            'debug_errors' => $errors,
-            'debug_db' => $dbErrors,
-            'debug_data' => $datos,
         ]);
     }
 

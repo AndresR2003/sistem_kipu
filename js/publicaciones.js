@@ -462,7 +462,6 @@ function guardarComo(tipo, id, btn) {
     }).then(function(result) {
         if (!result.isConfirmed) return;
         showLoading();
-        console.log('GUARDAR_DATA:', data);
         $.ajax({
             url: BASE_URL + 'recordatorio/guardar',
             type: 'POST',
@@ -471,16 +470,14 @@ function guardarComo(tipo, id, btn) {
             dataType: 'json',
             success: function(response) {
                 hideLoading();
-                console.log('GUARDAR_RESPONSE:', response);
                 if (response.success) {
                     Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
                 } else {
                     Swal.fire('Error', response.message, 'error');
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 hideLoading();
-                console.log('GUARDAR_ERROR:', xhr.status, xhr.responseText);
                 Swal.fire('Error', 'Error de conexion.', 'error');
             }
         });
