@@ -15,7 +15,7 @@ class Recordatorio extends BaseController
 
     public function index(): string
     {
-        $pageScripts = '<script src="' . base_url('js/recordatorio.js') . '?v=' . filemtime(FCPATH . 'js/recordatorio.js') . '"></script>';
+        $pageScripts = '<script src="' . base_url('js/recordatorio.js') . '?v=' . time() . '"></script>';
 
         return view('layout', [
             'contenido'   => view('recordatorios'),
@@ -36,6 +36,11 @@ class Recordatorio extends BaseController
             $item['origen_titulo'] = null;
             $item['origen_contenido'] = null;
             $item['origen_meta'] = null;
+
+            $seccion = $item['seccion'] ?? '';
+            if ($seccion === 'tareas_diarias') $seccion = 'tareas';
+            $item['seccion'] = $seccion;
+
             if (!empty($item['origen_id'])) {
                 if ($item['origen_tipo'] === 'entrega') {
                     $cnt = $db->table('comentarios')->where('entrega_id', (int) $item['origen_id'])->countAllResults();
@@ -83,6 +88,9 @@ class Recordatorio extends BaseController
 
         $tipo = $json['tipo'] ?? 'recordatorio';
 
+        $seccion = $json['seccion'] ?? null;
+        if ($seccion === 'tareas_diarias') $seccion = 'tareas';
+
         $datos = [
             'id'          => $json['id'] ?? null,
             'titulo'      => $json['titulo'],
@@ -92,7 +100,7 @@ class Recordatorio extends BaseController
             'tipo'        => $tipo,
             'origen_id'   => !empty($json['origen_id']) ? (int) $json['origen_id'] : null,
             'origen_tipo' => $json['origen_tipo'] ?? null,
-            'seccion'     => $json['seccion'] ?? null,
+            'seccion'     => $seccion,
             'usuario_id'  => (int) (session()->get('usuario_id') ?? session()->get('admin_id')),
         ];
 

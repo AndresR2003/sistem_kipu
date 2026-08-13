@@ -434,6 +434,10 @@ function guardarComo(tipo, id, btn) {
     var origenId = card.data('origen-id');
     var seccion = card.data('seccion') || '';
 
+    if (seccion === 'tareas_diarias') {
+        seccion = 'tareas';
+    }
+
     var data = {
         titulo: titulo,
         descripcion: contenido,
@@ -483,4 +487,20 @@ function guardarComo(tipo, id, btn) {
 $(document).ready(function() {
     var sec = $('#publicacionesContainer').data('seccion');
     if (sec) cargarPublicaciones(sec);
+});
+
+function enfocarPublicacionDesdeUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var selectId = params.get('select');
+    if (!selectId) return;
+    var card = $('#pub-' + selectId);
+    if (!card.length) return;
+    card.css('outline', '2px solid var(--primary)');
+    card.css('scroll-margin-top', '90px');
+    card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Cuando terminen de cargarse las publicaciones, intenta enfocar el post original
+$(document).ajaxStop(function() {
+    enfocarPublicacionDesdeUrl();
 });

@@ -74,6 +74,10 @@ function badgeSeccion(r) {
 function renderCardRec(r) {
   var fecha = r.fecha ? r.fecha.split(" ")[0] : "";
   var hora = r.fecha ? r.fecha.split(" ")[1]?.slice(0, 5) : "";
+  var completado = parseInt(r.completado || 0, 10) === 1;
+  var seccion = r.seccion || '';
+  if (seccion === 'tareas_diarias') seccion = 'tareas';
+  var destinoUrl = seccion && r.origen_id ? (BASE_URL + seccion + '?select=' + r.origen_id) : '';
 
   var badgePrio = "";
   switch (r.prioridad) {
@@ -93,9 +97,9 @@ function renderCardRec(r) {
   var origenTitulo = r.origen_titulo ? escHtml(r.origen_titulo) : '';
   var origenContenido = r.origen_contenido ? escHtml((r.origen_contenido || '').replace(/<[^>]*>/g, '').slice(0, 180)) : '';
   var origenMeta = r.origen_meta ? formatearFechaHora(r.origen_meta) : '';
-  var completadoClass = r.completado ? "completado" : "";
-  var checked = r.completado ? "checked" : "";
-  var secTitulo = r.seccion ? badgeSeccion(r) : "";
+   var completadoClass = completado ? "completado" : "";
+   var checked = completado ? "checked" : "";
+   var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: r.origen_tipo }) : "";
   var tipoTitulo = r.tipo === "marcador" ? "Marcador" : "Recordatorio";
 
   return (
@@ -107,7 +111,11 @@ function renderCardRec(r) {
     (r.origen_tipo === "entrega" ? "entrega" : "borrador") +
     '" data-origen-id="' +
     (r.origen_id || "") +
-    '" role="button" tabindex="0" onclick="abrirOrigenRec(' + r.id + ')">' +
+    '" data-seccion="' +
+    seccion +
+    '" role="button" tabindex="0" data-url="' +
+    escHtml(destinoUrl) +
+    '" onclick="abrirOrigenRec(' + r.id + ')">' +
     secTitulo +
     '<div class="pub-titulo">' +
     escHtml(r.titulo) +
@@ -152,12 +160,11 @@ function renderCardRec(r) {
 
 function abrirOrigenRec(id) {
   var card = $('#rec-' + id);
-  var origenTipo = card.data('origen') || 'borrador';
-  var origenId = card.data('origen-id');
-  if (!origenId) return;
-  var url = origenTipo === 'entrega'
-    ? BASE_URL + 'entregas?select=' + origenId
-    : BASE_URL + 'borradores?select=' + origenId;
+  var url = card.data('url') || '';
+  if (!url) {
+    Swal.fire('Sin destino', 'Este recordatorio no tiene una seccion asociada.', 'info');
+    return;
+  }
   window.location.href = url;
 }
 
