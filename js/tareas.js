@@ -4,6 +4,7 @@ var comentarioTareaId = 0;
 var departamentosCache = [];
 var usuariosCache = [];
 var acordeonesAbiertos = {};
+var tareasMap = {};
 
 $(document).ready(function() {
     if (typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin')) {
@@ -101,6 +102,8 @@ function renderizarTareas(departamentos) {
 // ─── Renderizar tarjeta individual ───
 
 function renderizarTarjeta(t) {
+    tareasMap[t.id] = t;
+
     var completada = parseInt(t.completada) === 1;
     var miAsignacion = t.mi_asignacion != null ? parseInt(t.mi_asignacion) : null;
     var miCompletado = t.mi_completado_at || null;
@@ -171,7 +174,9 @@ function renderizarTarjeta(t) {
         menuItems += '<div class="tarea-menu-item danger" onclick="eliminarTarea(' + t.id + ')"><i class="bi bi-trash"></i> Eliminar</div>';
     }
 
-    var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '">' +
+    var comCount = parseInt(t.comentarios_count) || 0;
+
+    var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '" data-origen="tarea" data-origen-id="' + t.id + '" data-seccion="tareas">' +
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
@@ -181,6 +186,11 @@ function renderizarTarjeta(t) {
         '<div class="tarea-menu" style="position:relative;">' +
         '<button class="tarea-menu-btn" onclick="toggleMenu(event, this)"><i class="bi bi-three-dots-vertical"></i></button>' +
         '<div class="tarea-menu-dropdown">' + menuItems + '</div>' +
+        '</div>' +
+        '<div class="tarea-acciones">' +
+        '<button class="tarea-accion rec" onclick="guardarComoTarea(\'recordatorio\', ' + t.id + ')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+        '<button class="tarea-accion mar" onclick="guardarComoTarea(\'marcador\', ' + t.id + ')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+        '<button class="tarea-accion com" onclick="abrirComentarios(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' + (comCount > 0 ? '<span class="tarea-com-count">' + comCount + '</span>' : '') + '</button>' +
         '</div>' +
         '</div>';
 
@@ -594,3 +604,78 @@ function guardarComentarioTarea() {
         }
     });
 }
+
+// ─── Guardar como recordatorio / marcador ───
+
+function guardarComoTarea(tipo, id) {
+    var t = tareasMap[id];
+    if (!t) return;
+
+    var data = {
+        titulo: t.titulo,
+        descripcion: t.descripcion || '',
+        tipo: tipo === 'marcador' ? 'marcador' : 'recordatorio',
+        origen_tipo: 'tarea',
+        origen_id: t.id,
+        seccion: 'tareas',
+        fecha: new Date().toISOString().slice(0, 10),
+    };
+
+    if (tipo === 'recordatorio') {
+        data.prioridad = 'media';
+    }
+
+    Swal.fire({
+        title: tipo === 'marcador' ? 'Agregar a Marcadores' : 'Agregar a Recordatorio',
+        text: 'Se guardara la tarea completa.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
+        showLoading();
+        $.ajax({
+            url: BASE_URL + '/recordatorio/guardar',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    Swal.fire({ icon: 'success', title: 'Guardado', timer: 1500, showConfirmButton: false });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function() {
+                hideLoading();
+                Swal.fire('Error', 'Error de conexion.', 'error');
+            }
+        });
+    });
+}
+
+// ─── Enfocar tarea desde URL (?select=ID) ───
+
+function enfocarTareaDesdeUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var selectId = params.get('select');
+    if (!selectId) return;
+
+    var card = $('.tarea-card[data-id="' + selectId + '"]');
+    if (!card.length) {
+        setTimeout(enfocarTareaDesdeUrl, 300);
+        return;
+    }
+
+    card.closest('.tarea-acordeon').addClass('open');
+    card.css('outline', '2px solid var(--primary)');
+    card.css('scroll-margin-top', '90px');
+    card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+$(document).ready(function() {
+    setTimeout(enfocarTareaDesdeUrl, 600);
+});

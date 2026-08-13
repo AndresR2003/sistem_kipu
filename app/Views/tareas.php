@@ -35,6 +35,14 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-card.completada{opacity:0.55;}
 .tarea-card.completada .tarea-titulo{text-decoration:line-through;color:var(--text-muted);}
 
+.tarea-acciones{display:flex;gap:4px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+.tarea-accion{background:transparent;border:none;padding:3px 8px;border-radius:5px;font-size:0.7rem;color:var(--text-muted);transition:all 0.15s;cursor:pointer;}
+.tarea-accion:hover{background:var(--bg-input);color:var(--text);}
+.tarea-accion.rec:hover{color:var(--warning);}
+.tarea-accion.mar:hover{color:var(--primary);}
+.tarea-accion.com:hover{color:var(--success);}
+.tarea-accion .tarea-com-count{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 4px;margin-left:3px;border-radius:8px;background:var(--success);color:#fff;font-size:0.6rem;font-weight:700;line-height:1;}
+
 .tarea-check{flex-shrink:0;padding-top:2px;}
 .tarea-check input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--success);}
 .tarea-info{flex:1;min-width:0;}

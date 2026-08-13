@@ -43,7 +43,8 @@ class TareaModel extends Model
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,
                        (SELECT ta2.completado FROM tarea_asignaciones ta2 WHERE ta2.tarea_id = t.id AND ta2.usuario_id = ?) AS mi_asignacion,
-                       (SELECT ta3.completado_at FROM tarea_asignaciones ta3 WHERE ta3.tarea_id = t.id AND ta3.usuario_id = ?) AS mi_completado_at
+                       (SELECT ta3.completado_at FROM tarea_asignaciones ta3 WHERE ta3.tarea_id = t.id AND ta3.usuario_id = ?) AS mi_completado_at,
+                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count
                 FROM tareas t
                 LEFT JOIN departamentos d ON d.id = t.departamento_id
                 LEFT JOIN admin_usuarios u ON u.id = t.created_by
@@ -81,7 +82,8 @@ class TareaModel extends Model
                        u.nombre AS creador_nombre,
                        CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
-                       (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados
+                       (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,
+                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count
                 FROM tareas t
                 LEFT JOIN departamentos d ON d.id = t.departamento_id
                 LEFT JOIN admin_usuarios u ON u.id = t.created_by

@@ -50,6 +50,14 @@ class Recordatorio extends BaseController
                         $item['origen_contenido'] = $origen['descripcion'] ?? null;
                         $item['origen_meta'] = !empty($origen['updated_at']) ? $origen['updated_at'] : ($origen['created_at'] ?? null);
                     }
+                } elseif ($item['origen_tipo'] === 'tarea') {
+                    $cnt = $db->table('comentarios')->where('tarea_id', (int) $item['origen_id'])->countAllResults();
+                    $origen = $db->table('tareas')->select('titulo, descripcion, created_at, updated_at')->where('id', (int) $item['origen_id'])->get()->getRowArray();
+                    if ($origen) {
+                        $item['origen_titulo'] = $origen['titulo'] ?? null;
+                        $item['origen_contenido'] = $origen['descripcion'] ?? null;
+                        $item['origen_meta'] = !empty($origen['updated_at']) ? $origen['updated_at'] : ($origen['created_at'] ?? null);
+                    }
                 } else {
                     $cnt = $db->table('comentarios')->where('borrador_id', (int) $item['origen_id'])->countAllResults();
                     $origen = $db->table('borradores')->select('titulo, contenido, updated_at')->where('id', (int) $item['origen_id'])->get()->getRowArray();

@@ -38,9 +38,13 @@ function cargarMarcadores() {
 
 function badgeSeccion(r) {
   var seccion = r.seccion || "";
-  var origen = r.origen_tipo === "entrega" ? "entrega" : "borrador";
+  var origen = r.origen_tipo;
   var label, cls, icon;
-  if (seccion === "tareas_diarias") {
+  if (origen === "tarea") {
+    label = "Tarea";
+    cls = "background:rgba(34,197,94,0.12);color:#22c55e;";
+    icon = "bi bi-check2-square";
+  } else if (origen === "entrega") {
     label = "Tarea diaria";
     cls = "background:rgba(34,197,94,0.12);color:#22c55e;";
     icon = "bi bi-arrow-repeat";
@@ -82,7 +86,7 @@ function renderCardMarcador(m) {
     '<div class="pub-card" id="rec-' +
     m.id +
     '" data-origen="' +
-    (m.origen_tipo === "entrega" ? "entrega" : "borrador") +
+    (m.origen_tipo === "entrega" ? "entrega" : m.origen_tipo === "tarea" ? "tarea" : "borrador") +
     '" data-origen-id="' +
     (m.origen_id || "") +
     '" data-seccion="' +
@@ -152,22 +156,31 @@ function cargarComentariosRec(id) {
   var origenTipo = card.data("origen") || "borrador";
   var origenId = card.data("origen-id");
 
-  var url = BASE_URL + (origenTipo === "entrega"
-    ? "entregas/comentarios/" + origenId
-    : "borradores/listar-comentarios/" + origenId);
+  var url, metodo;
+  if (origenTipo === "entrega") {
+    url = BASE_URL + "entregas/comentarios/" + origenId;
+    metodo = "GET";
+  } else if (origenTipo === "tarea") {
+    url = BASE_URL + "tareas/listar-comentarios/" + origenId;
+    metodo = "POST";
+  } else {
+    url = BASE_URL + "borradores/listar-comentarios/" + origenId;
+    metodo = "GET";
+  }
 
   $.ajax({
     url: url,
-    type: "GET",
+    type: metodo,
     dataType: "json",
     success: function (data) {
+      var items = data && data.data ? data.data : data;
       lista.empty();
-      setComentariosCountRec(id, data ? data.length : 0);
-      if (!data || data.length === 0) {
+      setComentariosCountRec(id, items ? items.length : 0);
+      if (!items || items.length === 0) {
         lista.html('<div class="comentario-vacio">Sin comentarios</div>');
         return;
       }
-      data.forEach(function (c) {
+      items.forEach(function (c) {
         var nombre = c.autor_nombre || "Desconocido";
         var fecha = c.created_at ? formatearFechaHora(c.created_at) : "";
         lista.append(
@@ -200,10 +213,17 @@ function guardarComentarioRec(id, btn) {
   var card = $("#rec-" + id);
   var origenTipo = card.data("origen") || "borrador";
   var origenId = card.data("origen-id");
-  var payload = origenTipo === "entrega"
-    ? { entrega_id: origenId, comentario: texto }
-    : { borrador_id: origenId, comentario: texto };
-  var url = BASE_URL + (origenTipo === "entrega" ? "entregas/comentario" : "borradores/guardar-comentario");
+  var payload, url;
+  if (origenTipo === "entrega") {
+    payload = { entrega_id: origenId, comentario: texto };
+    url = BASE_URL + "entregas/comentario";
+  } else if (origenTipo === "tarea") {
+    payload = { tarea_id: origenId, comentario: texto };
+    url = BASE_URL + "tareas/guardar-comentario";
+  } else {
+    payload = { borrador_id: origenId, comentario: texto };
+    url = BASE_URL + "borradores/guardar-comentario";
+  }
 
   $(btn).prop("disabled", true);
   $.ajax({
