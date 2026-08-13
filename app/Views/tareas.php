@@ -29,18 +29,22 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-acordeon-body{border-top:1px solid var(--border);display:none;}
 .tarea-acordeon.open .tarea-acordeon-body{display:block;}
 
-.tarea-card{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.tarea-card{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
 .tarea-card:last-child{border-bottom:none;}
 .tarea-card:hover{background:var(--bg-input);}
 .tarea-card.completada{opacity:0.55;}
 .tarea-card.completada .tarea-titulo{text-decoration:line-through;color:var(--text-muted);}
 
-.tarea-acciones{display:flex;gap:4px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+.tarea-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:4px;flex:0 0 100%;margin-top:6px;padding-top:8px;border-top:1px dashed var(--border);}
 .tarea-accion{background:transparent;border:none;padding:3px 8px;border-radius:5px;font-size:0.7rem;color:var(--text-muted);transition:all 0.15s;cursor:pointer;}
 .tarea-accion:hover{background:var(--bg-input);color:var(--text);}
 .tarea-accion.rec:hover{color:var(--warning);}
 .tarea-accion.mar:hover{color:var(--primary);}
 .tarea-accion.com:hover{color:var(--success);}
+.tarea-accion.edt:hover{color:var(--primary);}
+.tarea-accion.eye:hover{color:#06b6d4;}
+.tarea-accion.del:hover{color:#ef4444;}
+.tarea-accion-sep{width:1px;height:14px;background:var(--border);margin:0 4px;}
 .tarea-accion .tarea-com-count{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 4px;margin-left:3px;border-radius:8px;background:var(--success);color:#fff;font-size:0.6rem;font-weight:700;line-height:1;}
 
 .tarea-check{flex-shrink:0;padding-top:2px;}
@@ -59,15 +63,6 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-estado .completado-por{color:#22c55e;font-weight:600;}
 .tarea-estado .solo-mi{color:var(--primary);font-weight:500;}
 .tarea-estado .progreso{color:var(--primary);font-weight:500;}
-
-.tarea-menu{flex-shrink:0;}
-.tarea-menu-btn{background:transparent;border:none;color:var(--text-muted);font-size:1rem;padding:4px 8px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
-.tarea-menu-btn:hover{background:var(--bg-input);color:var(--text);}
-.tarea-menu-dropdown{position:absolute;right:0;top:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 0;min-width:160px;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-.tarea-menu-dropdown.show{display:block;}
-.tarea-menu-item{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:0.78rem;color:var(--text);cursor:pointer;transition:background 0.12s;}
-.tarea-menu-item:hover{background:var(--bg-input);}
-.tarea-menu-item.danger{color:#ef4444;}
 
 .tareas-footer{text-align:center;padding:16px;color:var(--text-muted);font-size:0.75rem;border-top:1px solid var(--border);margin-top:8px;}
 

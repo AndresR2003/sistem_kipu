@@ -163,18 +163,20 @@ function renderizarTarjeta(t) {
         }
     }
 
-    var menuItems = '<div class="tarea-menu-item" onclick="abrirComentarios(' + t.id + ')"><i class="bi bi-chat-dots"></i> Comentarios</div>';
-    if (typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin')) {
-        menuItems += '<div class="tarea-menu-item" onclick="abrirModalEditar(' + t.id + ')"><i class="bi bi-pencil"></i> Editar</div>';
-        if (parseInt(t.publicado)) {
-            menuItems += '<div class="tarea-menu-item" onclick="despublicarTarea(' + t.id + ')"><i class="bi bi-eye-slash"></i> Despublicar</div>';
-        } else {
-            menuItems += '<div class="tarea-menu-item" onclick="publicarTarea(' + t.id + ')"><i class="bi bi-eye"></i> Publicar</div>';
-        }
-        menuItems += '<div class="tarea-menu-item danger" onclick="eliminarTarea(' + t.id + ')"><i class="bi bi-trash"></i> Eliminar</div>';
-    }
-
+    var esAdmin = typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin');
     var comCount = parseInt(t.comentarios_count) || 0;
+
+    var adminAcciones = '';
+    if (esAdmin) {
+        adminAcciones += '<span class="tarea-accion-sep"></span>' +
+            '<button class="tarea-accion edt" onclick="abrirModalEditar(' + t.id + ')" title="Editar"><i class="bi bi-pencil"></i> Editar</button>';
+        if (parseInt(t.publicado)) {
+            adminAcciones += '<button class="tarea-accion eye" onclick="despublicarTarea(' + t.id + ')" title="Despublicar"><i class="bi bi-eye-slash"></i> Despublicar</button>';
+        } else {
+            adminAcciones += '<button class="tarea-accion eye" onclick="publicarTarea(' + t.id + ')" title="Publicar"><i class="bi bi-eye"></i> Publicar</button>';
+        }
+        adminAcciones += '<button class="tarea-accion del" onclick="eliminarTarea(' + t.id + ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>';
+    }
 
     var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '" data-origen="tarea" data-origen-id="' + t.id + '" data-seccion="tareas">' +
         '<div class="tarea-check">' + checkbox + '</div>' +
@@ -183,14 +185,11 @@ function renderizarTarjeta(t) {
         '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + '</div>' +
         estadoHtml +
         '</div>' +
-        '<div class="tarea-menu" style="position:relative;">' +
-        '<button class="tarea-menu-btn" onclick="toggleMenu(event, this)"><i class="bi bi-three-dots-vertical"></i></button>' +
-        '<div class="tarea-menu-dropdown">' + menuItems + '</div>' +
-        '</div>' +
         '<div class="tarea-acciones">' +
         '<button class="tarea-accion rec" onclick="guardarComoTarea(\'recordatorio\', ' + t.id + ')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="tarea-accion mar" onclick="guardarComoTarea(\'marcador\', ' + t.id + ')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         '<button class="tarea-accion com" onclick="abrirComentarios(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' + (comCount > 0 ? '<span class="tarea-com-count">' + comCount + '</span>' : '') + '</button>' +
+        adminAcciones +
         '</div>' +
         '</div>';
 
@@ -204,19 +203,6 @@ function toggleAcordeon(deptId) {
     el.toggleClass('open');
     acordeonesAbiertos[deptId] = el.hasClass('open');
 }
-
-// ─── Toggle menú contextual ───
-
-function toggleMenu(e, btn) {
-    e.stopPropagation();
-    var dropdown = $(btn).next('.tarea-menu-dropdown');
-    $('.tarea-menu-dropdown').not(dropdown).removeClass('show');
-    dropdown.toggleClass('show');
-}
-
-$(document).on('click', function() {
-    $('.tarea-menu-dropdown').removeClass('show');
-});
 
 // ─── Cambiar pestaña ───
 
