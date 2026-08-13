@@ -105,9 +105,6 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
             <button class="btn-filtros" onclick="toggleFiltros()">
                 <i class="bi bi-funnel"></i> Filtros
             </button>
-            <button class="btn-nueva-tarea" id="btnNuevaTarea" onclick="abrirModalNueva()" style="display:none;">
-                <i class="bi bi-plus-lg"></i> Nueva tarea
-            </button>
         </div>
     </div>
 
@@ -137,7 +134,7 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
         <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border);">
             <div class="modal-header" style="border-bottom:1px solid var(--border);">
                 <h6 class="modal-title" id="tituloModalTarea" style="font-size:0.95rem;font-weight:700;">
-                    <i class="bi bi-plus-circle"></i> Nueva tarea
+                    <i class="bi bi-pencil"></i> Editar tarea
                 </h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>

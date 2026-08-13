@@ -8,7 +8,6 @@ var tareasMap = {};
 
 $(document).ready(function() {
     if (typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin')) {
-        $('#btnNuevaTarea').show();
         $('#tabTodas').show();
     }
     cargarTareas();
@@ -234,24 +233,6 @@ function toggleCompletar(id, checked) {
             cargarTareas();
         }
     });
-}
-
-// ─── Modal nueva tarea ───
-
-function abrirModalNueva() {
-    $('#tituloModalTarea').html('<i class="bi bi-plus-circle"></i> Nueva tarea');
-    $('#tareaId').val('');
-    $('#tareaTitulo').val('');
-    $('#tareaDescripcion').val('');
-    $('#tareaPrioridad').val('media');
-    $('#tareaFechaLimite').val('');
-    $('#tareaDepartamento').val('');
-    $('input[name="modalidad"][value="single_completes_all"]').prop('checked', true);
-    $('#tareaDestinatarioTipo').val('todos');
-    $('#tareaDestinatarioId').hide().val('');
-    $('#tareaPublicar').prop('checked', false);
-    $('#seccionAsignados').hide();
-    $('#modalTarea').modal('show');
 }
 
 // ─── Modal editar tarea ───
