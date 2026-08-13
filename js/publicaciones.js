@@ -185,7 +185,7 @@ function tareaPublicadaCard(p) {
     var completado = parseInt(p.completado) ? 'completada' : '';
     var checked = parseInt(p.completado) ? 'checked' : '';
 
-    return '<div class="pub-card ' + completado + '" id="pub-' + p.id + '">' +
+    return '<div class="pub-card ' + completado + '" id="pub-' + p.id + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="tareas">' +
         '<div class="pub-check">' +
         '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTarea(' + p.id + ', this)">' +
         '<div class="flex-grow-1">' +
