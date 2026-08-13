@@ -12,9 +12,8 @@ $routes->post('login/autenticar', 'Login::authenticate');
 $routes->get('logout', 'Login::logout');
 
 // =====================================================
-// RUTA PUBLICA - Vista del usuario (acceso por token)
+// RUTA PUBLICA
 // =====================================================
-$routes->get('pago/(:segment)', 'Api::vistaPago/$1');
 
 // =====================================================
 // RUTAS PROTEGIDAS (requieren autenticacion)
@@ -30,40 +29,14 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     // RUTAS ADMIN - Usuarios
     $routes->get('usuarios', 'Usuarios::index');
 
-    // RUTAS ADMIN - Pagos
-    $routes->get('pagos', 'Pagos::index');
-    $routes->get('historial/(:num)', 'Pagos::historial/$1');
-
     // API AJAX - Estadisticas y datos
     $routes->post('api/estadisticas', 'Api::estadisticas');
     $routes->post('api/listar-usuarios', 'Api::listarUsuarios');
     $routes->post('api/guardar-usuario', 'Api::guardarUsuario');
     $routes->post('api/eliminar-usuario/(:num)', 'Api::eliminarUsuario/$1');
 
-    // API AJAX - Pagos
-    $routes->post('api/guardar-pago', 'Api::guardarPago');
-    $routes->post('api/aprobar-pago/(:num)', 'Api::aprobarPago/$1');
-    $routes->post('api/rechazar-pago/(:num)', 'Api::rechazarPago/$1');
-    $routes->post('api/eliminar-pago/(:num)', 'Api::eliminarPago/$1');
-    $routes->post('api/listar-pagos', 'Api::listarPagos');
-
-    // API AJAX - Comprobantes
-    $routes->post('api/subir-comprobante', 'Api::subirComprobante');
-    $routes->post('api/ver-comprobante/(:num)', 'Api::verComprobante/$1');
-
-    // API AJAX - Historial y reportes
-    $routes->post('api/historial-usuario/(:num)', 'Api::historialUsuario/$1');
-    $routes->post('api/datos-usuario-token/(:segment)', 'Api::datosUsuarioToken/$1');
-
-    // API AJAX - Exportar
-    $routes->post('api/exportar-excel', 'Api::exportarExcel');
-    $routes->post('api/exportar-pdf', 'Api::exportarPdf');
-
     // API AJAX - Notificaciones
     $routes->post('api/notificaciones', 'Api::notificaciones');
-
-    // API AJAX - Filtros
-    $routes->post('api/meses-registros', 'Api::mesesConRegistros');
 
     // =====================================================
     // SECCIONES DEL SIDEBAR

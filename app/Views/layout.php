@@ -755,13 +755,6 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             white-space: nowrap;
         }
 
-        .comprobante-preview {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: var(--radius);
-            border: 2px solid var(--border-light);
-        }
-
         .mobile-toggle {
             display: none;
             background: none;
@@ -1149,26 +1142,6 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                             '<div class="notif-txt">' +
                             '<div class="t">' + $('<div>').text(d.anuncio.titulo).html() + '</div>' +
                             '<div class="s"><i class="bi bi-newspaper"></i> Anuncio de Noticias</div>' +
-                            '</div></div>';
-                    }
-
-                    if (parseInt(d.pendientes) > 0) {
-                        total++;
-                        html += '<div class="notif-item">' +
-                            '<div class="notif-icon"><i class="bi bi-cash-stack"></i></div>' +
-                            '<div class="notif-txt">' +
-                            '<div class="t">' + d.pendientes + ' pago(s) pendientes de aprobacion</div>' +
-                            '<div class="s"><i class="bi bi-credit-card"></i> Pagos</div>' +
-                            '</div></div>';
-                    }
-
-                    if (parseInt(d.conDeuda) > 0) {
-                        total++;
-                        html += '<div class="notif-item">' +
-                            '<div class="notif-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>' +
-                            '<div class="notif-txt">' +
-                            '<div class="t">' + d.conDeuda + ' colaborador(es) con deuda</div>' +
-                            '<div class="s"><i class="bi bi-credit-card"></i> Pagos</div>' +
                             '</div></div>';
                     }
 

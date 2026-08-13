@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\PagoModel;
 use App\Models\EntregaModel;
 use App\Models\BorradorModel;
 use App\Models\RecordatorioModel;
@@ -13,9 +12,6 @@ class Dashboard extends BaseController
 {
     public function index(): string
     {
-        $pagoModel = new PagoModel();
-        $pagoModel->GenerarDeudasAutomaticas();
-
         $hoy = date('Y-m-d');
         $usuarioId = (int) session()->get('usuario_id');
         $rol = session()->get('admin_rol') ?? 'empleado';

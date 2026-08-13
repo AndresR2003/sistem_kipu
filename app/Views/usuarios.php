@@ -16,8 +16,6 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Telefono</th>
-                    <th>Estado Pago</th>
-                    <th>Enlace</th>
                     <th>Creado</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -52,11 +50,6 @@
                                placeholder="Numero de telefono" maxlength="20">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Monto mensual (S/) *</label>
-                        <input type="number" class="form-control" id="usuarioMonto"
-                               step="0.01" min="0" value="12.00" required>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Estado *</label>
                         <select class="form-select" id="usuarioActivo" required>
                             <option value="1">Activo</option>
@@ -70,32 +63,6 @@
                 <button type="button" class="btn btn-primary-custom" onclick="guardarUsuario()">
                     <i class="bi bi-check-lg"></i> Guardar
                 </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Enlace -->
-<div class="modal fade" id="modalEnlace" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-link-45deg"></i> Enlace del Usuario
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-muted">Comparte este enlace con el usuario para que pueda ver su estado y subir comprobantes:</p>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="enlaceUsuario" readonly>
-                    <button class="btn btn-primary-custom" onclick="copiarEnlace()">
-                        <i class="bi bi-clipboard"></i> Copiar
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

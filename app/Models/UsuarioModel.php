@@ -21,7 +21,6 @@ class UsuarioModel extends Model
     protected $allowedFields = [
         'nombre',
         'telefono',
-        'monto',
         'token',
         'activo',
     ];

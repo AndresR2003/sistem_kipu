@@ -38,7 +38,6 @@ class Soporte extends BaseController
             <li><strong>¿Cómo agrego un recordatorio?</strong> — Desde cualquier publicación, haz clic en el ícono de campana "Recordatorio" y selecciona la fecha.</li>
             <li><strong>¿Cómo marco una tarea como completada?</strong> — En la sección de Tareas, marca el checkbox correspondiente a la tarea.</li>
             <li><strong>¿Cómo cambio mi contraseña?</strong> — Ve a Configuración > Sesión > Cambiar contraseña.</li>
-            <li><strong>¿Puedo subir archivos?</strong> — Sí, desde el módulo de Pagos puedes subir comprobantes de pago en formato Excel.</li>
         </ul>
 
         <h6>Tutoriales Rápidos</h6>
@@ -56,7 +55,6 @@ class Soporte extends BaseController
             <li><strong>Ideas</strong> — Comparte propuestas de mejora y vota las mejores ideas.</li>
             <li><strong>Manual</strong> — Documenta procesos, procedimientos y políticas de la empresa.</li>
             <li><strong>Tareas</strong> — Crea tareas diarias o puntuales, asígnalas y haz seguimiento.</li>
-            <li><strong>Pagos</strong> — Registra pagos, sube comprobantes y revisa el historial.</li>
             <li><strong>Calendario</strong> — Visualiza eventos, recordatorios y fechas importantes.</li>
         </ul>
 
@@ -101,7 +99,6 @@ class Soporte extends BaseController
                         <option>Ideas</option>
                         <option>Manual</option>
                         <option>Tareas</option>
-                        <option>Pagos</option>
                         <option>Configuración</option>
                         <option>Otro</option>
                     </select>
@@ -143,7 +140,6 @@ class Soporte extends BaseController
                         <option>Tareas</option>
                         <option>Recordatorios</option>
                         <option>Marcadores</option>
-                        <option>Pagos</option>
                         <option>Configuración</option>
                         <option>Calendario</option>
                         <option>Otro</option>
@@ -181,7 +177,7 @@ class Soporte extends BaseController
         <p>Al acceder y utilizar KipuCloud ("la Plataforma"), el usuario acepta estos Términos y Condiciones. Si no está de acuerdo con alguno de los siguientes puntos, no debe utilizar el servicio.</p>
 
         <h6>2. Description of Service</h6>
-        <p>KipuCloud es una plataforma de gestión interna empresarial que incluye módulos de noticias, ideas, manual de procedimientos, tareas, pagos, calendario y soporte técnico. Está diseñada para facilitar la comunicación y productividad dentro de la organización.</p>
+        <p>KipuCloud es una plataforma de gestión interna empresarial que incluye módulos de noticias, ideas, manual de procedimientos, tareas, calendario y soporte técnico. Está diseñada para facilitar la comunicación y productividad dentro de la organización.</p>
 
         <h6>3. User Responsibilities</h6>
         <ul>
