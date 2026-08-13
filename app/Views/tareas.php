@@ -56,6 +56,7 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .badge-alta{background:rgba(239,68,68,0.15);color:#ef4444;}
 .badge-media{background:rgba(234,179,8,0.15);color:#eab308;}
 .badge-baja{background:rgba(34,197,94,0.15);color:#22c55e;}
+.badge-dept{background:rgba(70,105,250,0.15);color:#4669FA;}
 .tarea-fecha{font-size:0.7rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;}
 .tarea-fecha.vencida{color:#ef4444;font-weight:600;}
 .tarea-fecha.hoy{color:#eab308;font-weight:600;}
@@ -164,39 +165,20 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
                         <input type="datetime-local" class="form-control tarea-modal-input" id="tareaFechaLimite">
                     </div>
                     <div class="col-md-4">
-                        <label class="tarea-modal-label">Departamento</label>
-                        <select class="form-select tarea-modal-select" id="tareaDepartamento">
-                            <option value="">Sin departamento</option>
+                        <label class="tarea-modal-label">Modalidad de completado *</label>
+                        <select class="form-select tarea-modal-select" id="tareaModalidad" onchange="toggleAsignados()">
+                            <option value="single_completes_all">Una persona completa por todos</option>
+                            <option value="all_must_complete">Todos deben completar</option>
                         </select>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="tarea-modal-label">Modalidad de completado *</label>
-                    <div class="tarea-modal-radio">
-                        <label>
-                            <input type="radio" name="modalidad" value="single_completes_all" checked onchange="toggleAsignados()">
-                            Una persona completa por todos
-                        </label>
-                        <label>
-                            <input type="radio" name="modalidad" value="all_must_complete" onchange="toggleAsignados()">
-                            Todos deben completar
-                        </label>
-                    </div>
+                    <label class="tarea-modal-label">Departamentos * <span class="text-muted">(puedes elegir varios)</span></label>
+                    <div class="tarea-modal-asignados" id="listaDepartamentos"></div>
                 </div>
-                <div id="seccionAsignados" style="display:none;">
-                    <label class="tarea-modal-label">Asignar a *</label>
+                <div id="seccionAsignados">
+                    <label class="tarea-modal-label">Usuarios asignados <span class="text-muted">(puedes elegir varios)</span></label>
                     <div class="tarea-modal-asignados" id="listaAsignados"></div>
-                </div>
-                <div class="mb-3 mt-3">
-                    <label class="tarea-modal-label">Destinatario</label>
-                    <select class="form-select tarea-modal-select" id="tareaDestinatarioTipo" onchange="toggleDestinatarioId()">
-                        <option value="todos">Todos</option>
-                        <option value="departamento">Departamento</option>
-                        <option value="usuarios">Usuario especifico</option>
-                    </select>
-                    <select class="form-select tarea-modal-select mt-2" id="tareaDestinatarioId" style="display:none;">
-                        <option value="">Seleccionar...</option>
-                    </select>
                 </div>
                 <div class="form-check form-switch mt-3">
                     <input class="form-check-input" type="checkbox" id="tareaPublicar">

@@ -37,16 +37,16 @@ class TareaModel extends Model
         $db = \Config\Database::connect();
 
         $sql = "SELECT t.*,
-                       d.descripcion AS departamento_nombre,
                        u.nombre AS creador_nombre,
                        CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,
                        (SELECT ta2.completado FROM tarea_asignaciones ta2 WHERE ta2.tarea_id = t.id AND ta2.usuario_id = ?) AS mi_asignacion,
                        (SELECT ta3.completado_at FROM tarea_asignaciones ta3 WHERE ta3.tarea_id = t.id AND ta3.usuario_id = ?) AS mi_completado_at,
-                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count
+                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count,
+                       (SELECT GROUP_CONCAT(td.departamento_id) FROM tarea_departamentos td WHERE td.tarea_id = t.id) AS departamentos_ids,
+                       (SELECT GROUP_CONCAT(d.descripcion SEPARATOR ', ') FROM tarea_departamentos td INNER JOIN departamentos d ON d.id = td.departamento_id WHERE td.tarea_id = t.id) AS departamentos_nombres
                 FROM tareas t
-                LEFT JOIN departamentos d ON d.id = t.departamento_id
                 LEFT JOIN admin_usuarios u ON u.id = t.created_by
                 LEFT JOIN admin_usuarios cu ON cu.id = t.completada_por
                 WHERE t.publicado = 1";
@@ -55,11 +55,14 @@ class TareaModel extends Model
 
         if ($soloMisTareas) {
             $sql .= " AND (
-                t.destinatario_tipo = 'todos'
+                (NOT EXISTS (SELECT 1 FROM tarea_departamentos td WHERE td.tarea_id = t.id)
+                 AND NOT EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id))
+                OR EXISTS (SELECT 1 FROM tarea_departamentos td INNER JOIN admin_usuarios au ON au.id_departamento = td.departamento_id WHERE td.tarea_id = t.id AND au.id = ?)
+                OR EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.usuario_id = ?)
                 OR (t.destinatario_tipo = 'usuarios' AND t.destinatario_id = ?)
                 OR (t.destinatario_tipo = 'departamento' AND t.destinatario_id = (SELECT id_departamento FROM admin_usuarios WHERE id = ?))
-                OR EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.usuario_id = ?)
             )";
+            $params[] = $usuarioId;
             $params[] = $usuarioId;
             $params[] = $usuarioId;
             $params[] = $usuarioId;
@@ -78,14 +81,14 @@ class TareaModel extends Model
         $db = \Config\Database::connect();
 
         $sql = "SELECT t.*,
-                       d.descripcion AS departamento_nombre,
                        u.nombre AS creador_nombre,
                        CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,
-                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count
+                       (SELECT COUNT(*) FROM comentarios cc WHERE cc.tarea_id = t.id) AS comentarios_count,
+                       (SELECT GROUP_CONCAT(td.departamento_id) FROM tarea_departamentos td WHERE td.tarea_id = t.id) AS departamentos_ids,
+                       (SELECT GROUP_CONCAT(d.descripcion SEPARATOR ', ') FROM tarea_departamentos td INNER JOIN departamentos d ON d.id = td.departamento_id WHERE td.tarea_id = t.id) AS departamentos_nombres
                 FROM tareas t
-                LEFT JOIN departamentos d ON d.id = t.departamento_id
                 LEFT JOIN admin_usuarios u ON u.id = t.created_by
                 LEFT JOIN admin_usuarios cu ON cu.id = t.completada_por
                 ORDER BY t.created_at DESC";
@@ -101,11 +104,10 @@ class TareaModel extends Model
         $db = \Config\Database::connect();
 
         $sql = "SELECT t.*,
-                       d.descripcion AS departamento_nombre,
                        u.nombre AS creador_nombre,
-                       CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre
+                       CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
+                       (SELECT GROUP_CONCAT(td.departamento_id) FROM tarea_departamentos td WHERE td.tarea_id = t.id) AS departamentos_ids
                 FROM tareas t
-                LEFT JOIN departamentos d ON d.id = t.departamento_id
                 LEFT JOIN admin_usuarios u ON u.id = t.created_by
                 LEFT JOIN admin_usuarios cu ON cu.id = t.completada_por
                 WHERE t.id = ?";
@@ -120,25 +122,29 @@ class TareaModel extends Model
     {
         $db = \Config\Database::connect();
 
-        $sql = "SELECT t.departamento_id, COUNT(*) AS pendientes
+        $sql = "SELECT td.departamento_id, COUNT(DISTINCT t.id) AS pendientes
                 FROM tareas t
+                INNER JOIN tarea_departamentos td ON td.tarea_id = t.id
                 WHERE t.publicado = 1 AND t.completada = 0";
 
         $params = [];
 
         if ($soloMisTareas) {
             $sql .= " AND (
-                t.destinatario_tipo = 'todos'
+                (NOT EXISTS (SELECT 1 FROM tarea_departamentos td WHERE td.tarea_id = t.id)
+                 AND NOT EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id))
+                OR EXISTS (SELECT 1 FROM tarea_departamentos td INNER JOIN admin_usuarios au ON au.id_departamento = td.departamento_id WHERE td.tarea_id = t.id AND au.id = ?)
+                OR EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.usuario_id = ?)
                 OR (t.destinatario_tipo = 'usuarios' AND t.destinatario_id = ?)
                 OR (t.destinatario_tipo = 'departamento' AND t.destinatario_id = (SELECT id_departamento FROM admin_usuarios WHERE id = ?))
-                OR EXISTS (SELECT 1 FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.usuario_id = ?)
             )";
+            $params[] = $usuarioId;
             $params[] = $usuarioId;
             $params[] = $usuarioId;
             $params[] = $usuarioId;
         }
 
-        $sql .= " GROUP BY t.departamento_id";
+        $sql .= " GROUP BY td.departamento_id";
 
         $query = $db->query($sql, $params);
         $result = [];
@@ -304,10 +310,6 @@ class TareaModel extends Model
             return ['success' => false, 'message' => 'Tarea no encontrada.'];
         }
 
-        if ($tarea['modalidad'] !== 'all_must_complete') {
-            return ['success' => false, 'message' => 'Solo se pueden asignar usuarios en modalidad compartida.'];
-        }
-
         $db->query("DELETE FROM tarea_asignaciones WHERE tarea_id = ?", [$tareaId]);
 
         foreach ($usuarioIds as $uid) {
@@ -322,6 +324,33 @@ class TareaModel extends Model
         }
 
         return ['success' => true, 'message' => count($usuarioIds) . ' usuario(s) asignado(s).'];
+    }
+
+    public function GuardarDepartamentos(int $tareaId, array $departamentoIds): void
+    {
+        $db = \Config\Database::connect();
+        $db->table('tarea_departamentos')->where('tarea_id', $tareaId)->delete();
+
+        foreach (array_unique(array_filter($departamentoIds)) as $deptId) {
+            $db->table('tarea_departamentos')->insert([
+                'tarea_id'       => $tareaId,
+                'departamento_id' => (int) $deptId,
+            ]);
+        }
+    }
+
+    public function GuardarUsuarios(int $tareaId, array $usuarioIds): void
+    {
+        $db = \Config\Database::connect();
+        $db->table('tarea_asignaciones')->where('tarea_id', $tareaId)->delete();
+
+        foreach (array_unique(array_filter($usuarioIds)) as $uid) {
+            $db->table('tarea_asignaciones')->insert([
+                'tarea_id'   => $tareaId,
+                'usuario_id' => (int) $uid,
+                'completado' => 0,
+            ]);
+        }
     }
 
     public function ObtenerAsignaciones(int $tareaId): array

@@ -121,6 +121,13 @@ function renderizarTarjeta(t) {
     else if (t.prioridad === 'media') badgePrioridad = '<span class="tarea-badge badge-media"><i class="bi bi-dash"></i> Media</span>';
     else badgePrioridad = '<span class="tarea-badge badge-baja"><i class="bi bi-arrow-down"></i> Baja</span>';
 
+    var deptBadges = '';
+    if (t.departamentos_nombres) {
+        t.departamentos_nombres.split(', ').forEach(function(n) {
+            if (n) deptBadges += '<span class="tarea-badge badge-dept"><i class="bi bi-building"></i> ' + escHtml(n) + '</span>';
+        });
+    }
+
     var fechaHtml = '';
     if (t.fecha_limite) {
         var fechaLimite = new Date(t.fecha_limite);
@@ -180,7 +187,7 @@ function renderizarTarjeta(t) {
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
-        '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + '</div>' +
+        '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + deptBadges + '</div>' +
         estadoHtml +
         '</div>' +
         '<div class="tarea-acciones">' +
@@ -260,22 +267,22 @@ function abrirModalEditar(id) {
             $('#tareaDescripcion').val(t.descripcion || '');
             $('#tareaPrioridad').val(t.prioridad);
             $('#tareaFechaLimite').val(t.fecha_limite ? t.fecha_limite.replace(' ', 'T').substring(0, 16) : '');
-            $('#tareaDepartamento').val(t.departamento_id || '');
-            $('input[name="modalidad"][value="' + t.modalidad + '"]').prop('checked', true);
-            $('#tareaDestinatarioTipo').val(t.destinatario_tipo);
-            toggleDestinatarioId();
-            if (t.destinatario_id) {
-                setTimeout(function() { $('#tareaDestinatarioId').val(t.destinatario_id); }, 100);
-            }
+            $('#tareaModalidad').val(t.modalidad);
             $('#tareaPublicar').prop('checked', parseInt(t.publicado) === 1);
             toggleAsignados();
 
+            var deptIds = t.departamentos_ids ? t.departamentos_ids.split(',').map(function(x) { return parseInt(x); }) : [];
+            $('#listaDepartamentos input[type="checkbox"]').each(function() {
+                $(this).prop('checked', deptIds.indexOf(parseInt($(this).val())) !== -1);
+            });
+
+            var uids = [];
             if (t.asignaciones && t.asignaciones.length > 0) {
-                var uids = t.asignaciones.map(function(a) { return a.usuario_id; });
-                $('#listaAsignados input[type="checkbox"]').each(function() {
-                    $(this).prop('checked', uids.indexOf(parseInt($(this).val())) !== -1);
-                });
+                uids = t.asignaciones.map(function(a) { return a.usuario_id; });
             }
+            $('#listaAsignados input[type="checkbox"]').each(function() {
+                $(this).prop('checked', uids.indexOf(parseInt($(this).val())) !== -1);
+            });
 
             $('#modalTarea').modal('show');
         }
@@ -291,17 +298,19 @@ function guardarTarea() {
         return;
     }
 
-    var modalidad = $('input[name="modalidad"]:checked').val();
-    var asignados = [];
-    if (modalidad === 'all_must_complete') {
-        $('#listaAsignados input[type="checkbox"]:checked').each(function() {
-            asignados.push(parseInt($(this).val()));
-        });
-        if (asignados.length === 0) {
-            Swal.fire('Error', 'Debes asignar al menos un usuario', 'error');
-            return;
-        }
+    var departamentos = [];
+    $('#listaDepartamentos input[type="checkbox"]:checked').each(function() {
+        departamentos.push(parseInt($(this).val()));
+    });
+    if (departamentos.length === 0) {
+        Swal.fire('Error', 'Debes asignar al menos un departamento', 'error');
+        return;
     }
+
+    var asignados = [];
+    $('#listaAsignados input[type="checkbox"]:checked').each(function() {
+        asignados.push(parseInt($(this).val()));
+    });
 
     var fechaLimite = $('#tareaFechaLimite').val();
     if (fechaLimite) {
@@ -314,12 +323,10 @@ function guardarTarea() {
         descripcion: $('#tareaDescripcion').val(),
         prioridad: $('#tareaPrioridad').val(),
         fecha_limite: fechaLimite || null,
-        modalidad: modalidad,
-        departamento_id: $('#tareaDepartamento').val() || null,
-        destinatario_tipo: $('#tareaDestinatarioTipo').val(),
-        destinatario_id: $('#tareaDestinatarioId').val() || null,
-        publicado: $('#tareaPublicar').is(':checked') ? 1 : 0,
-        asignados: asignados
+        modalidad: $('#tareaModalidad').val(),
+        departamentos: departamentos,
+        asignados: asignados,
+        publicado: $('#tareaPublicar').is(':checked') ? 1 : 0
     };
 
     showLoading();
@@ -410,37 +417,15 @@ function eliminarTarea(id) {
 // ─── Toggle asignados ───
 
 function toggleAsignados() {
-    var modalidad = $('input[name="modalidad"]:checked').val();
+    var modalidad = $('#tareaModalidad').val();
     if (modalidad === 'all_must_complete') {
         $('#seccionAsignados').show();
     } else {
-        $('#seccionAsignados').hide();
+        $('#seccionAsignados').show();
     }
 }
 
-// ─── Toggle destinatario id ───
-
-function toggleDestinatarioId() {
-    var tipo = $('#tareaDestinatarioTipo').val();
-    var select = $('#tareaDestinatarioId');
-    select.empty().append('<option value="">Seleccionar...</option>');
-
-    if (tipo === 'departamento') {
-        departamentosCache.forEach(function(d) {
-            select.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
-        });
-        select.show();
-    } else if (tipo === 'usuarios') {
-        usuariosCache.forEach(function(u) {
-            select.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
-        });
-        select.show();
-    } else {
-        select.hide();
-    }
-}
-
-// ─── Cargar departamentos ───
+// ─── Cargar departamentos (checkboxes) ───
 
 function cargarDepartamentos() {
     $.ajax({
@@ -450,16 +435,22 @@ function cargarDepartamentos() {
         success: function(res) {
             if (res.success) {
                 departamentosCache = res.data;
-                var select = $('#tareaDepartamento');
+                var container = $('#listaDepartamentos');
+                container.empty();
                 res.data.forEach(function(d) {
-                    select.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
+                    container.append(
+                        '<label class="tarea-modal-asignado">' +
+                        '<input type="checkbox" value="' + d.id + '">' +
+                        escHtml(d.descripcion) +
+                        '</label>'
+                    );
                 });
             }
         }
     });
 }
 
-// ─── Cargar usuarios ───
+// ─── Cargar usuarios (checkboxes) ───
 
 function cargarUsuarios() {
     $.ajax({
@@ -470,6 +461,7 @@ function cargarUsuarios() {
             if (res.success) {
                 usuariosCache = res.data;
                 var container = $('#listaAsignados');
+                container.empty();
                 res.data.forEach(function(u) {
                     container.append(
                         '<label class="tarea-modal-asignado">' +

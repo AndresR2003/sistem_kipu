@@ -306,6 +306,7 @@ function cargarPublicaciones(seccion) {
                 var badge = '';
                 if (p.destinatario_tipo === 'usuarios') badge = '<span class="pub-badge"><i class="bi bi-person-fill"></i> Individual</span>';
                 else if (p.destinatario_tipo === 'departamento') badge = '<span class="pub-badge"><i class="bi bi-people-fill"></i> Departamento</span>';
+                else if (p.destinatario_tipo === 'multiple') badge = '<span class="pub-badge"><i class="bi bi-people-fill"></i> Multiple</span>';
                 else badge = '<span class="pub-badge"><i class="bi bi-globe"></i> Todos</span>';
 
                 var card = '<div class="pub-card">' +

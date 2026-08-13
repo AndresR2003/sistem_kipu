@@ -38,47 +38,108 @@ class BorradorModel extends Model
 
     public function ObtenerPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado', ?int $limite = null): array
     {
-        $this->select('borradores.*, u.nombre AS usuario_nombre');
-        $this->join('admin_usuarios u', 'u.id = borradores.usuario_id', 'left');
-        $this->where('publicado', 1)->where('seccion_destino', $seccion);
+        $db = \Config\Database::connect();
+
+        $sql = "SELECT b.*, u.nombre AS usuario_nombre
+                FROM borradores b
+                LEFT JOIN admin_usuarios u ON u.id = b.usuario_id
+                WHERE b.publicado = 1 AND b.seccion_destino = ?";
+
+        $params = [$seccion];
 
         // Admin y superadmin ven todas las publicaciones
         if (!in_array($rol, ['admin', 'superadmin'], true)) {
-            $this->groupStart();
-            $this->where('destinatario_tipo', 'todos');
-            if ($usuarioId) {
-                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
-            }
-            if ($departamentoId) {
-                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
-            }
-            $this->groupEnd();
+            $sql .= " AND (
+                (NOT EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id)
+                 AND NOT EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id AND bd.departamento_id = ?))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id AND bu.usuario_id = ?))
+            )";
+            $params[] = $departamentoId;
+            $params[] = $departamentoId;
+            $params[] = $usuarioId;
+            $params[] = $usuarioId;
         }
+
+        $sql .= " ORDER BY b.fijado DESC, b.updated_at DESC";
 
         if ($limite !== null) {
-            $this->limit($limite);
+            $sql .= " LIMIT " . (int) $limite;
         }
 
-        return $this->orderBy('fijado DESC, updated_at DESC')->findAll();
+        $query = $db->query($sql, $params);
+        return $query->getResultArray();
     }
 
     public function ContarPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): int
     {
-        $this->where('publicado', 1)->where('seccion_destino', $seccion);
+        $db = \Config\Database::connect();
+
+        $sql = "SELECT COUNT(*) AS total
+                FROM borradores b
+                WHERE b.publicado = 1 AND b.seccion_destino = ?";
+
+        $params = [$seccion];
 
         if (!in_array($rol, ['admin', 'superadmin'], true)) {
-            $this->groupStart();
-            $this->where('destinatario_tipo', 'todos');
-            if ($usuarioId) {
-                $this->orWhere('destinatario_tipo', 'usuarios')->where('destinatario_id', $usuarioId);
-            }
-            if ($departamentoId) {
-                $this->orWhere('destinatario_tipo', 'departamento')->where('destinatario_id', $departamentoId);
-            }
-            $this->groupEnd();
+            $sql .= " AND (
+                (NOT EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id)
+                 AND NOT EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id AND bd.departamento_id = ?))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id AND bu.usuario_id = ?))
+            )";
+            $params[] = $departamentoId;
+            $params[] = $departamentoId;
+            $params[] = $usuarioId;
+            $params[] = $usuarioId;
         }
 
-        return (int) $this->countAllResults();
+        $query = $db->query($sql, $params);
+        return (int) ($query->getRowArray()['total'] ?? 0);
+    }
+
+    public function GuardarDepartamentos(int $borradorId, array $departamentoIds): void
+    {
+        $db = \Config\Database::connect();
+        $db->table('borrador_departamentos')->where('borrador_id', $borradorId)->delete();
+
+        foreach (array_unique(array_filter($departamentoIds)) as $deptId) {
+            $db->table('borrador_departamentos')->insert([
+                'borrador_id'    => $borradorId,
+                'departamento_id' => (int) $deptId,
+            ]);
+        }
+    }
+
+    public function GuardarUsuarios(int $borradorId, array $usuarioIds): void
+    {
+        $db = \Config\Database::connect();
+        $db->table('borrador_usuarios')->where('borrador_id', $borradorId)->delete();
+
+        foreach (array_unique(array_filter($usuarioIds)) as $uid) {
+            $db->table('borrador_usuarios')->insert([
+                'borrador_id' => $borradorId,
+                'usuario_id'  => (int) $uid,
+            ]);
+        }
+    }
+
+    public function ObtenerDepartamentos(int $borradorId): array
+    {
+        $db = \Config\Database::connect();
+        return $db->table('borrador_departamentos')
+            ->where('borrador_id', $borradorId)
+            ->get()
+            ->getResultArray();
+    }
+
+    public function ObtenerUsuarios(int $borradorId): array
+    {
+        $db = \Config\Database::connect();
+        return $db->table('borrador_usuarios')
+            ->where('borrador_id', $borradorId)
+            ->get()
+            ->getResultArray();
     }
 
     public function Guardar(array $datos): bool

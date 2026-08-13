@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\BorradorModel;
 use App\Models\ComentarioModel;
 use App\Models\DepartamentoModel;
+use App\Models\TareaModel;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\API\ResponseTrait;
 
@@ -120,14 +121,27 @@ class Borradores extends BaseController
             ]);
         }
 
+        $borradorId    = (int) $json['id'];
+        $seccion       = $json['seccion'];
+        $departamentos = !empty($json['departamentos']) ? array_map('intval', (array) $json['departamentos']) : [];
+        $usuarios      = !empty($json['usuarios']) ? array_map('intval', (array) $json['usuarios']) : [];
+
         $model = new BorradorModel();
-        $ok    = $model->Publicar(
-            (int) $json['id'],
-            $json['seccion'],
-            $json['destinatario_tipo'] ?? 'todos',
-            !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null,
+        $ok = $model->Publicar(
+            $borradorId,
+            $seccion,
+            'multiple',
+            null,
             !empty($json['anuncio']) ? 1 : 0
         );
+
+        $model->GuardarDepartamentos($borradorId, $departamentos);
+        $model->GuardarUsuarios($borradorId, $usuarios);
+
+        // Si se publica en la seccion Tareas, se crea/actualiza la tarea enlazada
+        if ($seccion === 'tareas') {
+            $this->sincronizarTareaDesdeBorrador($borradorId, $departamentos, $usuarios);
+        }
 
         if ($ok && !empty($json['anuncio'])) {
             service('cache')->delete('ultimo_anuncio');
@@ -137,6 +151,38 @@ class Borradores extends BaseController
             'success' => $ok,
             'message' => $ok ? 'Publicado correctamente.' : 'Error al publicar.',
         ]);
+    }
+
+    private function sincronizarTareaDesdeBorrador(int $borradorId, array $departamentos, array $usuarios): void
+    {
+        $borrador = (new BorradorModel())->ObtenerPorId($borradorId);
+        if (!$borrador) {
+            return;
+        }
+
+        $tareaModel = new TareaModel();
+        $tarea = $tareaModel->where('borrador_id', $borradorId)->first();
+
+        $datos = [
+            'titulo'     => $borrador['titulo'],
+            'descripcion'=> $borrador['contenido'] ?? '',
+            'publicado'  => 1,
+        ];
+
+        if ($tarea) {
+            $tareaModel->update($tarea['id'], $datos);
+            $tareaId = $tarea['id'];
+        } else {
+            $datos['borrador_id'] = $borradorId;
+            $datos['created_by']  = (int) ($borrador['usuario_id'] ?? session()->get('usuario_id') ?? session()->get('admin_id'));
+            $datos['prioridad']   = 'media';
+            $datos['modalidad']   = 'single_completes_all';
+            $tareaModel->insert($datos);
+            $tareaId = $tareaModel->insertID();
+        }
+
+        $tareaModel->GuardarDepartamentos($tareaId, $departamentos);
+        $tareaModel->GuardarUsuarios($tareaId, $usuarios);
     }
 
     public function anuncio()

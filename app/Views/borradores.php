@@ -10,6 +10,10 @@
 .badge-pub{font-size:0.6rem;padding:2px 8px;border-radius:8px;margin-left:6px;font-weight:600;}
 .badge-pub.si{background:rgba(34,197,94,0.15);color:#22c55e;}
 .badge-pub.no{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}
+.pub-checks{max-height:130px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);padding:6px 8px;display:flex;flex-direction:column;gap:2px;}
+.pub-check{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--text);padding:2px 4px;border-radius:4px;cursor:pointer;}
+.pub-check:hover{background:var(--bg-input);}
+.pub-check input{accent-color:var(--primary);}
 </style>
 
 <div class="table-container" style="padding:0;overflow:hidden;">
@@ -100,16 +104,14 @@
                     </label>
                 </div>
                 <div class="mb-2">
-                    <label class="form-label small">Destinatarios</label>
-                    <select class="form-select" id="pubTipo" onchange="toggleDestinatario()">
-                        <option value="todos">Todos</option>
-                        <option value="usuarios">Usuarios</option>
-                        <option value="departamento">Departamento</option>
-                    </select>
+                    <label class="form-label small">Departamentos <span class="text-muted">(puedes elegir varios)</span></label>
+                    <div class="pub-checks" id="pubDepartamentos"></div>
                 </div>
-                <div class="mb-2" id="pubDestinatarioWrap" style="display:none;">
-                    <select class="form-select" id="pubDestinatario"></select>
+                <div class="mb-2">
+                    <label class="form-label small">Usuarios <span class="text-muted">(puedes elegir varios)</span></label>
+                    <div class="pub-checks" id="pubUsuarios"></div>
                 </div>
+                <div class="small text-muted"><i class="bi bi-info-circle"></i> Si no eliges departamentos ni usuarios, se publica para todos.</div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
@@ -122,42 +124,35 @@
 <script>
 var destinatariosCache = null;
 
-function toggleDestinatario() {
-    var tipo = $('#pubTipo').val();
-    if (tipo === 'todos') {
-        $('#pubDestinatarioWrap').hide();
+function llenarChecks() {
+    if (!destinatariosCache) {
+        $.ajax({
+            url: BASE_URL + 'borradores/destinatarios',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                destinatariosCache = data;
+                llenarChecks();
+            }
+        });
         return;
     }
-    $('#pubDestinatarioWrap').show();
 
-    if (destinatariosCache) {
-        llenarDestinatarios(tipo);
-        return;
-    }
-
-    $.ajax({
-        url: BASE_URL + 'borradores/destinatarios',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            destinatariosCache = data;
-            llenarDestinatarios(tipo);
-        }
+    var dep = $('#pubDepartamentos');
+    dep.empty();
+    (destinatariosCache.departamentos || []).forEach(function(d) {
+        dep.append(
+            '<label class="pub-check"><input type="checkbox" value="' + d.id + '"> ' + escHtml(d.descripcion) + '</label>'
+        );
     });
-}
 
-function llenarDestinatarios(tipo) {
-    var sel = $('#pubDestinatario');
-    sel.empty();
-    if (tipo === 'usuarios' && destinatariosCache.usuarios) {
-        destinatariosCache.usuarios.forEach(function(u) {
-            sel.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
-        });
-    } else if (tipo === 'departamento' && destinatariosCache.departamentos) {
-        destinatariosCache.departamentos.forEach(function(d) {
-            sel.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
-        });
-    }
+    var usr = $('#pubUsuarios');
+    usr.empty();
+    (destinatariosCache.usuarios || []).forEach(function(u) {
+        usr.append(
+            '<label class="pub-check"><input type="checkbox" value="' + u.id + '"> ' + escHtml(u.nombre) + '</label>'
+        );
+    });
 }
 
 function publicarBorrador() {
@@ -165,11 +160,11 @@ function publicarBorrador() {
     if (!id) { Swal.fire('Aviso', 'Guarda el borrador primero.', 'info'); return; }
     $('#pubBorradorId').val(id);
     $('#pubSeccion').val('noticias');
-    $('#pubTipo').val('todos');
-    $('#pubDestinatarioWrap').hide();
+    $('#pubDepartamentos input').prop('checked', false);
+    $('#pubUsuarios input').prop('checked', false);
     $('#pubAnuncio').prop('checked', false);
+    llenarChecks();
     toggleAnuncioCheck();
-    toggleDestinatario();
     $('#modalPublicar').modal('show');
 }
 
@@ -184,11 +179,22 @@ function toggleAnuncioCheck() {
 }
 
 function confirmarPublicar() {
-    var id = $('#pubBorradorId').val();
+    var id = parseInt($('#pubBorradorId').val());
     var seccion = $('#pubSeccion').val();
-    var tipo = $('#pubTipo').val();
-    var destId = tipo !== 'todos' ? parseInt($('#pubDestinatario').val()) : null;
+    var departamentos = [];
+    $('#pubDepartamentos input:checked').each(function() {
+        departamentos.push(parseInt(this.value));
+    });
+    var usuarios = [];
+    $('#pubUsuarios input:checked').each(function() {
+        usuarios.push(parseInt(this.value));
+    });
     var anuncio = $('#pubAnuncio').is(':checked') ? 1 : 0;
+
+    if (seccion === 'tareas' && departamentos.length === 0) {
+        Swal.fire('Validacion', 'Para Tareas debes seleccionar al menos un departamento.', 'warning');
+        return;
+    }
 
     showLoading();
     $.ajax({
@@ -196,10 +202,10 @@ function confirmarPublicar() {
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
-            id: parseInt(id),
+            id: id,
             seccion: seccion,
-            destinatario_tipo: tipo,
-            destinatario_id: destId,
+            departamentos: departamentos,
+            usuarios: usuarios,
             anuncio: anuncio,
         }),
         dataType: 'json',

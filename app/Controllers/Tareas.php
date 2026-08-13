@@ -49,8 +49,13 @@ class Tareas extends BaseController
 
         $porDept = [];
         foreach ($tareas as $t) {
-            $deptId = $t['departamento_id'] ?? 0;
-            $porDept[$deptId][] = $t;
+            $idsDept = $t['departamentos_ids'] ? array_map('intval', explode(',', $t['departamentos_ids'])) : [];
+            if (empty($idsDept) && !empty($t['departamento_id'])) {
+                $idsDept = [(int) $t['departamento_id']];
+            }
+            foreach ($idsDept as $did) {
+                $porDept[$did][] = $t;
+            }
         }
 
         $resultado = [];
@@ -114,15 +119,18 @@ class Tareas extends BaseController
             $fechaLimite = str_replace('T', ' ', $fechaLimite) . ':00';
         }
 
+        $departamentos = !empty($json['departamentos']) ? array_map('intval', (array) $json['departamentos']) : [];
+        $asignados     = !empty($json['asignados']) ? array_map('intval', (array) $json['asignados']) : [];
+
         $datos = [
             'titulo'            => $json['titulo'],
             'descripcion'       => $json['descripcion'] ?? '',
             'prioridad'         => $json['prioridad'] ?? 'media',
             'fecha_limite'      => $fechaLimite,
             'modalidad'         => $json['modalidad'] ?? 'single_completes_all',
-            'departamento_id'   => !empty($json['departamento_id']) ? (int) $json['departamento_id'] : null,
-            'destinatario_tipo' => $json['destinatario_tipo'] ?? 'todos',
-            'destinatario_id'   => !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null,
+            'departamento_id'   => !empty($departamentos) ? $departamentos[0] : null,
+            'destinatario_tipo' => $json['destinatario_tipo'] ?? 'multiple',
+            'destinatario_id'   => null,
             'created_by'        => (int) (session()->get('usuario_id') ?? session()->get('admin_id')),
             'publicado'         => !empty($json['publicado']) ? 1 : 0,
         ];
@@ -134,9 +142,8 @@ class Tareas extends BaseController
         if ($this->model->Guardar($datos)) {
             $tareaId = $json['id'] ?? $this->model->insertID();
 
-            if (($json['modalidad'] ?? '') === 'all_must_complete' && !empty($json['asignados'])) {
-                $this->model->Asignar($tareaId, $json['asignados']);
-            }
+            $this->model->GuardarDepartamentos($tareaId, $departamentos);
+            $this->model->GuardarUsuarios($tareaId, $asignados);
 
             return $this->response->setJSON([
                 'success' => true,
