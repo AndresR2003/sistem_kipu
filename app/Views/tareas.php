@@ -78,8 +78,9 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-modal-asignado{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:0.82rem;color:var(--text);}
 .tarea-modal-asignado input{accent-color:var(--primary);}
 
-/* Comentarios modal */
-.tarea-comentarios-lista{max-height:280px;overflow-y:auto;margin-bottom:12px;}
+/* Comentarios inline */
+.comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;flex:0 0 100%;}
+.comentarios-lista{max-height:280px;overflow-y:auto;}
 .tarea-comentario{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem;}
 .tarea-comentario:last-child{border-bottom:none;}
 .tarea-comentario-avatar{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff;}
@@ -89,10 +90,11 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-comentario-fecha{color:var(--text-muted);font-size:0.65rem;margin-left:6px;}
 .tarea-comentario-texto{color:var(--text);margin-top:2px;line-height:1.4;}
 .tarea-comentario-vacio{text-align:center;color:var(--text-muted);font-size:0.78rem;padding:12px 0;}
-.tarea-comentario-form{display:flex;gap:8px;}
-.tarea-comentario-form input{flex:1;font-size:0.82rem;background:var(--bg-input);color:var(--text);border-color:var(--border);border-radius:var(--radius);padding:8px 12px;}
-.tarea-comentario-form input:focus{border-color:var(--primary);box-shadow:none;}
-.tarea-comentario-form button{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);font-size:0.82rem;cursor:pointer;}
+.comentarios-form{margin-top:8px;display:flex;flex-direction:column;}
+.comentarios-form textarea{font-size:0.78rem;background:var(--bg-input);color:var(--text);border-color:var(--border);border-radius:var(--radius);}
+.comentarios-form textarea:focus{border-color:var(--primary);box-shadow:none;}
+.comentario-enviar{align-self:flex-end;background:var(--primary);color:#fff;border:none;padding:6px 12px;border-radius:var(--radius);font-size:0.75rem;margin-top:6px;cursor:pointer;transition:all 0.15s;}
+.comentario-enviar:hover{opacity:0.9;}
 </style>
 
 <div class="table-container">
@@ -206,29 +208,6 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
                 <button type="button" class="btn btn-primary btn-sm" onclick="guardarTarea()" style="background:var(--primary);border:none;">
                     <i class="bi bi-check-lg"></i> Guardar
                 </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Comentarios -->
-<div class="modal fade" id="modalComentarios" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:var(--bg-card);border:1px solid var(--border);">
-            <div class="modal-header" style="border-bottom:1px solid var(--border);">
-                <h6 class="modal-title" style="font-size:0.95rem;font-weight:700;">
-                    <i class="bi bi-chat-dots"></i> Comentarios
-                </h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" style="padding:20px;">
-                <div class="tarea-comentarios-lista" id="comentariosLista">
-                    <div class="tarea-comentario-vacio">No hay comentarios aun.</div>
-                </div>
-                <div class="tarea-comentario-form">
-                    <input type="text" id="comentarioInput" placeholder="Escribe un comentario..." onkeydown="if(event.key==='Enter')guardarComentarioTarea()">
-                    <button onclick="guardarComentarioTarea()"><i class="bi bi-send-fill"></i></button>
-                </div>
             </div>
         </div>
     </div>

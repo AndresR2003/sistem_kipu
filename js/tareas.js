@@ -1,6 +1,5 @@
 var modoVista = 'mis_tareas';
 var tareaActual = 0;
-var comentarioTareaId = 0;
 var departamentosCache = [];
 var usuariosCache = [];
 var acordeonesAbiertos = {};
@@ -187,8 +186,15 @@ function renderizarTarjeta(t) {
         '<div class="tarea-acciones">' +
         '<button class="tarea-accion rec" onclick="guardarComoTarea(\'recordatorio\', ' + t.id + ')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="tarea-accion mar" onclick="guardarComoTarea(\'marcador\', ' + t.id + ')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-        '<button class="tarea-accion com" onclick="abrirComentarios(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' + (comCount > 0 ? '<span class="tarea-com-count">' + comCount + '</span>' : '') + '</button>' +
+        '<button class="tarea-accion com" onclick="toggleComentariosTarea(' + t.id + ')" title="Ver comentarios"><i class="bi bi-chat-fill"></i> Comentarios' + (comCount > 0 ? '<span class="tarea-com-count">' + comCount + '</span>' : '') + '</button>' +
         adminAcciones +
+        '</div>' +
+        '<div class="comentarios-wrap" id="comentarios-tarea-' + t.id + '" style="display:none;">' +
+        '<div class="comentarios-lista"></div>' +
+        '<div class="comentarios-form">' +
+        '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button type="button" class="comentario-enviar" onclick="guardarComentarioTarea(' + t.id + ', this)"><i class="bi bi-send-fill"></i> Enviar</button>' +
+        '</div>' +
         '</div>' +
         '</div>';
 
@@ -517,21 +523,33 @@ function toggleFiltros() {
 
 // ─── Comentarios ───
 
-function abrirComentarios(id) {
-    comentarioTareaId = id;
-    $('#comentarioInput').val('');
-    $('#comentariosLista').html('<div class="text-center py-2"><div class="spinner-border spinner-border-sm"></div></div>');
-    $('#modalComentarios').modal('show');
+function setComentariosCountTarea(id, count) {
+    var btn = $('#comentarios-tarea-' + id).closest('.tarea-card').find('.tarea-accion.com');
+    if (!btn.length) return;
+    btn.find('.tarea-com-count').remove();
+    if (count > 0) {
+        btn.append('<span class="tarea-com-count">' + count + '</span>');
+    }
+}
 
+function toggleComentariosTarea(id) {
+    var wrap = $('#comentarios-tarea-' + id);
+    var visible = wrap.is(':visible');
+    wrap.slideToggle(200);
+    if (!visible) cargarComentariosTarea(id);
+}
+
+function cargarComentariosTarea(id) {
+    var lista = $('#comentarios-tarea-' + id + ' .comentarios-lista');
     $.ajax({
         url: BASE_URL + '/tareas/listar-comentarios/' + id,
         type: 'POST',
         dataType: 'json',
         success: function(res) {
-            var container = $('#comentariosLista');
-            container.empty();
+            lista.empty();
+            setComentariosCountTarea(id, res.data ? res.data.length : 0);
             if (!res.success || !res.data || res.data.length === 0) {
-                container.html('<div class="tarea-comentario-vacio">No hay comentarios aun.</div>');
+                lista.html('<div class="tarea-comentario-vacio">Sin comentarios</div>');
                 return;
             }
             res.data.forEach(function(c) {
@@ -539,12 +557,13 @@ function abrirComentarios(id) {
                 var fotoHtml = c.autor_foto
                     ? '<img src="' + c.autor_foto + '" alt="">'
                     : iniciales;
-                container.append(
+                var fecha = c.created_at ? new Date(c.created_at).toLocaleString('es-PE') : '';
+                lista.append(
                     '<div class="tarea-comentario">' +
                     '<div class="tarea-comentario-avatar">' + fotoHtml + '</div>' +
                     '<div class="tarea-comentario-body">' +
                     '<span class="tarea-comentario-autor">' + escHtml(c.autor_nombre) +
-                    '<span class="tarea-comentario-fecha">' + new Date(c.created_at).toLocaleString('es-PE') + '</span></span>' +
+                    '<span class="tarea-comentario-fecha">' + fecha + '</span></span>' +
                     '<div class="tarea-comentario-texto">' + escHtml(c.comentario) + '</div>' +
                     '</div></div>'
                 );
@@ -553,21 +572,32 @@ function abrirComentarios(id) {
     });
 }
 
-function guardarComentarioTarea() {
-    var texto = $('#comentarioInput').val().trim();
+function guardarComentarioTarea(id, btn) {
+    var wrap = $('#comentarios-tarea-' + id);
+    var ta = wrap.find('textarea');
+    var texto = ta.val().trim();
     if (!texto) return;
 
+    $(btn).prop('disabled', true);
     $.ajax({
         url: BASE_URL + '/tareas/guardar-comentario',
         type: 'POST',
-        data: JSON.stringify({ tarea_id: comentarioTareaId, comentario: texto }),
         contentType: 'application/json',
+        data: JSON.stringify({ tarea_id: id, comentario: texto }),
         dataType: 'json',
         success: function(res) {
             if (res.success) {
-                $('#comentarioInput').val('');
-                abrirComentarios(comentarioTareaId);
+                ta.val('');
+                cargarComentariosTarea(id);
+            } else {
+                Swal.fire('Error', res.message, 'error');
             }
+        },
+        error: function() {
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        },
+        complete: function() {
+            $(btn).prop('disabled', false);
         }
     });
 }
