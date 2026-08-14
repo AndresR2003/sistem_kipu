@@ -12,16 +12,14 @@ $routes->post('login/autenticar', 'Login::authenticate');
 $routes->get('logout', 'Login::logout');
 
 // =====================================================
-// RUTA PUBLICA
+// RUTA PUBLICA - Landing page
 // =====================================================
+$routes->get('/', 'Landing::index');
 
 // =====================================================
 // RUTAS PROTEGIDAS (requieren autenticacion)
 // =====================================================
 $routes->group('', ['filter' => 'auth'], function($routes) {
-
-    // RUTAS PRINCIPAL - Redirigir al dashboard
-    $routes->get('/', 'Dashboard::index');
 
     // RUTAS ADMIN - Dashboard
     $routes->get('dashboard', 'Dashboard::index');

@@ -16,7 +16,10 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión - <?= esc($marcaNombre) ?></title>
+    <title>Iniciar sesion - <?= esc($marcaNombre) ?></title>
+    <meta name="description" content="Accede a la plataforma de gestion empresarial <?= esc($marcaNombre) ?>.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="<?= base_url('login') ?>">
     <link href="<?= base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
