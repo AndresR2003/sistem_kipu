@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Kipucloud">
+  <defs>
+    <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4669FA"/>
+      <stop offset="1" stop-color="#3651d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#kg)"/>
+  <path d="M18 43a9.5 9.5 0 0 1-1.5-18.9A11.5 11.5 0 0 1 38 19.2a10.5 10.5 0 0 1 9.4 6.7A9 9 0 0 1 46 43z" fill="#fff"/>
+  <path d="M28.5 38V21.5l11 9v3l-11-3.2v7.7z" fill="#4669FA"/>
+</svg>

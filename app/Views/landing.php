@@ -19,7 +19,7 @@ $logueado = !empty($logueado);
     <meta property="og:url" content="<?= base_url() ?>">
     <meta property="og:site_name" content="<?= esc($marcaNombre) ?>">
     <link rel="canonical" href="<?= base_url() ?>">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234669FA'/><text x='50' y='68' font-size='52' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="<?= esc($marcaLigo) ?>">
     <link href="<?= base_url('assets/css/bootstrap-icons.css') ?>" rel="stylesheet">
     <style>
         :root {
@@ -128,11 +128,7 @@ $logueado = !empty($logueado);
     <nav class="nav">
         <div class="nav-brand">
             <span class="brand-icon">
-                <?php if (!empty($marcaLigo)): ?>
-                    <img src="<?= esc($marcaLigo) ?>" alt="Logo <?= esc($marcaNombre) ?>">
-                <?php else: ?>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h18"/><path d="M7 4.5v8"/><circle cx="7" cy="12.5" r="1.9"/><path d="M12 4.5v12"/><circle cx="12" cy="9" r="1.9"/><circle cx="12" cy="15" r="1.9"/><path d="M17 4.5v6"/><circle cx="17" cy="7.5" r="1.9"/></svg>
-                <?php endif; ?>
+                <img src="<?= esc($marcaLigo) ?>" alt="Logo <?= esc($marcaNombre) ?>">
             </span>
             <?= esc($marcaNombre) ?>
         </div>
