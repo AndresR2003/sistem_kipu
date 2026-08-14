@@ -13,6 +13,7 @@
     max-width: 1280px;
     margin: 0 auto;
     color: var(--nd-text);
+    container-type: inline-size;
 }
 
 /* ─── Top bar ─── */
@@ -170,12 +171,30 @@
 
 .dropdown-menu-custom a i { margin-right: 6px; }
 
-/* ─── Responsive ─── */
-@media (max-width: 1024px) {
+/* ─── Responsive (por ancho del contenedor) ─── */
+@container (max-width: 980px) {
     .nd-grid { grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; }
 }
 
-@media (max-width: 900px) {
+@container (max-width: 720px) {
+    .nd-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "chip"
+            "titulo"
+            "autor"
+            "fecha"
+            "resumen"
+            "contenido"
+            "acciones"
+            "sep"
+            "comentarios";
+        gap: 20px;
+    }
+}
+
+/* Fallback: navegadores sin container queries */
+@media (max-width: 720px) {
     .nd-grid {
         grid-template-columns: 1fr;
         grid-template-areas:
