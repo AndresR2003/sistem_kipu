@@ -43,16 +43,16 @@
 .nd-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 300px;
-    grid-template-rows: auto;
-    gap: 28px;
     grid-template-areas:
-        "topbar topbar"
-        "chip   side1"
-        "titulo side1"
-        "resumen side2"
-        "contenido side2"
-        "acciones side2"
-        "comentarios side2";
+        "chip      autor"
+        "titulo    autor"
+        "resumen   fecha"
+        "contenido fecha"
+        "acciones  fecha"
+        "sep       fecha"
+        "comentarios fecha";
+    gap: 24px 28px;
+    align-items: start;
 }
 
 .nd-chip { grid-area: chip; }
@@ -60,16 +60,18 @@
 .nd-resumen { grid-area: resumen; }
 .nd-contenido { grid-area: contenido; }
 .nd-acciones { grid-area: acciones; }
+.nd-sep { grid-area: sep; }
 .nd-comentarios { grid-area: comentarios; }
-.nd-autor { grid-area: side1; }
-.nd-fecha { grid-area: side2; }
+.nd-autor { grid-area: autor; }
+.nd-fecha { grid-area: fecha; }
 
 /* ─── Chip ─── */
+.nd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .nd-chip {
-    display: inline-flex; align-items: center; gap: 6px; justify-self: start;
+    display: inline-flex; align-items: center; gap: 6px;
     height: 30px; padding: 0 16px; border-radius: 999px;
     background: rgba(124, 58, 237, 0.18); color: var(--nd-accent);
-    font-size: 0.75rem; font-weight: 600; margin-bottom: 18px;
+    font-size: 0.75rem; font-weight: 600;
 }
 .nd-chip.fijada { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
@@ -89,7 +91,7 @@
 }
 
 /* ─── Barra de acciones ─── */
-.nd-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; }
+.nd-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
 .nd-accion {
     display: inline-flex; align-items: center; gap: 7px;
     background: transparent; border: 1px solid var(--nd-border); color: var(--nd-text2);
@@ -108,7 +110,7 @@
 }
 
 /* ─── Separador ─── */
-.nd-sep { height: 1px; background: var(--nd-border); margin: 26px 0; }
+.nd-sep { height: 1px; background: var(--nd-border); margin: 4px 0 0; }
 
 /* ─── Comentarios ─── */
 .nd-comentarios-titulo {
@@ -148,7 +150,6 @@
     background: var(--nd-bg-side); border: 1px solid var(--nd-border); border-radius: var(--nd-radius);
     padding: 18px 20px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
 }
-.nd-autor { margin-bottom: 24px; align-self: start; }
 .nd-card-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--nd-text2); margin-bottom: 12px; font-weight: 600; }
 .nd-avatar {
     width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
@@ -178,7 +179,6 @@
     .nd-grid {
         grid-template-columns: 1fr;
         grid-template-areas:
-            "topbar"
             "chip"
             "titulo"
             "autor"
@@ -186,10 +186,10 @@
             "resumen"
             "contenido"
             "acciones"
+            "sep"
             "comentarios";
         gap: 20px;
     }
-    .nd-autor { margin-bottom: 0; }
 }
 </style>
 
@@ -214,7 +214,9 @@ $chipMapa = [
     'todos'       => 'Todos',
 ];
 $chipTexto = $chipMapa[$tipo] ?? 'Todos';
+$chipIcono = $tipo === 'usuarios' ? 'person-fill' : ($tipo === 'departamento' || $tipo === 'multiple' ? 'people-fill' : 'globe');
 $fotoSesion = session('admin_foto');
+$comentarios = (int) ($publicacion['comentarios_count'] ?? 0);
 ?>
 
 <div class="nd">
@@ -254,13 +256,12 @@ $fotoSesion = session('admin_foto');
     </div>
 
     <div class="nd-grid">
-        <span class="nd-chip">
-            <i class="bi bi-<?= $tipo === 'usuarios' ? 'person-fill' : ($tipo === 'departamento' || $tipo === 'multiple' ? 'people-fill' : 'globe') ?>"></i>
-            <?= esc($chipTexto) ?>
-        </span>
-        <span class="nd-chip fijada" <?= $publicacion['fijado'] ? '' : 'style="display:none;"' ?>>
-            <i class="bi bi-pin-fill"></i> Fijada
-        </span>
+        <div class="nd-chips">
+            <span class="nd-chip"><i class="bi bi-<?= $chipIcono ?>"></i> <?= esc($chipTexto) ?></span>
+            <?php if ($publicacion['fijado']): ?>
+            <span class="nd-chip fijada"><i class="bi bi-pin-fill"></i> Fijada</span>
+            <?php endif; ?>
+        </div>
 
         <h1 class="nd-titulo"><?= esc($publicacion['titulo']) ?></h1>
 
@@ -279,7 +280,7 @@ $fotoSesion = session('admin_foto');
             </button>
             <button class="nd-accion com" onclick="toggleComentariosDetalle()" title="Ver comentarios">
                 <i class="bi bi-chat"></i> Comentarios
-                <span class="com-count" <?= ((int) ($publicacion['comentarios_count'] ?? 0)) > 0 ? '' : 'style="display:none;"' ?>><?= (int) ($publicacion['comentarios_count'] ?? 0) ?></span>
+                <span class="com-count" <?= $comentarios > 0 ? '' : 'style="display:none;"' ?>><?= $comentarios ?></span>
             </button>
         </div>
 
