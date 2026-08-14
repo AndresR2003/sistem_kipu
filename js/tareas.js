@@ -4,15 +4,27 @@ var departamentosCache = [];
 var usuariosCache = [];
 var acordeonesAbiertos = {};
 var tareasMap = {};
+var filtroInicial = '';
+var hayFiltroActivo = false;
 
 $(document).ready(function() {
     if (typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin')) {
         $('#tabTodas').show();
     }
+    leerFiltroUrl();
     cargarTareas();
     cargarDepartamentos();
     cargarUsuarios();
 });
+
+function leerFiltroUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var f = params.get('f');
+    if (f === 'pendientes' || f === 'completadas') {
+        filtroInicial = f;
+        hayFiltroActivo = true;
+    }
+}
 
 function escHtml(t) {
     if (!t) return '';
@@ -95,6 +107,59 @@ function renderizarTareas(departamentos) {
         html += '</div></div>';
         container.append(html);
     });
+
+    if (hayFiltroActivo && filtroInicial) {
+        aplicarFiltroInicial();
+    }
+}
+
+// ─── Filtro desde dashboard (?f=pendientes|completadas) ───
+
+function aplicarFiltroInicial() {
+    var mostrarSoloCompletadas = filtroInicial === 'completadas';
+
+    $('.tarea-card').each(function() {
+        var completada = parseInt($(this).data('completada')) === 1;
+        if (mostrarSoloCompletadas ? completada : !completada) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+
+    $('.tarea-acordeon').each(function() {
+        var visibles = $(this).find('.tarea-card:visible').length;
+        if (visibles === 0) {
+            $(this).hide();
+        } else {
+            $(this).show();
+            var pendientes = 0;
+            $(this).find('.tarea-card:visible').each(function() {
+                if (parseInt($(this).data('completada')) !== 1) pendientes++;
+            });
+            if (pendientes > 0) {
+                $(this).find('.tarea-acordeon-pendientes').text(pendientes + ' pendiente' + (pendientes > 1 ? 's' : ''));
+            }
+            $(this).addClass('open');
+        }
+    });
+
+    var tituloFiltro = mostrarSoloCompletadas ? 'tareas completadas' : 'tareas pendientes';
+    $('#tareasContainer').prepend(
+        '<div class="alert alert-info d-flex align-items-center justify-content-between" style="font-size:0.8rem;padding:10px 14px;">' +
+        '<span><i class="bi bi-funnel-fill"></i> Mostrando solo <b>' + tituloFiltro + '</b></span>' +
+        '<button type="button" class="btn btn-sm btn-outline-info" onclick="quitarFiltroInicial()">Ver todas</button>' +
+        '</div>'
+    );
+}
+
+function quitarFiltroInicial() {
+    hayFiltroActivo = false;
+    filtroInicial = '';
+    var url = new URL(window.location.href);
+    url.searchParams.delete('f');
+    history.replaceState(null, '', url.toString());
+    cargarTareas();
 }
 
 // ─── Renderizar tarjeta individual ───
@@ -183,7 +248,7 @@ function renderizarTarjeta(t) {
         adminAcciones += '<button class="tarea-accion del" onclick="eliminarTarea(' + t.id + ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>';
     }
 
-    var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '" data-origen="tarea" data-origen-id="' + t.id + '" data-seccion="tareas">' +
+    var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '" data-completada="' + (completada ? '1' : '0') + '" data-origen="tarea" data-origen-id="' + t.id + '" data-seccion="tareas">' +
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +

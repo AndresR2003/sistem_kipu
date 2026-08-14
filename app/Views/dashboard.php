@@ -58,6 +58,19 @@ try {
         padding:16px;position:relative;overflow:hidden;transition:all 0.25s;
     }
     .dash-stat:hover{border-color:var(--border-light);transform:translateY(-3px);box-shadow:var(--shadow);}
+    a.dash-stat-link,
+    a.dash-stat-link:hover,
+    a.dash-stat-link:active,
+    a.dash-stat-link:visited{color:inherit;text-decoration:none !important;}
+    .dash-stat-link .ds-value,
+    .dash-stat-link .ds-label{transition:color 0.2s;}
+    .dash-stat-link:hover .ds-label{color:var(--primary);}
+    .dash-stat-link::after{
+        content:'\F2C7';font-family:'bootstrap-icons';
+        position:absolute;top:12px;right:12px;font-size:0.7rem;
+        color:var(--text-muted);opacity:0;transition:opacity 0.2s,transform 0.2s;
+    }
+    .dash-stat-link:hover::after{opacity:1;transform:translateX(2px);}
     .dash-stat .ds-icon{
         width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
         font-size:1.15rem;margin-bottom:12px;
@@ -180,36 +193,36 @@ try {
 </div>
 
 <div class="dash-stats">
-    <div class="dash-stat">
+    <a class="dash-stat dash-stat-link" href="<?= site_url('tareas') ?>?f=pendientes" title="Ver tareas pendientes">
         <div class="ds-icon" style="background:rgba(70,105,250,0.12);color:var(--primary);"><i class="bi bi-check2-square"></i></div>
         <div class="ds-value"><?= (int)($stats['tareas_hoy'] ?? 0) ?></div>
         <div class="ds-label">Tareas de hoy</div>
-    </div>
-    <div class="dash-stat">
+    </a>
+    <a class="dash-stat dash-stat-link" href="<?= site_url('tareas') ?>?f=completadas" title="Ver tareas completadas">
         <div class="ds-icon" style="background:rgba(34,197,94,0.12);color:var(--success);"><i class="bi bi-check-circle"></i></div>
         <div class="ds-value"><?= (int)($stats['tareas_done'] ?? 0) ?></div>
         <div class="ds-label">Completadas hoy</div>
-    </div>
-    <div class="dash-stat">
+    </a>
+    <a class="dash-stat dash-stat-link" href="<?= site_url('noticias') ?>" title="Ver noticias">
         <div class="ds-icon" style="background:rgba(6,182,212,0.12);color:var(--info);"><i class="bi bi-newspaper"></i></div>
         <div class="ds-value"><?= (int)($stats['noticias'] ?? 0) ?></div>
         <div class="ds-label">Noticias</div>
-    </div>
-    <div class="dash-stat">
+    </a>
+    <a class="dash-stat dash-stat-link" href="<?= site_url('recordatorio') ?>" title="Ver pendientes">
         <div class="ds-icon" style="background:rgba(245,158,11,0.12);color:var(--warning);"><i class="bi bi-bell-fill"></i></div>
         <div class="ds-value"><?= (int)($stats['recordatorios'] ?? 0) ?></div>
         <div class="ds-label">Pendientes</div>
-    </div>
-    <div class="dash-stat">
+    </a>
+    <a class="dash-stat dash-stat-link" href="<?= site_url('marcadores') ?>" title="Ver marcadores">
         <div class="ds-icon" style="background:rgba(168,85,247,0.14);color:#a855f7;"><i class="bi bi-bookmark-fill"></i></div>
         <div class="ds-value"><?= (int)($stats['marcadores'] ?? 0) ?></div>
         <div class="ds-label">Marcadores</div>
-    </div>
-    <div class="dash-stat">
+    </a>
+    <a class="dash-stat dash-stat-link" href="<?= site_url('calendario') ?>" title="Ver eventos proximos">
         <div class="ds-icon" style="background:rgba(239,68,68,0.12);color:var(--danger);"><i class="bi bi-calendar-event"></i></div>
         <div class="ds-value"><?= (int)($stats['eventos'] ?? 0) ?></div>
         <div class="ds-label">Eventos proximos</div>
-    </div>
+    </a>
 </div>
 
 <div class="dash-section-title">
