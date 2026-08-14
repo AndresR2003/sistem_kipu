@@ -74,3 +74,50 @@ if (!function_exists('fecha_es')) {
         return $fmt->format($ts) ?: date('d/m/Y', $ts);
     }
 }
+
+if (!function_exists('fecha_publicacion')) {
+    /**
+     * Devuelve la fecha en formato estandar DD/MM/YYYY.
+     */
+    function fecha_publicacion(?string $fecha): string
+    {
+        if (empty($fecha)) {
+            return '';
+        }
+        $ts = strtotime($fecha);
+        return $ts === false ? '' : date('d/m/Y', $ts);
+    }
+}
+
+if (!function_exists('hora_publicacion')) {
+    /**
+     * Devuelve la hora en formato estandar HH:MM.
+     */
+    function hora_publicacion(?string $fecha): string
+    {
+        if (empty($fecha)) {
+            return '';
+        }
+        $ts = strtotime($fecha);
+        return $ts === false ? '' : date('H:i', $ts);
+    }
+}
+
+if (!function_exists('rol_legible')) {
+    /**
+     * Traduce el codigo de rol de admin_usuarios a una etiqueta legible.
+     */
+    function rol_legible(?string $rol): string
+    {
+        $mapa = [
+            'superadmin' => 'Administrador',
+            'admin'      => 'Administrador',
+            'empleado'   => 'Empleado',
+            'soporte'    => 'Soporte',
+            'vendedor'   => 'Vendedor',
+            'tecnico'    => 'Tecnico',
+        ];
+
+        return $mapa[$rol] ?? ($rol ? ucfirst($rol) : 'Empleado');
+    }
+}

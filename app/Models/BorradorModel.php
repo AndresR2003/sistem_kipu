@@ -40,7 +40,7 @@ class BorradorModel extends Model
     {
         $db = \Config\Database::connect();
 
-        $sql = "SELECT b.*, u.nombre AS usuario_nombre
+        $sql = "SELECT b.*, u.nombre AS usuario_nombre, u.rol AS autor_rol, u.foto AS autor_foto
                 FROM borradores b
                 LEFT JOIN admin_usuarios u ON u.id = b.usuario_id
                 WHERE b.publicado = 1 AND b.seccion_destino = ?";
@@ -69,6 +69,58 @@ class BorradorModel extends Model
 
         $query = $db->query($sql, $params);
         return $query->getResultArray();
+    }
+
+    public function ObtenerPublicadoDetalle(int $id, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): ?array
+    {
+        $db = \Config\Database::connect();
+
+        $sql = "SELECT b.*, u.nombre AS usuario_nombre, u.rol AS autor_rol, u.foto AS autor_foto
+                FROM borradores b
+                LEFT JOIN admin_usuarios u ON u.id = b.usuario_id
+                WHERE b.publicado = 1 AND b.id = ?";
+
+        $params = [$id];
+
+        if (!in_array($rol, ['admin', 'superadmin'], true)) {
+            $sql .= " AND (
+                (NOT EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id)
+                 AND NOT EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_departamentos bd WHERE bd.borrador_id = b.id AND bd.departamento_id = ?))
+                OR (? IS NOT NULL AND EXISTS (SELECT 1 FROM borrador_usuarios bu WHERE bu.borrador_id = b.id AND bu.usuario_id = ?))
+            )";
+            $params[] = $departamentoId;
+            $params[] = $departamentoId;
+            $params[] = $usuarioId;
+            $params[] = $usuarioId;
+        }
+
+        $row = $db->query($sql, $params)->getRowArray();
+        if (!$row) {
+            return null;
+        }
+
+        $ts = strtotime($row['updated_at'] ?? $row['created_at'] ?? 'now');
+
+        return [
+            'id'              => (int) $row['id'],
+            'titulo'          => $row['titulo'],
+            'contenido'       => $row['contenido'],
+            'seccion'         => $row['seccion_destino'],
+            'destinatario_tipo' => $row['destinatario_tipo'],
+            'fijado'          => (int) $row['fijado'],
+            'completado'      => (int) $row['completado'],
+            'usuario_id'      => (int) $row['usuario_id'],
+            'autor_nombre'    => $row['usuario_nombre'] ?? 'Desconocido',
+            'autor_rol'       => $row['autor_rol'],
+            'autor_rol_legible' => rol_legible($row['autor_rol']),
+            'autor_foto'      => $row['autor_foto'],
+            'updated_at'      => $row['updated_at'],
+            'created_at'      => $row['created_at'],
+            'fecha'           => fecha_publicacion($row['updated_at'] ?? $row['created_at'] ?? 'now'),
+            'hora'            => hora_publicacion($row['updated_at'] ?? $row['created_at'] ?? 'now'),
+            'timestamp'       => $ts,
+        ];
     }
 
     public function ContarPublicados(string $seccion, ?int $usuarioId = null, ?int $departamentoId = null, string $rol = 'empleado'): int

@@ -4,6 +4,21 @@ $(document).ready(function() {
     cargarBorradores();
 });
 
+function seleccionarBorradorDesdeUrl(intentos) {
+    var params = new URLSearchParams(window.location.search);
+    var selectId = params.get('select');
+    if (!selectId) return;
+    intentos = intentos || 0;
+    if (intentos > 10) return;
+    var item = $('.borrador-item[data-id="' + selectId + '"]');
+    if (!item.length) {
+        setTimeout(function() { seleccionarBorradorDesdeUrl(intentos + 1); }, 300);
+        return;
+    }
+    seleccionarBorrador(selectId);
+    item[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 function cargarBorradores() {
     showLoading();
     $.ajax({
@@ -47,6 +62,7 @@ function cargarBorradores() {
                 $('.borrador-item[data-id="' + borradorActualId + '"]').css('background', 'var(--bg-input)');
             }
 
+            seleccionarBorradorDesdeUrl();
             hideLoading();
         },
         error: function() {

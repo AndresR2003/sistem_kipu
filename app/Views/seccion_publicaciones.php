@@ -1,6 +1,12 @@
 <style>
 .pub-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:14px;transition:border-color 0.2s;}
 .pub-card:hover{border-color:var(--primary);}
+.pub-autor{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.pub-autor-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;}
+.pub-autor-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.pub-autor-info{min-width:0;}
+.pub-autor-nombre{font-size:0.8rem;font-weight:600;color:var(--text);line-height:1.2;}
+.pub-autor-rol{font-size:0.68rem;color:var(--text-muted);margin-top:2px;}
 .pub-card .pub-titulo{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:6px;}
 .pub-card .pub-contenido{font-size:0.85rem;color:var(--text-muted);white-space:pre-line;line-height:1.5;}
 .pub-card .pub-meta{font-size:0.7rem;color:var(--text-muted);margin-top:10px;}
@@ -60,6 +66,10 @@
 .pub-compact .pub-card .pub-contenido{font-size:0.78rem;margin:0;line-height:1.4;}
 .pub-compact .pub-card .pub-meta{font-size:0.65rem;margin:0;}
 .pub-compact .pub-card .pub-badge{font-size:0.55rem;padding:2px 7px;margin:0;}
+.pub-compact .pub-autor{gap:8px;margin-bottom:8px;}
+.pub-compact .pub-autor-avatar{width:30px;height:30px;font-size:0.7rem;}
+.pub-compact .pub-autor-nombre{font-size:0.74rem;}
+.pub-compact .pub-autor-rol{font-size:0.62rem;}
 .pub-compact .pub-check{gap:10px;justify-content:space-between;}
 .pub-compact .pub-check .form-check-input{width:16px;height:16px;margin-top:2px;order:2;}
 .pub-compact .pub-acciones{margin-top:2px;opacity:0;transition:opacity 0.15s;}

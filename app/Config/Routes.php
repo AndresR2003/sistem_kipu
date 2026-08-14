@@ -94,6 +94,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('entregas/usuarios', 'Entregas::usuarios');
 
     $routes->get('noticias', 'Noticias::index');
+    $routes->get('noticias/ver/(:num)', 'Noticias::ver/$1');
     $routes->get('ideas', 'Ideas::index');
     $routes->get('manual', 'Manual::index');
     $routes->get('tareas', 'Tareas::index');

@@ -221,6 +221,9 @@ class Borradores extends BaseController
         $counts = empty($ids) ? [] : (new ComentarioModel())->ContarPorBorradores($ids);
         foreach ($data as &$d) {
             $d['comentarios_count'] = $counts[$d['id']] ?? 0;
+            $d['autor_rol_legible'] = rol_legible($d['autor_rol'] ?? null);
+            $d['fecha']             = fecha_publicacion($d['updated_at'] ?? $d['created_at'] ?? 'now');
+            $d['hora']              = hora_publicacion($d['updated_at'] ?? $d['created_at'] ?? 'now');
         }
 
         return $this->response->setJSON($data);

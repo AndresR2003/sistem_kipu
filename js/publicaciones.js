@@ -65,22 +65,22 @@ function cargarBorradoresPublicados(seccion) {
                 var d = p.updated_at ? formatearFecha(p.updated_at) : '';
                 var cardId = 'pub-' + p.id;
                 var completado = parseInt(p.completado) ? 'completada' : '';
-                var checked = parseInt(p.completado) ? 'checked' : '';
 
-                var bodyContent = (seccion === 'tareas')
-                    ? '<div class="pub-check">' +
-                      '<input class="form-check-input" type="checkbox" ' + checked + ' onchange="toggleTarea(' + p.id + ', this)">' +
-                      '<div>' +
-                      '<div class="pub-titulo">' + escHtml(p.titulo) + '</div>' +
-                      '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
-                      '</div></div>'
-                    : '<div class="pub-titulo">' + escHtml(p.titulo) + '</div>' +
-                      '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>';
+                var autorBlock = '';
+                var tituloHtml = escHtml(p.titulo);
+                if (seccion === 'noticias') {
+                    autorBlock = bloqueAutorCard(p);
+                    tituloHtml = '<a href="' + BASE_URL + 'noticias/ver/' + p.id + '" style="color:inherit;text-decoration:none;">' + escHtml(p.titulo) + '</a>';
+                }
 
                 var card = '<div class="pub-card ' + completado + '" id="' + cardId + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
+                    autorBlock +
                     badge +
-                    bodyContent +
-                    '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
+                    '<div class="pub-titulo">' + tituloHtml + '</div>' +
+                    '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
+                    '<div class="pub-meta">' + (seccion === 'noticias'
+                        ? '<i class="bi bi-calendar3"></i> ' + (p.fecha || d) + ' <i class="bi bi-clock" style="margin-left:8px;"></i> ' + (p.hora || '') + ' hrs'
+                        : '<i class="bi bi-clock"></i> ' + d) + '</div>' +
                     '<div class="pub-acciones">' +
                     '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                     '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
@@ -157,6 +157,24 @@ function toggleTarea(id, checkbox) {
             checkbox.checked = !checkbox.checked;
         }
     });
+}
+
+function bloqueAutorCard(p) {
+    var nombre = p.usuario_nombre || 'Desconocido';
+    var avatar = '';
+    if (p.autor_foto) {
+        avatar = '<img src="' + BASE_URL + p.autor_foto + '" alt="">';
+    } else {
+        var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
+        avatar = '<span>' + escHtml(inicial) + '</span>';
+    }
+    return '<div class="pub-autor">' +
+        '<div class="pub-autor-avatar">' + avatar + '</div>' +
+        '<div class="pub-autor-info">' +
+        '<div class="pub-autor-nombre">' + escHtml(nombre) + '</div>' +
+        '<div class="pub-autor-rol">' + escHtml(p.autor_rol_legible || '') + '</div>' +
+        '</div>' +
+        '</div>';
 }
 
 function avatarComentario(c, nombre) {
