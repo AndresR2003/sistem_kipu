@@ -158,7 +158,9 @@ function noticiaCard(p) {
     var nombre = p.usuario_nombre || 'Desconocido';
     var avatar = '';
     if (p.autor_foto) {
-        avatar = '<img src="' + BASE_URL + p.autor_foto + '" alt="">';
+        var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
+        var foto = p.autor_foto.indexOf('http') === 0 ? p.autor_foto : base + p.autor_foto;
+        avatar = '<img src="' + foto + '?t=' + Date.now() + '" alt="">';
     } else {
         var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
         avatar = '<span>' + escHtml(inicial) + '</span>';
@@ -180,11 +182,6 @@ function noticiaCard(p) {
         '<div class="pub-titulo"><a href="' + BASE_URL + 'noticias/ver/' + p.id + '">' + escHtml(p.titulo) + '</a></div>' +
         '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
         '<div class="pub-meta"><i class="bi bi-calendar3"></i> ' + (p.fecha || d) + ' <i class="bi bi-clock" style="margin-left:8px;"></i> ' + (p.hora || '') + ' hrs</div>' +
-        '<div class="pub-acciones">' +
-        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
-        '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-        comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
-        '</div>' +
         '</div>' +
         '<div class="noticia-side">' +
         '<div class="noticia-side-card">' +
@@ -201,6 +198,13 @@ function noticiaCard(p) {
         '<div class="noticia-side-label">Fecha de publicacion</div>' +
         '<div class="noticia-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + (p.fecha || d) + '</span></span></div>' +
         '<div class="noticia-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + (p.hora || '') + ' hrs</span></span></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="noticia-footer">' +
+        '<div class="pub-acciones">' +
+        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+        '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+        comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
         '</div>' +
         '</div>' +
         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +

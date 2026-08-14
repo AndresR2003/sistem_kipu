@@ -85,7 +85,7 @@
 .publicaciones-lista .pub-card:last-child{border-bottom:none;}
 
 /* ===== Tarjeta de Noticias en dos columnas ===== */
-.noticia-card{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:14px;}
+.noticia-card{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:14px;}
 .noticia-card .noticia-main{min-width:0;}
 .noticia-card .noticia-side{display:flex;flex-direction:column;gap:12px;}
 .noticia-card .pub-titulo{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px;}
@@ -94,13 +94,16 @@
 .noticia-card .pub-contenido{font-size:0.85rem;color:var(--text-muted);white-space:pre-line;line-height:1.55;}
 .noticia-card .pub-meta{font-size:0.7rem;color:var(--text-muted);margin-top:10px;}
 .noticia-card .pub-badge{margin-top:8px;display:inline-block;}
-.noticia-card .pub-acciones{display:flex;gap:4px;margin-top:12px;}
-.noticia-card .pub-acciones button{background:transparent;border:none;padding:4px 9px;border-radius:6px;font-size:0.72rem;color:var(--text-muted);transition:all 0.15s;}
-.noticia-card .pub-acciones button:hover{background:var(--bg-input);color:var(--text);}
-.noticia-card .pub-acciones button.rec:hover{color:var(--warning);}
-.noticia-card .pub-acciones button.mar:hover{color:var(--primary);}
-.noticia-card .pub-acciones button.com:hover{color:var(--success);}
-.noticia-card .comentarios-wrap{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:16px;padding-top:14px;}
+
+/* Pie de tarjeta: Recordatorio / Marcador / Comentarios a todo lo ancho */
+.noticia-footer{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:4px;padding-top:10px;}
+.noticia-footer .pub-acciones{display:flex;gap:4px;margin-top:0;}
+.noticia-footer .pub-acciones button{background:transparent;border:none;padding:4px 9px;border-radius:6px;font-size:0.72rem;color:var(--text-muted);transition:all 0.15s;}
+.noticia-footer .pub-acciones button:hover{background:var(--bg-input);color:var(--text);}
+.noticia-footer .pub-acciones button.rec:hover{color:var(--warning);}
+.noticia-footer .pub-acciones button.mar:hover{color:var(--primary);}
+.noticia-footer .pub-acciones button.com:hover{color:var(--success);}
+.noticia-card .comentarios-wrap{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:14px;padding-top:14px;}
 
 .noticia-side-card{background:transparent;border:none;border-radius:var(--radius);padding:2px 0;font-size:0.9em;}
 .noticia-side-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:10px;}
