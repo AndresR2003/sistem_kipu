@@ -3,7 +3,7 @@ function comButton(count, onclick) {
 }
 
 function setComentariosCount(wrapId, count) {
-    var btn = $('#' + wrapId).closest('.pub-card').find('.com');
+    var btn = $('#' + wrapId).closest('.pub-card, .noticia-card').find('.com');
     if (!btn.length) return;
     btn.find('.com-count').remove();
     if (count > 0) {
@@ -66,34 +66,29 @@ function cargarBorradoresPublicados(seccion) {
                 var cardId = 'pub-' + p.id;
                 var completado = parseInt(p.completado) ? 'completada' : '';
 
-                var autorBlock = '';
-                var tituloHtml = escHtml(p.titulo);
+                var card;
                 if (seccion === 'noticias') {
-                    autorBlock = bloqueAutorCard(p);
-                    tituloHtml = '<a href="' + BASE_URL + 'noticias/ver/' + p.id + '" style="color:inherit;text-decoration:none;">' + escHtml(p.titulo) + '</a>';
+                    card = noticiaCard(p);
+                } else {
+                    card = '<div class="pub-card ' + completado + '" id="' + cardId + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
+                        badge +
+                        '<div class="pub-titulo">' + escHtml(p.titulo) + '</div>' +
+                        '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
+                        '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
+                        '<div class="pub-acciones">' +
+                        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+                        '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+                        comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
+                        '</div>' +
+                        '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
+                        '<div class="comentarios-lista"></div>' +
+                        '<div class="comentarios-form">' +
+                        '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+                        '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentario(' + p.id + ', this)">Enviar</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
                 }
-
-                var card = '<div class="pub-card ' + completado + '" id="' + cardId + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
-                    autorBlock +
-                    badge +
-                    '<div class="pub-titulo">' + tituloHtml + '</div>' +
-                    '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
-                    '<div class="pub-meta">' + (seccion === 'noticias'
-                        ? '<i class="bi bi-calendar3"></i> ' + (p.fecha || d) + ' <i class="bi bi-clock" style="margin-left:8px;"></i> ' + (p.hora || '') + ' hrs'
-                        : '<i class="bi bi-clock"></i> ' + d) + '</div>' +
-                    '<div class="pub-acciones">' +
-                    '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
-                    '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
-                    comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
-                    '</div>' +
-                    '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
-                    '<div class="comentarios-lista"></div>' +
-                    '<div class="comentarios-form">' +
-                    '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
-                    '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentario(' + p.id + ', this)">Enviar</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
                 lista.append(card);
             });
         }
@@ -159,7 +154,7 @@ function toggleTarea(id, checkbox) {
     });
 }
 
-function bloqueAutorCard(p) {
+function noticiaCard(p) {
     var nombre = p.usuario_nombre || 'Desconocido';
     var avatar = '';
     if (p.autor_foto) {
@@ -168,11 +163,52 @@ function bloqueAutorCard(p) {
         var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
         avatar = '<span>' + escHtml(inicial) + '</span>';
     }
-    return '<div class="pub-autor">' +
-        '<div class="pub-autor-avatar">' + avatar + '</div>' +
-        '<div class="pub-autor-info">' +
-        '<div class="pub-autor-nombre">' + escHtml(nombre) + '</div>' +
-        '<div class="pub-autor-rol">' + escHtml(p.autor_rol_legible || '') + '</div>' +
+
+    var badge = '';
+    if (p.destinatario_tipo === 'usuarios') badge = '<span class="pub-badge"><i class="bi bi-person-fill"></i> Individual</span>';
+    else if (p.destinatario_tipo === 'departamento') badge = '<span class="pub-badge"><i class="bi bi-people-fill"></i> Departamento</span>';
+    else if (p.destinatario_tipo === 'multiple') badge = '<span class="pub-badge"><i class="bi bi-people-fill"></i> Multiple</span>';
+    else badge = '<span class="pub-badge"><i class="bi bi-globe"></i> Todos</span>';
+
+    var fijado = parseInt(p.fijado) ? '<span class="pub-badge"><i class="bi bi-pin-fill"></i> Fijada</span>' : '';
+
+    var d = p.updated_at ? formatearFecha(p.updated_at) : '';
+
+    return '<div class="noticia-card" id="pub-' + p.id + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="noticias">' +
+        '<div class="noticia-main">' +
+        badge + fijado +
+        '<div class="pub-titulo"><a href="' + BASE_URL + 'noticias/ver/' + p.id + '">' + escHtml(p.titulo) + '</a></div>' +
+        '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
+        '<div class="pub-meta"><i class="bi bi-calendar3"></i> ' + (p.fecha || d) + ' <i class="bi bi-clock" style="margin-left:8px;"></i> ' + (p.hora || '') + ' hrs</div>' +
+        '<div class="pub-acciones">' +
+        '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
+        '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
+        comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
+        '</div>' +
+        '</div>' +
+        '<div class="noticia-side">' +
+        '<div class="noticia-side-card">' +
+        '<div class="noticia-side-label">Publicado por</div>' +
+        '<div class="noticia-autor-row">' +
+        '<div class="noticia-autor-avatar">' + avatar + '</div>' +
+        '<div>' +
+        '<div class="noticia-autor-nombre">' + escHtml(nombre) + '</div>' +
+        '<div class="noticia-autor-rol">' + escHtml(p.autor_rol_legible || '') + '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="noticia-side-card">' +
+        '<div class="noticia-side-label">Fecha de publicacion</div>' +
+        '<div class="noticia-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + (p.fecha || d) + '</span></span></div>' +
+        '<div class="noticia-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + (p.hora || '') + ' hrs</span></span></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
+        '<div class="comentarios-lista"></div>' +
+        '<div class="comentarios-form">' +
+        '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentario(' + p.id + ', this)">Enviar</button>' +
+        '</div>' +
         '</div>' +
         '</div>';
 }

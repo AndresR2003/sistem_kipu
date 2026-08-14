@@ -83,6 +83,40 @@
 /* Lista con contenedor para secciones sin grupos (noticias, manual) */
 .publicaciones-lista{border:1px solid var(--border);border-radius:6px;overflow:hidden;}
 .publicaciones-lista .pub-card:last-child{border-bottom:none;}
+
+/* ===== Tarjeta de Noticias en dos columnas ===== */
+.noticia-card{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:14px;}
+.noticia-card .noticia-main{min-width:0;}
+.noticia-card .noticia-side{display:flex;flex-direction:column;gap:12px;}
+.noticia-card .pub-titulo{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+.noticia-card .pub-titulo a{color:inherit;text-decoration:none;}
+.noticia-card .pub-titulo a:hover{color:var(--primary);}
+.noticia-card .pub-contenido{font-size:0.85rem;color:var(--text-muted);white-space:pre-line;line-height:1.55;}
+.noticia-card .pub-meta{font-size:0.7rem;color:var(--text-muted);margin-top:10px;}
+.noticia-card .pub-badge{margin-top:8px;display:inline-block;}
+.noticia-card .pub-acciones{display:flex;gap:4px;margin-top:12px;}
+.noticia-card .pub-acciones button{background:transparent;border:none;padding:4px 9px;border-radius:6px;font-size:0.72rem;color:var(--text-muted);transition:all 0.15s;}
+.noticia-card .pub-acciones button:hover{background:var(--bg-input);color:var(--text);}
+.noticia-card .pub-acciones button.rec:hover{color:var(--warning);}
+.noticia-card .pub-acciones button.mar:hover{color:var(--primary);}
+.noticia-card .pub-acciones button.com:hover{color:var(--success);}
+.noticia-card .comentarios-wrap{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:16px;padding-top:14px;}
+
+.noticia-side-card{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.noticia-side-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:10px;}
+.noticia-autor-row{display:flex;align-items:center;gap:10px;}
+.noticia-autor-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:#fff;}
+.noticia-autor-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.noticia-autor-nombre{font-size:0.82rem;font-weight:600;color:var(--text);line-height:1.25;}
+.noticia-autor-rol{font-size:0.7rem;color:var(--text-muted);margin-top:2px;}
+.noticia-fecha-item{display:flex;align-items:center;gap:8px;font-size:0.76rem;color:var(--text);padding:4px 0;}
+.noticia-fecha-item i{color:var(--primary);}
+.noticia-fecha-item .lbl{color:var(--text-muted);font-size:0.66rem;display:block;}
+.noticia-fecha-item .val{font-weight:600;}
+
+@media (max-width: 900px){
+    .noticia-card{grid-template-columns:1fr;gap:16px;}
+}
 </style>
 
 <div class="table-container">
@@ -99,7 +133,7 @@
             </div>
         </div>
     </div>
-    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>" class="<?= in_array($seccion, ['tareas', 'noticias', 'manual']) ? 'pub-compact' : '' ?>">
+    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>" class="<?= in_array($seccion, ['tareas', 'manual']) ? 'pub-compact' : '' ?>">
         <div class="text-center py-5 text-muted">
             <div class="spinner-border spinner-border-sm"></div> Cargando...
         </div>
