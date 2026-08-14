@@ -136,7 +136,7 @@
             </div>
         </div>
     </div>
-    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>" class="<?= in_array($seccion, ['tareas', 'manual']) ? 'pub-compact' : '' ?>">
+    <div id="publicacionesContainer" data-seccion="<?= $seccion ?>" class="<?= in_array($seccion, ['tareas']) ? 'pub-compact' : '' ?>">
         <div class="text-center py-5 text-muted">
             <div class="spinner-border spinner-border-sm"></div> Cargando...
         </div>

@@ -29,13 +29,16 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-acordeon-body{border-top:1px solid var(--border);display:none;}
 .tarea-acordeon.open .tarea-acordeon-body{display:block;}
 
-.tarea-card{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.tarea-card{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:10px 20px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
 .tarea-card:last-child{border-bottom:none;}
 .tarea-card:hover{background:var(--bg-input);}
 .tarea-card.completada{opacity:0.55;}
 .tarea-card.completada .tarea-titulo{text-decoration:line-through;color:var(--text-muted);}
 
-.tarea-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:4px;flex:0 0 100%;margin-top:6px;padding-top:8px;border-top:1px dashed var(--border);}
+.tarea-main{display:flex;align-items:flex-start;gap:10px;min-width:0;}
+.tarea-side{display:flex;flex-direction:column;gap:10px;min-width:0;}
+
+.tarea-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:4px;grid-column:1 / -1;margin-top:6px;padding-top:10px;border-top:1px solid var(--border);}
 .tarea-accion{background:transparent;border:none;padding:3px 8px;border-radius:5px;font-size:0.7rem;color:var(--text-muted);transition:all 0.15s;cursor:pointer;}
 .tarea-accion:hover{background:var(--bg-input);color:var(--text);}
 .tarea-accion.rec:hover{color:var(--warning);}
@@ -65,6 +68,23 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-estado .solo-mi{color:var(--primary);font-weight:500;}
 .tarea-estado .progreso{color:var(--primary);font-weight:500;}
 
+/* Tarjeta lateral: autor y fecha */
+.tarea-side-card{background:transparent;border:none;padding:2px 0;font-size:0.9em;}
+.tarea-side-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:8px;}
+.tarea-autor-row{display:flex;align-items:center;gap:10px;}
+.tarea-autor-avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;}
+.tarea-autor-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.tarea-autor-nombre{font-size:0.82rem;font-weight:600;color:var(--text);line-height:1.25;}
+.tarea-autor-rol{font-size:0.7rem;color:var(--text-muted);margin-top:2px;}
+.tarea-fecha-item{display:flex;align-items:center;gap:8px;font-size:0.76rem;color:var(--text);padding:4px 0;}
+.tarea-fecha-item i{color:var(--primary);}
+.tarea-fecha-item .lbl{color:var(--text-muted);font-size:0.66rem;display:block;}
+.tarea-fecha-item .val{font-weight:600;}
+
+@media (max-width: 900px){
+    .tarea-card{grid-template-columns:1fr;gap:12px;}
+}
+
 .tareas-footer{text-align:center;padding:16px;color:var(--text-muted);font-size:0.75rem;border-top:1px solid var(--border);margin-top:8px;}
 
 /* Modal */
@@ -80,7 +100,7 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-modal-asignado input{accent-color:var(--primary);}
 
 /* Comentarios inline */
-.comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;flex:0 0 100%;}
+.comentarios-wrap{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;grid-column:1 / -1;}
 .comentarios-lista{max-height:280px;overflow-y:auto;}
 .tarea-comentario{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem;}
 .tarea-comentario:last-child{border-bottom:none;}

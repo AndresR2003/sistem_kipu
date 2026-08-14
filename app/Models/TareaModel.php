@@ -38,6 +38,8 @@ class TareaModel extends Model
 
         $sql = "SELECT t.*,
                        u.nombre AS creador_nombre,
+                       u.foto AS creador_foto,
+                       u.rol AS creador_rol,
                        CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,
@@ -82,6 +84,8 @@ class TareaModel extends Model
 
         $sql = "SELECT t.*,
                        u.nombre AS creador_nombre,
+                       u.foto AS creador_foto,
+                       u.rol AS creador_rol,
                        CASE WHEN t.completada_por IS NOT NULL THEN cu.nombre ELSE NULL END AS completada_por_nombre,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id) AS total_asignados,
                        (SELECT COUNT(*) FROM tarea_asignaciones ta WHERE ta.tarea_id = t.id AND ta.completado = 1) AS total_completados,

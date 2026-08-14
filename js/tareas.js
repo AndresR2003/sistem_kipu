@@ -249,11 +249,17 @@ function renderizarTarjeta(t) {
     }
 
     var html = '<div class="tarea-card' + claseCompletada + '" data-id="' + t.id + '" data-completada="' + (completada ? '1' : '0') + '" data-origen="tarea" data-origen-id="' + t.id + '" data-seccion="tareas">' +
+        '<div class="tarea-main">' +
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
         '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + deptBadges + '</div>' +
         estadoHtml +
+        '</div>' +
+        '</div>' +
+        '<div class="tarea-side">' +
+        tareaAutorCard(t) +
+        tareaFechaCard(t) +
         '</div>' +
         '<div class="tarea-acciones">' +
         '<button class="tarea-accion rec" onclick="guardarComoTarea(\'recordatorio\', ' + t.id + ')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
@@ -271,6 +277,63 @@ function renderizarTarjeta(t) {
         '</div>';
 
     return html;
+}
+
+function tareaAutorCard(t) {
+    var nombre = t.creador_nombre || 'Desconocido';
+    var avatar = '';
+    if (t.creador_foto) {
+        var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
+        var foto = t.creador_foto.indexOf('http') === 0 ? t.creador_foto : base + t.creador_foto;
+        var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
+        avatar = '<img src="' + foto + '?t=' + Date.now() + '" alt="" onerror="this.outerHTML=\'<span>\' + \'' + escHtml(inicial) + '\' + \'</span>\';">';
+    } else {
+        var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
+        avatar = '<span>' + escHtml(inicial) + '</span>';
+    }
+    var rol = rolLegible(t.creador_rol);
+    return '<div class="tarea-side-card">' +
+        '<div class="tarea-side-label">Publicado por</div>' +
+        '<div class="tarea-autor-row">' +
+        '<div class="tarea-autor-avatar">' + avatar + '</div>' +
+        '<div>' +
+        '<div class="tarea-autor-nombre">' + escHtml(nombre) + '</div>' +
+        '<div class="tarea-autor-rol">' + escHtml(rol) + '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+}
+
+function tareaFechaCard(t) {
+    var creado = t.created_at ? formatearFechaTarea(t.created_at) : '';
+    var hora = t.created_at ? formatearHoraTarea(t.created_at) : '';
+    return '<div class="tarea-side-card">' +
+        '<div class="tarea-side-label">Fecha de publicacion</div>' +
+        '<div class="tarea-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + creado + '</span></span></div>' +
+        '<div class="tarea-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + hora + ' hrs</span></span></div>' +
+        '</div>';
+}
+
+function rolLegible(rol) {
+    var map = { 'superadmin': 'Administrador', 'admin': 'Administrador', 'empleado': 'Empleado', 'soporte': 'Soporte', 'vendedor': 'Vendedor', 'tecnico': 'Tecnico' };
+    return map[rol] || '';
+}
+
+function formatearFechaTarea(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var dd = ('0' + d.getDate()).slice(-2);
+    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    var yy = d.getFullYear();
+    return dd + '/' + mm + '/' + yy;
+}
+
+function formatearHoraTarea(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var hh = ('0' + d.getHours()).slice(-2);
+    var mi = ('0' + d.getMinutes()).slice(-2);
+    return hh + ':' + mi;
 }
 
 // ─── Toggle acordeón ───

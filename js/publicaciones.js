@@ -67,8 +67,8 @@ function cargarBorradoresPublicados(seccion) {
                 var completado = parseInt(p.completado) ? 'completada' : '';
 
                 var card;
-                if (seccion === 'noticias') {
-                    card = noticiaCard(p);
+                if (seccion === 'noticias' || seccion === 'ideas' || seccion === 'manual') {
+                    card = noticiaCard(p, seccion);
                 } else {
                     card = '<div class="pub-card ' + completado + '" id="' + cardId + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
                         badge +
@@ -154,7 +154,7 @@ function toggleTarea(id, checkbox) {
     });
 }
 
-function noticiaCard(p) {
+function noticiaCard(p, seccion) {
     var nombre = p.usuario_nombre || 'Desconocido';
     var avatar = '';
     if (p.autor_foto) {
@@ -177,10 +177,15 @@ function noticiaCard(p) {
 
     var d = p.updated_at ? formatearFecha(p.updated_at) : '';
 
-    return '<div class="noticia-card" id="pub-' + p.id + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="noticias">' +
+    var tituloHtml = escHtml(p.titulo);
+    if (seccion === 'noticias') {
+        tituloHtml = '<a href="' + BASE_URL + 'noticias/ver/' + p.id + '">' + escHtml(p.titulo) + '</a>';
+    }
+
+    return '<div class="noticia-card" id="pub-' + p.id + '" data-origen="borrador" data-origen-id="' + p.id + '" data-seccion="' + seccion + '">' +
         '<div class="noticia-main">' +
         badge + fijado +
-        '<div class="pub-titulo"><a href="' + BASE_URL + 'noticias/ver/' + p.id + '">' + escHtml(p.titulo) + '</a></div>' +
+        '<div class="pub-titulo">' + tituloHtml + '</div>' +
         '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
         '<div class="pub-meta"><i class="bi bi-calendar3"></i> ' + (p.fecha || d) + ' <i class="bi bi-clock" style="margin-left:8px;"></i> ' + (p.hora || '') + ' hrs</div>' +
         '</div>' +
