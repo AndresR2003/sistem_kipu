@@ -920,7 +920,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             <div class="nav-item">
                 <a class="nav-link <?= uri_string() === 'entregas' ? 'active' : '' ?>" href="<?= site_url('entregas') ?>">
                     <i class="bi bi-arrow-left-right"></i>
-                    <span>Entregas / Pases de turno</span>
+                    <span>Pases de turno</span>
                 </a>
             </div>
             <div class="nav-item">

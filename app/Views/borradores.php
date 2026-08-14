@@ -126,188 +126,14 @@
     </div>
 
     <!-- TAB PASE DE TURNO -->
-    <div class="brd-tabpane" id="panePase" style="min-height:500px;display:none;">
-        <div class="ent-header">
-            <div>
-                <h5 class="mb-0" style="font-size:1rem;"><i class="bi bi-arrow-left-right" style="color:var(--primary);"></i> Pases de turno</h5>
-                <div class="ent-sub"><i class="bi bi-shield-lock-fill"></i> Administracion de tareas diarias y revision de cumplimiento</div>
-            </div>
-        </div>
-
-        <div class="stats-grid" id="statsEntregas">
-            <div class="stat-card">
-                <div class="stat-icon blue"><i class="bi bi-list-task"></i></div>
-                <div>
-                    <div class="stat-num" id="statTotal">0</div>
-                    <div class="stat-label">Tareas</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
-                <div>
-                    <div class="stat-num" id="statPub">0</div>
-                    <div class="stat-label">Publicadas</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon gray"><i class="bi bi-eye-slash-fill"></i></div>
-                <div>
-                    <div class="stat-num" id="statOcultas">0</div>
-                    <div class="stat-label">Ocultas</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon amber"><i class="bi bi-clipboard-check-fill"></i></div>
-                <div>
-                    <div class="stat-num" id="statHoy">0</div>
-                    <div class="stat-label">Realizadas hoy</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-tabs-lito" id="entTabs">
-            <button class="active" onclick="cambiarTabEntregas('tareas', this)"><i class="bi bi-list-task"></i> Tareas</button>
-            <button onclick="cambiarTabEntregas('registros', this)"><i class="bi bi-clipboard-check"></i> Revision de tareas realizadas</button>
-        </div>
-
-        <!-- TAB TAREAS -->
-        <div class="tab-pane" id="tabTareas">
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                <h6 class="mb-0" style="font-size:0.9rem;"><i class="bi bi-arrow-repeat" style="color:var(--primary);"></i> Tareas preseleccionadas</h6>
-                <button class="btn btn-primary-custom btn-sm" onclick="nuevaTarea()">
-                    <i class="bi bi-plus-lg"></i> Nueva tarea
-                </button>
-            </div>
-
-            <div class="table-responsive" style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-                <table class="table table-hover w-100">
-                    <thead>
-                        <tr>
-                            <th>Tarea</th>
-                            <th>Repite</th>
-                            <th>Inicio</th>
-                            <th>Fin</th>
-                            <th>Asignada a</th>
-                            <th>Estado</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyEntregas"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TAB REGISTROS -->
-        <div class="tab-pane" id="tabRegistros" style="display:none;">
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                <h6 class="mb-0" style="font-size:0.9rem;"><i class="bi bi-clipboard-check" style="color:var(--primary);"></i> Revision de tareas realizadas</h6>
-                <div class="d-flex gap-2">
-                    <input type="date" class="form-control form-control-sm" id="filtroRegInicio">
-                    <input type="date" class="form-control form-control-sm" id="filtroRegFin">
-                    <button class="btn btn-sm btn-outline-secondary" onclick="cargarRegistros()"><i class="bi bi-search"></i> Filtrar</button>
-                </div>
-            </div>
-
-            <div class="table-responsive" style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-                <table class="table table-hover w-100">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Tarea</th>
-                            <th>Realizado por</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyRegistros"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Nueva/Editar pase de turno -->
-<div class="modal fade" id="modalTarea" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title" id="modalTareaTitulo"><i class="bi bi-plus-circle"></i> Nueva tarea</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="tareaId">
-                <div class="mb-3">
-                    <label class="form-label">Titulo de la tarea</label>
-                    <input type="text" class="form-control" id="tareaTitulo" placeholder="Ej: Revisar habitaciones">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Descripcion</label>
-                    <textarea class="form-control" id="tareaDescripcion" rows="3" placeholder="Detalle de la tarea..."></textarea>
-                </div>
-                <div class="row g-3">
-                    <div class="col-6">
-                        <label class="form-label">Fecha de inicio</label>
-                        <input type="date" class="form-control" id="tareaInicio">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Fecha de fin <span class="text-muted">(opcional)</span></label>
-                        <input type="date" class="form-control" id="tareaFin">
-                    </div>
-                </div>
-                <div class="mb-3 mt-3">
-                    <label class="form-label">Asignada a</label>
-                    <select class="form-select" id="tareaTipo" onchange="toggleTareaDestinatario()">
-                        <option value="todos">Todos</option>
-                        <option value="usuarios">Usuarios</option>
-                        <option value="departamento">Departamento</option>
-                    </select>
-                </div>
-                <div class="mb-3" id="tareaDestinatarioWrap" style="display:none;">
-                    <select class="form-select" id="tareaDestinatario"></select>
-                </div>
-                <div class="form-check form-switch mt-3">
-                    <input class="form-check-input" type="checkbox" id="tareaRepetir" checked>
-                    <label class="form-check-label" for="tareaRepetir">Repetir diariamente</label>
-                </div>
-                <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" id="tareaPublicado" checked>
-                    <label class="form-check-label" for="tareaPublicado">Publicada (visible en Tareas)</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary-custom btn-sm" onclick="guardarTarea()"><i class="bi bi-save"></i> Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Publicar pase de turno -->
-<div class="modal fade" id="modalPublicarEntrega" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title"><i class="bi bi-send-fill" style="color:var(--success);"></i> Publicar tarea</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="pubTareaId">
-                <div class="mb-2">
-                    <label class="form-label small">Dirigido a</label>
-                    <select class="form-select" id="pubTipo" onchange="togglePubDestinatario()">
-                        <option value="todos">Todos</option>
-                        <option value="usuarios">Usuarios</option>
-                        <option value="departamento">Departamento</option>
-                    </select>
-                </div>
-                <div class="mb-2" id="pubDestinatarioWrap" style="display:none;">
-                    <select class="form-select" id="pubDestinatario"></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-success btn-sm" onclick="confirmarPublicarEntrega()"><i class="bi bi-send-fill"></i> Publicar</button>
-            </div>
+    <div class="brd-tabpane" id="panePase" style="min-height:300px;display:none;">
+        <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;min-height:300px;padding:24px;">
+            <i class="bi bi-arrow-left-right" style="font-size:3rem;color:var(--primary);opacity:0.6;"></i>
+            <h6 class="mb-0" style="font-size:0.95rem;color:var(--text);"><i class="bi bi-clock-history"></i> Pase de turno</h6>
+            <p class="text-muted small" style="max-width:360px;text-align:center;">El intercambio de informacion entre turnos ahora tiene su propia seccion, con puntos por area, revisiones y comentarios.</p>
+            <a href="<?= site_url('entregas') ?>" class="btn btn-primary-custom btn-sm">
+                <i class="bi bi-box-arrow-up-right"></i> Ir a Pases de turno
+            </a>
         </div>
     </div>
 </div>
@@ -363,18 +189,6 @@ function cambiarTabBorradores(nombre, btn) {
     $(btn).addClass('active');
     $('.brd-tabpane').removeClass('active');
     $('#pane' + nombre.charAt(0).toUpperCase() + nombre.slice(1)).addClass('active');
-}
-
-function cambiarTabEntregas(tab, btn) {
-    $('#entTabs button').removeClass('active');
-    $(btn).addClass('active');
-    if (tab === 'tareas') {
-        $('#tabTareas').show();
-        $('#tabRegistros').hide();
-    } else {
-        $('#tabTareas').hide();
-        $('#tabRegistros').show();
-    }
 }
 
 function llenarChecks() {

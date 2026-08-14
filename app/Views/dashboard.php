@@ -258,8 +258,8 @@ try {
     </a>
     <a class="quick-card" style="--qcol:#ec4899;--qbg:rgba(236,72,153,0.12);" href="<?= site_url('entregas') ?>">
         <div class="q-icon"><i class="bi bi-arrow-left-right"></i></div>
-        <span>Entregas</span>
-        <small>Pases de turno</small>
+        <span>Pases de turno</span>
+        <small>Relevos</small>
     </a>
     <a class="quick-card" style="--qcol:#14b8a6;--qbg:rgba(20,184,166,0.12);" href="<?= site_url('ideas') ?>">
         <div class="q-icon"><i class="bi bi-lightbulb-fill"></i></div>
@@ -279,7 +279,7 @@ try {
 </div>
 
 <div class="alert-row">
-    <a class="alert-card alert-card--tareas" href="<?= site_url('entregas') ?>">
+    <a class="alert-card alert-card--tareas" href="<?= site_url('tareas') ?>">
         <div class="ac-top">
             <div class="ac-icon"><i class="bi bi-arrow-repeat"></i></div>
             <span class="ac-badge">Tareas</span>

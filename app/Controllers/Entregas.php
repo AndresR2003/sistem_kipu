@@ -2,263 +2,365 @@
 
 namespace App\Controllers;
 
-use App\Models\ComentarioModel;
 use App\Models\DepartamentoModel;
-use App\Models\EntregaModel;
+use App\Models\PaseTurnoModel;
+use App\Models\TareaModel;
 
 class Entregas extends BaseController
 {
-    protected EntregaModel $model;
+    protected PaseTurnoModel $model;
 
     public function __construct()
     {
-        $this->model = new EntregaModel();
+        $this->model = new PaseTurnoModel();
+    }
+
+    private function usuarioId(): int
+    {
+        return (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+    }
+
+    private function esAdmin(): bool
+    {
+        return in_array(session()->get('admin_rol') ?? 'empleado', ['admin', 'superadmin'], true);
+    }
+
+    private function negar(): \CodeIgniter\HTTP\Response
+    {
+        return $this->response->setJSON(['success' => false, 'message' => 'No tienes permisos para realizar esta accion.']);
     }
 
     public function index()
     {
-        $rol = session()->get('admin_rol') ?? 'empleado';
-        if (!in_array($rol, ['admin', 'superadmin'], true)) {
-            return redirect()->to(site_url('tareas'));
-        }
-
-        $pageScripts = '<script src="' . base_url('js/entregas.js') . '?v=' . filemtime(FCPATH . 'js/entregas.js') . '"></script>';
+        $pageScripts = '<script src="' . base_url('js/pases.js') . '?v=' . filemtime(FCPATH . 'js/pases.js') . '"></script>';
 
         return view('layout', [
-            'contenido'   => view('entregas'),
-            'titulo'      => 'Entregas / Pases de turno - Kipucloud',
+            'contenido'   => view('entregas', ['esAdmin' => $this->esAdmin()]),
+            'titulo'      => 'Pases de turno - Kipucloud',
             'pageScripts' => $pageScripts,
         ]);
     }
 
-    public function listar(): \CodeIgniter\HTTP\Response
+    // ─── Catálogo de turnos ───
+
+    public function turnos(): \CodeIgniter\HTTP\Response
     {
-        $fecha = $this->request->getGet('fecha') ?? date('Y-m-d');
-        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
-        $rol = session()->get('admin_rol') ?? 'empleado';
-        $departamentoId = (int) (session()->get('id_departamento') ?? 0);
-        $tareas = $this->model->ObtenerActivas($fecha, $usuarioId, $departamentoId ?: null, $rol);
-        $registros = $this->model->ObtenerRegistrosDeHoy($fecha);
-
-        $porTarea = [];
-        foreach ($registros as $r) {
-            $porTarea[$r['entrega_id']][] = $r;
-        }
-
-        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
-        foreach ($tareas as &$t) {
-            $t['hecho_por_mi'] = false;
-            $t['hecho_por'] = [];
-            if (isset($porTarea[$t['id']])) {
-                foreach ($porTarea[$t['id']] as $r) {
-                    $t['hecho_por'][] = [
-                        'nombre' => $r['usuario_nombre'] ?? 'Desconocido',
-                        'hora'   => $r['completado_at'],
-                        'mio'    => ((int) $r['usuario_id']) === $usuarioId,
-                    ];
-                    if (((int) $r['usuario_id']) === $usuarioId) {
-                        $t['hecho_por_mi'] = true;
-                    }
-                }
-            }
-        }
-
-        $ids = array_column($tareas, 'id');
-        $counts = empty($ids) ? [] : (new ComentarioModel())->ContarPorEntregas($ids);
-        foreach ($tareas as &$t) {
-            $t['comentarios_count'] = $counts[$t['id']] ?? 0;
-        }
-
-        return $this->response->setJSON(['fecha' => $fecha, 'tareas' => $tareas]);
+        return $this->response->setJSON(['success' => true, 'data' => $this->model->Turnos(false)]);
     }
 
-    public function listarAdmin(): \CodeIgniter\HTTP\Response
+    public function guardarTurno(): \CodeIgniter\HTTP\Response
     {
-        return $this->response->setJSON($this->model->ObtenerTodasConDestinatario());
-    }
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $json = $this->request->getJSON(true);
+        if (!$json || trim($json['nombre'] ?? '') === '') {
+            return $this->response->setJSON(['success' => false, 'message' => 'El nombre del turno es obligatorio.']);
+        }
 
-    public function destinatarios(): \CodeIgniter\HTTP\Response
-    {
-        $db = \Config\Database::connect();
-        $usuarios = $db->table('admin_usuarios')->where('activo', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
-        $deptoModel = new DepartamentoModel();
-        $deptos = $deptoModel->ObtenerTodos();
+        $ok = $this->model->GuardarTurno(
+            trim($json['nombre']),
+            trim($json['descripcion'] ?? '') ?: null,
+            (int) ($json['orden'] ?? 0),
+            !empty($json['activo']) ? 1 : 0,
+            !empty($json['id']) ? (int) $json['id'] : null
+        );
 
         return $this->response->setJSON([
-            'usuarios'      => $usuarios,
-            'departamentos' => $deptos,
+            'success' => $ok,
+            'message' => $ok ? 'Turno guardado.' : 'Error al guardar el turno.',
+        ]);
+    }
+
+    public function eliminarTurno(int $id): \CodeIgniter\HTTP\Response
+    {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $ok = $this->model->EliminarTurno($id);
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Turno eliminado.' : 'Error al eliminar el turno.',
+        ]);
+    }
+
+    // ─── Pases de turno ───
+
+    public function listar(): \CodeIgniter\HTTP\Response
+    {
+        $estado = $this->request->getGet('estado') ?? '';
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $this->model->ListarPases($estado),
         ]);
     }
 
     public function obtener(int $id): \CodeIgniter\HTTP\Response
     {
-        $tarea = $this->model->ObtenerPorId($id);
-        if (!$tarea) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Tarea no encontrada.']);
+        $pase = $this->model->ObtenerPase($id);
+        if (!$pase) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Pase de turno no encontrado.']);
         }
-        return $this->response->setJSON($tarea);
-    }
-
-    public function registros(): \CodeIgniter\HTTP\Response
-    {
-        $inicio = $this->request->getGet('inicio') ?? '';
-        $fin = $this->request->getGet('fin') ?? '';
-        return $this->response->setJSON($this->model->ObtenerRegistros($inicio, $fin));
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $pase,
+        ]);
     }
 
     public function guardar(): \CodeIgniter\HTTP\Response
     {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
         $json = $this->request->getJSON(true);
-
-        if (!$json || empty($json['titulo']) || empty($json['fecha_inicio'])) {
+        if (!$json || empty($json['de_turno_id']) || empty($json['a_turno_id']) || empty($json['fecha'])) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'El titulo y la fecha de inicio son obligatorios.',
+                'message' => 'Debes indicar los turnos (de y para) y la fecha.',
             ]);
         }
 
-        $datos = [
-            'id'            => $json['id'] ?? null,
-            'titulo'        => $json['titulo'],
-            'descripcion'   => $json['descripcion'] ?? '',
-            'repetir_diario'=> !empty($json['repetir_diario']) ? 1 : 0,
-            'fecha_inicio'  => $json['fecha_inicio'],
-            'fecha_fin'     => $json['fecha_fin'] ?? null,
-            'publicado'     => !empty($json['publicado']) ? 1 : 0,
-            'destinatario_tipo' => $json['destinatario_tipo'] ?? 'todos',
-            'destinatario_id'   => !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null,
-            'created_by'    => session()->get('usuario_id') ?? session()->get('admin_id'),
-        ];
+        $id = $this->model->GuardarPase([
+            'titulo'      => trim($json['titulo'] ?? '') ?: null,
+            'de_turno_id' => (int) $json['de_turno_id'],
+            'a_turno_id'  => (int) $json['a_turno_id'],
+            'fecha'       => $json['fecha'],
+            'estado'      => 'abierto',
+            'creado_por'  => $this->usuarioId(),
+        ]);
 
-        if (empty($datos['id'])) {
-            unset($datos['id']);
-        }
-
-        if ($this->model->Guardar($datos)) {
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Tarea guardada.',
-            ]);
-        }
-
-        $errors = $this->model->errors();
         return $this->response->setJSON([
-            'success' => false,
-            'message' => !empty($errors) ? implode(', ', $errors) : 'Error al guardar.',
+            'success' => true,
+            'message' => 'Pase de turno creado.',
+            'id'      => $id,
+        ]);
+    }
+
+    public function cerrar(int $id): \CodeIgniter\HTTP\Response
+    {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $ok = $this->model->CerrarPase($id, $this->usuarioId());
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Pase de turno cerrado.' : 'Error al cerrar.',
+        ]);
+    }
+
+    public function reabrir(int $id): \CodeIgniter\HTTP\Response
+    {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $ok = $this->model->ReabrirPase($id);
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Pase de turno reabierto.' : 'Error al reabrir.',
         ]);
     }
 
     public function eliminar(int $id): \CodeIgniter\HTTP\Response
     {
-        $ok = $this->model->Eliminar($id);
-        return $this->response->setJSON([
-            'success' => $ok,
-            'message' => $ok ? 'Tarea eliminada.' : 'Error al eliminar.',
-        ]);
-    }
-
-    public function publicar(int $id): \CodeIgniter\HTTP\Response
-    {
-        $tarea = $this->model->ObtenerPorId($id);
-        if (!$tarea) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Tarea no encontrada.']);
+        if (!$this->esAdmin()) {
+            return $this->negar();
         }
-
-        $json = $this->request->getJSON(true) ?? [];
-        $tipo = $json['destinatario_tipo'] ?? 'todos';
-        $destId = !empty($json['destinatario_id']) ? (int) $json['destinatario_id'] : null;
-
-        $ok = $this->model->PublicarCon($id, $tipo, $destId);
+        $ok = $this->model->EliminarPase($id);
         return $this->response->setJSON([
             'success' => $ok,
-            'publicado' => (bool) $ok,
-            'message' => $ok ? 'Tarea publicada.' : 'Error al publicar.',
+            'message' => $ok ? 'Pase de turno eliminado.' : 'Error al eliminar.',
         ]);
     }
 
-    public function despublicar(int $id): \CodeIgniter\HTTP\Response
+    // ─── Puntos del pase ───
+
+    public function puntos(int $id): \CodeIgniter\HTTP\Response
     {
-        $tarea = $this->model->ObtenerPorId($id);
-        if (!$tarea || !$tarea['publicado']) {
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $this->model->ObtenerPuntos($id),
+        ]);
+    }
+
+    public function guardarPunto(): \CodeIgniter\HTTP\Response
+    {
+        $json = $this->request->getJSON(true);
+        if (!$json || empty($json['pase_id']) || trim($json['contenido'] ?? '') === '') {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'La tarea no esta publicada.',
+                'message' => 'El contenido del punto es obligatorio.',
             ]);
         }
 
-        $ok = $this->model->TogglePublicado($id, 0);
+        $pase = $this->model->ObtenerPase((int) $json['pase_id']);
+        if (!$pase) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Pase de turno no encontrado.']);
+        }
+
+        $datos = [
+            'pase_id'    => (int) $json['pase_id'],
+            'area_id'    => !empty($json['area_id']) ? (int) $json['area_id'] : null,
+            'contenido'  => trim($json['contenido']),
+            'creado_por' => $this->usuarioId(),
+        ];
+
+        $puntoId = $this->model->GuardarPunto($datos, !empty($json['id']) ? (int) $json['id'] : null);
         return $this->response->setJSON([
-            'success' => $ok,
-            'message' => $ok ? 'Tarea despublicada.' : 'Error al despublicar.',
+            'success' => true,
+            'message' => empty($json['id']) ? 'Punto agregado.' : 'Punto actualizado.',
+            'id'      => $puntoId,
         ]);
     }
 
-    public function completar(int $id): \CodeIgniter\HTTP\Response
+    public function cambiarEstadoPunto(int $id): \CodeIgniter\HTTP\Response
     {
-        $tarea = $this->model->ObtenerPorId($id);
-        if (!$tarea || !$tarea['publicado']) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Tarea no disponible.']);
-        }
-
         $json = $this->request->getJSON(true) ?? [];
-        $fecha = $json['fecha'] ?? date('Y-m-d');
-        $completado = !empty($json['completado']) ? 1 : 0;
-        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
-        $rol = session()->get('admin_rol') ?? 'empleado';
-        $departamentoId = (int) (session()->get('id_departamento') ?? 0);
-
-        $activas = $this->model->ObtenerActivas($fecha, $usuarioId, $departamentoId ?: null, $rol);
-        $visible = false;
-        foreach ($activas as $a) {
-            if ((int) $a['id'] === $id) {
-                $visible = true;
-                break;
-            }
+        $estado = $json['estado'] ?? '';
+        if (!in_array($estado, ['pendiente', 'revisado', 'completado'], true)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Estado invalido.']);
         }
-        if (!$visible) {
-            return $this->response->setJSON(['success' => false, 'message' => 'No tienes asignada esta tarea.']);
-        }
-
-        $resultado = $this->model->RegistrarEjecucion($id, $usuarioId, $fecha, $completado);
-        return $this->response->setJSON($resultado);
-    }
-
-    public function eliminarRegistro(int $id): \CodeIgniter\HTTP\Response
-    {
-        $ok = $this->model->EliminarRegistro($id);
+        $ok = $this->model->CambiarEstadoPunto($id, $estado, $this->usuarioId());
         return $this->response->setJSON([
             'success' => $ok,
-            'message' => $ok ? 'Registro eliminado.' : 'Error al eliminar.',
+            'message' => $ok ? 'Estado actualizado.' : 'Error al actualizar.',
         ]);
     }
 
-    public function listarComentarios(int $id): \CodeIgniter\HTTP\Response
+    public function eliminarPunto(int $id): \CodeIgniter\HTTP\Response
     {
-        $model = new ComentarioModel();
-        return $this->response->setJSON($model->ObtenerPorEntrega($id));
+        $punto = $this->model->ObtenerPunto($id);
+        if (!$punto) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Punto no encontrado.']);
+        }
+
+        $esAutor = ((int) $punto['creado_por']) === $this->usuarioId();
+        if (!$this->esAdmin() && !$esAutor) {
+            return $this->negar();
+        }
+
+        $ok = $this->model->EliminarPunto($id);
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Punto eliminado.' : 'Error al eliminar.',
+        ]);
+    }
+
+    // ─── Convertir punto en tarea ───
+
+    public function convertirEnTarea(int $puntoId): \CodeIgniter\HTTP\Response
+    {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $json = $this->request->getJSON(true);
+        $punto = $this->model->ObtenerPunto($puntoId);
+        if (!$punto) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Punto no encontrado.']);
+        }
+
+        if (!$json || trim($json['titulo'] ?? '') === '') {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'El titulo de la tarea es obligatorio.',
+            ]);
+        }
+
+        $tareaModel = new TareaModel();
+        $departamentos = !empty($json['departamentos']) ? array_map('intval', (array) $json['departamentos']) : [];
+        $asignados     = !empty($json['asignados']) ? array_map('intval', (array) $json['asignados']) : [];
+
+        $fechaLimite = $json['fecha_limite'] ?? null;
+        if (!empty($fechaLimite)) {
+            $fechaLimite = str_replace('T', ' ', $fechaLimite) . ':00';
+        }
+
+        $datos = [
+            'titulo'            => trim($json['titulo']),
+            'descripcion'       => trim($json['descripcion'] ?? ''),
+            'prioridad'         => $json['prioridad'] ?? 'media',
+            'fecha_limite'      => $fechaLimite,
+            'modalidad'         => $json['modalidad'] ?? 'single_completes_all',
+            'departamento_id'   => !empty($departamentos) ? $departamentos[0] : null,
+            'destinatario_tipo' => 'multiple',
+            'destinatario_id'   => null,
+            'created_by'        => $this->usuarioId(),
+            'publicado'         => !empty($json['publicado']) ? 1 : 0,
+        ];
+
+        if ($tareaModel->Guardar($datos)) {
+            $tareaId = (int) $tareaModel->insertID();
+            $tareaModel->GuardarDepartamentos($tareaId, $departamentos);
+            $tareaModel->GuardarUsuarios($tareaId, $asignados);
+            $this->model->VincularTarea($puntoId, $tareaId);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Tarea creada y vinculada al punto.',
+                'tarea_id' => $tareaId,
+            ]);
+        }
+
+        $errors = $tareaModel->errors();
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => !empty($errors) ? implode(', ', $errors) : 'Error al crear la tarea.',
+        ]);
+    }
+
+    public function desvincularTarea(int $puntoId): \CodeIgniter\HTTP\Response
+    {
+        if (!$this->esAdmin()) {
+            return $this->negar();
+        }
+        $ok = $this->model->DesvincularTarea($puntoId);
+        return $this->response->setJSON([
+            'success' => $ok,
+            'message' => $ok ? 'Vinculo con la tarea eliminado.' : 'Error.',
+        ]);
+    }
+
+    // ─── Comentarios por punto ───
+
+    public function listarComentarios(int $puntoId): \CodeIgniter\HTTP\Response
+    {
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $this->model->ListarComentarios($puntoId),
+        ]);
     }
 
     public function guardarComentario(): \CodeIgniter\HTTP\Response
     {
         $json = $this->request->getJSON(true);
-
-        if (!$json || empty($json['entrega_id']) || empty($json['comentario'])) {
+        if (!$json || empty($json['punto_id']) || trim($json['comentario'] ?? '') === '') {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Faltan datos.',
+                'message' => 'El comentario es obligatorio.',
             ]);
         }
 
-        $model = new ComentarioModel();
-        $ok    = $model->Guardar([
-            'entrega_id'  => (int) $json['entrega_id'],
-            'usuario_id'  => session()->get('usuario_id') ?? session()->get('admin_id'),
-            'comentario'  => $json['comentario'],
-        ]);
-
+        $ok = $this->model->GuardarComentario((int) $json['punto_id'], $this->usuarioId(), trim($json['comentario']));
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Comentario agregado.' : 'Error al guardar.',
         ]);
+    }
+
+    // ─── Utilidades (areas y usuarios) ───
+
+    public function areas(): \CodeIgniter\HTTP\Response
+    {
+        $deptoModel = new DepartamentoModel();
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $deptoModel->ObtenerTodos(),
+        ]);
+    }
+
+    public function usuarios(): \CodeIgniter\HTTP\Response
+    {
+        $db = \Config\Database::connect();
+        $usuarios = $db->table('admin_usuarios')->where('activo', 1)->orderBy('nombre', 'ASC')->get()->getResultArray();
+        return $this->response->setJSON(['success' => true, 'data' => $usuarios]);
     }
 }

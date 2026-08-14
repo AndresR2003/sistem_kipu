@@ -2,11 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Models\EntregaModel;
 use App\Models\BorradorModel;
+use App\Models\PaseTurnoModel;
 use App\Models\RecordatorioModel;
 use App\Models\EventoModel;
 use App\Models\ColaboradorModel;
+use App\Models\TareaModel;
 
 class Dashboard extends BaseController
 {
@@ -22,21 +23,33 @@ class Dashboard extends BaseController
         $data = $cache->get($cacheKey);
 
         if ($data === null) {
-            $entregaModel = new EntregaModel();
+            $paseModel = new PaseTurnoModel();
+            $tareaModel = new TareaModel();
             $borradorModel = new BorradorModel();
             $recordatorioModel = new RecordatorioModel();
             $eventoModel = new EventoModel();
             $colaboradorModel = new ColaboradorModel();
 
+            $db = \Config\Database::connect();
+            $tareasHoy = (int) $db->table('tareas')->where('publicado', 1)->where('completada', 0)->countAllResults();
+            $tareasDone = (int) $db->table('tareas')->where('publicado', 1)->where('completada', 1)->countAllResults();
+            $tareasVencidas = (int) $db->table('tareas')
+                ->where('publicado', 1)
+                ->where('completada', 0)
+                ->where('fecha_limite IS NOT NULL')
+                ->where('fecha_limite <', $hoy . ' 00:00:00')
+                ->countAllResults();
+
             $stats = [
-                'tareas_hoy'      => $entregaModel->ContarActivas($hoy, $usuarioId, $departamentoId, $rol),
-                'tareas_done'     => $entregaModel->ContarRegistradasHoy($hoy),
-                'noticias'        => $borradorModel->ContarPublicados('noticias', $usuarioId, $departamentoId, $rol),
-                'recordatorios'   => $recordatorioModel->ContarPendientes('recordatorio', $usuarioId),
-                'marcadores'      => $recordatorioModel->ContarTodos('marcador', $usuarioId),
-                'eventos'         => $eventoModel->ContarProximos($hoy),
-                'colaboradores'   => $colaboradorModel->countAllResults(),
-                'tareas_vencidas' => $entregaModel->ContarVencidas($hoy),
+                'tareas_hoy'       => $tareasHoy,
+                'tareas_done'      => $tareasDone,
+                'noticias'         => $borradorModel->ContarPublicados('noticias', $usuarioId, $departamentoId, $rol),
+                'recordatorios'    => $recordatorioModel->ContarPendientes('recordatorio', $usuarioId),
+                'marcadores'       => $recordatorioModel->ContarTodos('marcador', $usuarioId),
+                'eventos'          => $eventoModel->ContarProximos($hoy),
+                'colaboradores'    => $colaboradorModel->countAllResults(),
+                'tareas_vencidas'  => $tareasVencidas,
+                'pases_pendientes' => $paseModel->ContarAbiertos(),
             ];
 
             $eventos = $eventoModel->ObtenerProximos($hoy, 5);
