@@ -1,5 +1,5 @@
 var BASE = BASE_URL + 'entregas/';
-var destinatariosCache = null;
+var destEntregasCache = null;
 
 $(document).ready(function() {
     cargarTareasAdmin();
@@ -7,7 +7,7 @@ $(document).ready(function() {
     cargarStatsHoy();
 });
 
-function cambiarTab(tab, btn) {
+function cambiarTabEntregas(tab, btn) {
     $('#entTabs button').removeClass('active');
     $(btn).addClass('active');
     if (tab === 'tareas') {
@@ -32,8 +32,7 @@ function cargarTareasAdmin() {
             var tbody = $('#tbodyEntregas');
             tbody.empty();
             if (!data || data.length === 0) {
-                tbody.html(vacioHtml(7, 'bi-inbox', 'Sin tareas configuradas. Crea la primera con "Nueva tarea".'));
-                actualizarStats([]);
+                tbody.html('<tr><td colspan="7" class="text-center text-muted py-4">Sin tareas configuradas.</td></tr>');
                 return;
             }
             data.forEach(function(t) {
@@ -48,22 +47,21 @@ function cargarTareasAdmin() {
                 var fila = '<tr>' +
                     '<td><div class="fw-semibold">' + escHtml(t.titulo) + '</div>' +
                     (t.descripcion ? '<small class="text-muted">' + escHtml(t.descripcion) + '</small>' : '') + '</td>' +
-                    '<td>' + (parseInt(t.repetir_diario) ? '<i class="bi bi-arrow-repeat" style="color:var(--primary);"></i> Diaria' : 'Unica') + '</td>' +
+                    '<td>' + (parseInt(t.repetir_diario) ? '<i class="bi bi-arrow-repeat"></i> Diaria' : 'Unica') + '</td>' +
                     '<td>' + formatearFecha(t.fecha_inicio) + '</td>' +
                     '<td>' + formatearFecha(t.fecha_fin) + '</td>' +
                     '<td>' + dest + '</td>' +
                     '<td>' + estado + '</td>' +
                     '<td class="text-center text-nowrap">' +
-                    '<button class="btn-sm-icon edt" title="Editar" onclick="editarTarea(' + t.id + ')"><i class="bi bi-pencil"></i></button>' +
-                    '<button class="btn-sm-icon eye" title="Publicar/Despublicar" onclick="gestionarPublicacion(' + t.id + ')"><i class="bi bi-eye"></i></button>' +
-                    '<button class="btn-sm-icon del" title="Eliminar" onclick="eliminarTarea(' + t.id + ', \'' + escHtml(t.titulo).replace(/'/g, '\\\'') + '\')"><i class="bi bi-trash"></i></button>' +
+                    '<button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarTarea(' + t.id + ')"><i class="bi bi-pencil"></i></button> ' +
+                    '<button class="btn btn-sm btn-outline-secondary" title="Publicar/Despublicar" onclick="gestionarPublicacion(' + t.id + ')"><i class="bi bi-eye"></i></button> ' +
+                    '<button class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="eliminarTarea(' + t.id + ', \'' + escHtml(t.titulo).replace(/'/g, '\\\'') + '\')"><i class="bi bi-trash"></i></button>' +
                     '</td></tr>';
                 tbody.append(fila);
             });
-            actualizarStats(data);
         },
         error: function() {
-            $('#tbodyEntregas').html(vacioHtml(7, 'bi-exclamation-triangle', 'Error al cargar tareas.'));
+            $('#tbodyEntregas').html('<tr><td colspan="7" class="text-center text-danger py-4">Error al cargar tareas.</td></tr>');
         }
     });
 }
@@ -116,49 +114,6 @@ function escHtml(str) {
     return $('<div>').text(str).html();
 }
 
-function cargarTareasAdmin() {
-    $.ajax({
-        url: BASE + 'listarAdmin',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            var tbody = $('#tbodyEntregas');
-            tbody.empty();
-            if (!data || data.length === 0) {
-                tbody.html('<tr><td colspan="7" class="text-center text-muted py-4">Sin tareas configuradas.</td></tr>');
-                return;
-            }
-            data.forEach(function(t) {
-                var estado = parseInt(t.publicado)
-                    ? '<span class="badge-estado pub">Publicada</span>'
-                    : '<span class="badge-estado despub">Oculta</span>';
-                var dest = t.destinatario_tipo === 'todos'
-                    ? '<span class="badge-dest"><i class="bi bi-globe"></i> Todos</span>'
-                    : (t.destinatario_tipo === 'usuarios'
-                        ? '<span class="badge-dest"><i class="bi bi-person-fill"></i> ' + escHtml(t.destinatario_nombre || 'Usuario') + '</span>'
-                        : '<span class="badge-dest"><i class="bi bi-people-fill"></i> ' + escHtml(t.destinatario_nombre || 'Departamento') + '</span>');
-                var fila = '<tr>' +
-                    '<td><div class="fw-semibold">' + escHtml(t.titulo) + '</div>' +
-                    (t.descripcion ? '<small class="text-muted">' + escHtml(t.descripcion) + '</small>' : '') + '</td>' +
-                    '<td>' + (parseInt(t.repetir_diario) ? '<i class="bi bi-arrow-repeat"></i> Diaria' : 'Unica') + '</td>' +
-                    '<td>' + formatearFecha(t.fecha_inicio) + '</td>' +
-                    '<td>' + formatearFecha(t.fecha_fin) + '</td>' +
-                    '<td>' + dest + '</td>' +
-                    '<td>' + estado + '</td>' +
-                    '<td class="text-center text-nowrap">' +
-                    '<button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarTarea(' + t.id + ')"><i class="bi bi-pencil"></i></button> ' +
-                    '<button class="btn btn-sm btn-outline-secondary" title="Publicar/Despublicar" onclick="gestionarPublicacion(' + t.id + ')"><i class="bi bi-eye"></i></button> ' +
-                    '<button class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="eliminarTarea(' + t.id + ', \'' + escHtml(t.titulo).replace(/'/g, '\\\'') + '\')"><i class="bi bi-trash"></i></button>' +
-                    '</td></tr>';
-                tbody.append(fila);
-            });
-        },
-        error: function() {
-            $('#tbodyEntregas').html('<tr><td colspan="7" class="text-center text-danger py-4">Error al cargar tareas.</td></tr>');
-        }
-    });
-}
-
 function toggleTareaDestinatario() {
     var tipo = $('#tareaTipo').val();
     if (tipo === 'todos') {
@@ -167,7 +122,7 @@ function toggleTareaDestinatario() {
     }
     $('#tareaDestinatarioWrap').show();
 
-    if (destinatariosCache) {
+    if (destEntregasCache) {
         llenarTareaDestinatarios(tipo);
         return;
     }
@@ -177,7 +132,7 @@ function toggleTareaDestinatario() {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            destinatariosCache = data;
+            destEntregasCache = data;
             llenarTareaDestinatarios(tipo);
         }
     });
@@ -186,12 +141,12 @@ function toggleTareaDestinatario() {
 function llenarTareaDestinatarios(tipo) {
     var sel = $('#tareaDestinatario');
     sel.empty();
-    if (tipo === 'usuarios' && destinatariosCache.usuarios) {
-        destinatariosCache.usuarios.forEach(function(u) {
+    if (tipo === 'usuarios' && destEntregasCache.usuarios) {
+        destEntregasCache.usuarios.forEach(function(u) {
             sel.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
         });
-    } else if (tipo === 'departamento' && destinatariosCache.departamentos) {
-        destinatariosCache.departamentos.forEach(function(d) {
+    } else if (tipo === 'departamento' && destEntregasCache.departamentos) {
+        destEntregasCache.departamentos.forEach(function(d) {
             sel.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
         });
     }
@@ -322,7 +277,7 @@ function abrirModalPublicar(t) {
     if (t.destinatario_id) {
         $('#pubDestinatario').val(String(t.destinatario_id));
     }
-    new bootstrap.Modal(document.getElementById('modalPublicar')).show();
+    new bootstrap.Modal(document.getElementById('modalPublicarEntrega')).show();
 }
 
 function togglePubDestinatario() {
@@ -333,7 +288,7 @@ function togglePubDestinatario() {
     }
     $('#pubDestinatarioWrap').show();
 
-    if (destinatariosCache) {
+    if (destEntregasCache) {
         llenarPubDestinatarios(tipo);
         return;
     }
@@ -343,7 +298,7 @@ function togglePubDestinatario() {
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            destinatariosCache = data;
+            destEntregasCache = data;
             llenarPubDestinatarios(tipo);
         }
     });
@@ -352,18 +307,18 @@ function togglePubDestinatario() {
 function llenarPubDestinatarios(tipo) {
     var sel = $('#pubDestinatario');
     sel.empty();
-    if (tipo === 'usuarios' && destinatariosCache.usuarios) {
-        destinatariosCache.usuarios.forEach(function(u) {
+    if (tipo === 'usuarios' && destEntregasCache.usuarios) {
+        destEntregasCache.usuarios.forEach(function(u) {
             sel.append('<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>');
         });
-    } else if (tipo === 'departamento' && destinatariosCache.departamentos) {
-        destinatariosCache.departamentos.forEach(function(d) {
+    } else if (tipo === 'departamento' && destEntregasCache.departamentos) {
+        destEntregasCache.departamentos.forEach(function(d) {
             sel.append('<option value="' + d.id + '">' + escHtml(d.descripcion) + '</option>');
         });
     }
 }
 
-function confirmarPublicar() {
+function confirmarPublicarEntrega() {
     var id = $('#pubTareaId').val();
     var tipo = $('#pubTipo').val();
     var destId = tipo !== 'todos' ? parseInt($('#pubDestinatario').val()) : null;
@@ -381,7 +336,7 @@ function confirmarPublicar() {
         success: function(response) {
             hideLoading();
             if (response.success) {
-                bootstrap.Modal.getInstance(document.getElementById('modalPublicar')).hide();
+                bootstrap.Modal.getInstance(document.getElementById('modalPublicarEntrega')).hide();
                 Swal.fire({ icon: 'success', title: 'Publicada', text: 'La tarea se publico en Tareas.', timer: 1500, showConfirmButton: false });
                 cargarTareasAdmin();
             } else {
