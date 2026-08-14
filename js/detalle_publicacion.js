@@ -36,9 +36,9 @@ function cargarComentariosDetalle() {
 }
 
 function setComentariosCountDetalle(count) {
-    $('.detalle-accion.com .com-count').text(count).show();
+    $('.nd-accion.com .com-count').text(count).show();
     if (count === 0) {
-        $('.detalle-accion.com .com-count').hide();
+        $('.nd-accion.com .com-count').hide();
     }
 }
 
