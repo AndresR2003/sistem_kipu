@@ -102,7 +102,7 @@
 .noticia-card .pub-acciones button.com:hover{color:var(--success);}
 .noticia-card .comentarios-wrap{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:16px;padding-top:14px;}
 
-.noticia-side-card{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.noticia-side-card{background:transparent;border:none;border-radius:var(--radius);padding:2px 0;font-size:0.9em;}
 .noticia-side-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:10px;}
 .noticia-autor-row{display:flex;align-items:center;gap:10px;}
 .noticia-autor-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:#fff;}
