@@ -160,7 +160,8 @@ function noticiaCard(p) {
     if (p.autor_foto) {
         var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
         var foto = p.autor_foto.indexOf('http') === 0 ? p.autor_foto : base + p.autor_foto;
-        avatar = '<img src="' + foto + '?t=' + Date.now() + '" alt="">';
+        var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
+        avatar = '<img src="' + foto + '?t=' + Date.now() + '" alt="" onerror="this.outerHTML=\'<span>\' + \'' + escHtml(inicial) + '\' + \'</span>\';">';
     } else {
         var inicial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'A';
         avatar = '<span>' + escHtml(inicial) + '</span>';
