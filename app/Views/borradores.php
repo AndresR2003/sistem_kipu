@@ -14,9 +14,28 @@
 .pub-check{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--text);padding:2px 4px;border-radius:4px;cursor:pointer;}
 .pub-check:hover{background:var(--bg-input);}
 .pub-check input{accent-color:var(--primary);}
+
+/* Tabs de Borradores */
+.brd-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding:0 14px;background:var(--bg-card);}
+.brd-tabs button{background:transparent;border:none;padding:11px 16px;font-size:0.8rem;color:var(--text-muted);border-bottom:2px solid transparent;transition:all 0.15s;display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
+.brd-tabs button:hover{color:var(--text);}
+.brd-tabs button.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600;}
+.brd-tabpane{display:none;}
+.brd-tabpane.active{display:block;}
 </style>
 
 <div class="table-container" style="padding:0;overflow:hidden;">
+    <div class="brd-tabs">
+        <button class="active" data-tab="borradores" onclick="cambiarTabBorradores('borradores', this)">
+            <i class="bi bi-pencil-fill"></i> Borradores
+        </button>
+        <button data-tab="pase" onclick="cambiarTabBorradores('pase', this)">
+            <i class="bi bi-arrow-left-right"></i> Pase de turno
+        </button>
+    </div>
+
+    <!-- TAB BORRADORES -->
+    <div class="brd-tabpane active" id="paneBorradores">
     <div style="display:flex;flex-wrap:wrap;min-height:500px;">
         <!-- Panel izquierdo - Lista -->
         <div style="flex:1;min-width:280px;border-right:1px solid var(--border);">
@@ -76,6 +95,16 @@
             </div>
         </div>
     </div>
+    </div>
+
+    <!-- TAB PASE DE TURNO (contenido por definir) -->
+    <div class="brd-tabpane" id="panePase" style="min-height:500px;display:none;">
+        <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;min-height:500px;padding:24px;">
+            <i class="bi bi-arrow-left-right" style="font-size:3rem;color:var(--text-muted);opacity:0.3;"></i>
+            <h6 class="mb-0" style="font-size:0.95rem;color:var(--text);"><i class="bi bi-clock-history"></i> Pase de turno</h6>
+            <p class="text-muted small" style="max-width:360px;text-align:center;">Este espacio se habilitara pronto con la gestion de pases de turno.</p>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Publicar -->
@@ -123,6 +152,13 @@
 
 <script>
 var destinatariosCache = null;
+
+function cambiarTabBorradores(nombre, btn) {
+    $('.brd-tabs button').removeClass('active');
+    $(btn).addClass('active');
+    $('.brd-tabpane').removeClass('active');
+    $('#pane' + nombre.charAt(0).toUpperCase() + nombre.slice(1)).addClass('active');
+}
 
 function llenarChecks() {
     if (!destinatariosCache) {
