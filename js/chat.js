@@ -99,6 +99,7 @@
                     unreadByConversation[mode + ':' + (targetId || 0)] = 0;
                     panel.addClass('room-open');
                     updateHeader();
+                    markConversationAsRead();
                     resetConversation();
                     conversationsBox.find('.chat-conversation').removeClass('active');
                     $(this).addClass('active');
@@ -118,6 +119,14 @@
         $('#chatHeaderStatus').text(group ? 'Comunicación del equipo' : 'Conversación privada');
     }
 
+    function markConversationAsRead() {
+        $.ajax({
+            url: window.BASE_URL + 'chat/marcar-leidos',
+            type: 'POST',
+            data: { destinatario_id: mode === 'individual' ? targetId : '' }
+        });
+    }
+
     function renderMessage(message) {
         var mine = Number(message.usuario_id) === Number(window.USUARIO_ID);
         var nombre = message.usuario_nombre || 'Usuario';
@@ -128,11 +137,14 @@
         var attachment = '';
 
         if (message.archivo_nombre) {
-            var icon = (message.archivo_mime || '').indexOf('image/') === 0 ? 'bi-image' : 'bi-file-earmark-arrow-down';
+            var extension = message.archivo_nombre.toLowerCase().split('.').pop();
+            var isImage = (message.archivo_mime || '').indexOf('image/') === 0 || ['jpg', 'jpeg', 'png', 'gif', 'webp'].indexOf(extension) !== -1;
+            var isAudio = (message.archivo_mime || '').indexOf('audio/') === 0 || ['mp3', 'ogg', 'wav', 'webm', 'm4a'].indexOf(extension) !== -1;
+            var icon = isImage ? 'bi-image' : 'bi-file-earmark-arrow-down';
             var attachmentUrl = window.BASE_URL + 'chat/archivo/' + Number(message.id);
-            if ((message.archivo_mime || '').indexOf('image/') === 0) {
+            if (isImage) {
                 attachment = '<a class="chat-image-link" href="' + attachmentUrl + '?inline=1" target="_blank" rel="noopener"><img class="chat-image" src="' + attachmentUrl + '?inline=1" alt="' + escapeHtml(message.archivo_nombre) + '"></a>';
-            } else if ((message.archivo_mime || '').indexOf('audio/') === 0) {
+            } else if (isAudio) {
                 attachment = '<audio class="chat-audio" controls preload="none" src="' + attachmentUrl + '?inline=1"></audio>';
             }
             attachment += '<a class="chat-attachment" href="' + attachmentUrl + '" target="_blank" rel="noopener">' +
@@ -251,6 +263,7 @@
             panel.toggleClass('is-open');
             if (panel.hasClass('is-open')) {
                 if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
+                if (panel.hasClass('room-open') || window.innerWidth > 576) markConversationAsRead();
                 loadConversations();
                 loadMessages();
                 input.trigger('focus');

@@ -61,19 +61,28 @@ class Chat extends BaseController
         $destinatarioId = $this->destinatario();
 
         try {
-            if ((int) $this->request->getGet('marcar_leido') === 1) {
-                (new ChatModel())->marcarComoLeidos($usuarioId, $destinatarioId);
-            }
             $mensajes = (new ChatModel())->obtenerRecientes($usuarioId, $destinatarioId, $desde);
         } catch (\Throwable $e) {
             log_message('error', 'Chat listar: {message}', ['message' => $e->getMessage()]);
-            return $this->respuestaError('No se pudo cargar el chat. Ejecuta la migración de chat_mensajes.');
+            return $this->respuestaError('No se pudo cargar el chat. Ejecuta las migraciones de chat_mensajes y chat_lecturas.');
         }
 
         return $this->response->setJSON([
             'success' => true,
             'data'    => $mensajes,
         ]);
+    }
+
+    public function marcarLeidos(): ResponseInterface
+    {
+        try {
+            $destinatarioId = $this->destinatario();
+            (new ChatModel())->marcarComoLeidos($this->usuarioActual(), $destinatarioId);
+            return $this->response->setJSON(['success' => true]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Chat marcar leidos: {message}', ['message' => $e->getMessage()]);
+            return $this->respuestaError('No se pudo actualizar el estado de lectura.');
+        }
     }
 
     public function enviar(): ResponseInterface
@@ -118,6 +127,9 @@ class Chat extends BaseController
             $imagenValida = $esImagen && @getimagesize($archivo->getTempName()) !== false;
             if (!in_array($extension, self::ALLOWED_EXTENSIONS, true) || (!$imagenValida && !in_array($mimeBase, self::ALLOWED_MIMES, true))) {
                 return $this->respuestaError('Este tipo de archivo no está permitido.');
+            }
+            if (in_array($extension, ['mp3', 'ogg', 'wav', 'webm', 'm4a'], true) && $mimeBase === 'video/webm') {
+                $mimeBase = 'audio/webm';
             }
 
             $directorio = WRITEPATH . 'uploads/chat';

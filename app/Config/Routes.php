@@ -40,6 +40,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('chat/usuarios', 'Chat::usuarios');
     $routes->get('chat/conversaciones', 'Chat::conversaciones');
     $routes->get('chat/listar', 'Chat::listar');
+    $routes->post('chat/marcar-leidos', 'Chat::marcarLeidos');
     $routes->post('chat/enviar', 'Chat::enviar');
     $routes->get('chat/archivo/(:num)', 'Chat::archivo/$1');
 
