@@ -572,6 +572,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         .chat-attachment { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; margin-top: 6px; padding: 6px 8px; border-radius: 8px; background: var(--bg-input); color: var(--primary); font-size: 0.68rem; text-decoration: none; }
         .chat-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .chat-attachment:hover { color: var(--primary-light); }
+        .chat-audio { display: block; width: 220px; max-width: 100%; height: 34px; margin-top: 6px; }
 
         .chat-composer { position: relative; flex-shrink: 0; padding: 10px; border-top: 1px solid var(--border); background: var(--modal-bg); }
         .chat-attachment-preview { display: none; align-items: center; gap: 7px; margin-bottom: 7px; padding: 6px 8px; border-radius: 7px; background: var(--bg-input); color: var(--text-muted); font-size: 0.68rem; }
@@ -583,6 +584,8 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         .chat-input:focus { border-color: var(--primary); }
         .chat-tool { width: 32px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer; }
         .chat-tool:hover { background: var(--bg-input); color: var(--primary); }
+        .chat-tool.recording { background: color-mix(in srgb, var(--danger) 14%, var(--bg-input)); color: var(--danger); animation: chat-recording-pulse 1.2s infinite; }
+        @keyframes chat-recording-pulse { 50% { opacity: 0.45; } }
         .chat-send { width: 36px; height: 34px; border: 0; border-radius: 9px; background: var(--primary); color: #fff; cursor: pointer; }
         .chat-send:disabled { opacity: 0.55; cursor: wait; }
         .chat-emoji-picker { position: absolute; right: 48px; bottom: 56px; display: none; width: 220px; padding: 9px; border: 1px solid var(--border-light); border-radius: 10px; background: var(--modal-bg); box-shadow: var(--shadow-lg); }
@@ -1269,7 +1272,8 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                         <div class="chat-input-row">
                             <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
                             <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
-                            <input type="file" id="chatFile" name="archivo" accept="image/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.mp3,.ogg,.wav,.mp4,.webm" hidden>
+                            <button class="chat-tool" id="chatRecordButton" type="button" title="Grabar audio" aria-label="Grabar audio"><i class="bi bi-mic-fill"></i></button>
+                            <input type="file" id="chatFile" name="archivo" accept="image/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.mp3,.ogg,.wav,.webm,.m4a,.mp4" hidden>
                             <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
                             <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
                         </div>

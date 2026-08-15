@@ -16,14 +16,14 @@ class Chat extends BaseController
         'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'audio/mpeg', 'audio/ogg', 'audio/wav', 'video/mp4', 'video/webm',
+        'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/x-wav', 'audio/webm', 'audio/mp4', 'audio/m4a', 'video/mp4', 'video/webm',
         'application/x-rar-compressed', 'application/vnd.rar', 'application/octet-stream',
     ];
 
     private const ALLOWED_EXTENSIONS = [
         'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'txt', 'csv',
         'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar',
-        'mp3', 'ogg', 'wav', 'mp4', 'webm',
+        'mp3', 'ogg', 'wav', 'webm', 'm4a', 'mp4',
     ];
 
     public function usuarios(): ResponseInterface
@@ -108,9 +108,12 @@ class Chat extends BaseController
             if ($archivo->getSize() > self::MAX_FILE_SIZE) {
                 return $this->respuestaError('El archivo debe pesar como máximo 10 MB.');
             }
-            $extension = strtolower($archivo->getExtension());
-            $mime = $archivo->getMimeType();
-            if (!in_array($extension, self::ALLOWED_EXTENSIONS, true) || !in_array($mime, self::ALLOWED_MIMES, true)) {
+            $extension = strtolower(pathinfo($archivo->getClientName(), PATHINFO_EXTENSION) ?: $archivo->getExtension());
+            $mime = strtolower((string) $archivo->getMimeType());
+            $mimeBase = trim(explode(';', $mime)[0]);
+            $esImagen = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true);
+            $imagenValida = $esImagen && @getimagesize($archivo->getTempName()) !== false;
+            if (!in_array($extension, self::ALLOWED_EXTENSIONS, true) || (!$imagenValida && !in_array($mimeBase, self::ALLOWED_MIMES, true))) {
                 return $this->respuestaError('Este tipo de archivo no está permitido.');
             }
 
@@ -123,7 +126,7 @@ class Chat extends BaseController
             $archivo->move($directorio, $nombreGuardado);
             $datos['archivo_nombre'] = $archivo->getClientName();
             $datos['archivo_ruta'] = $nombreGuardado;
-            $datos['archivo_mime'] = $archivo->getMimeType();
+            $datos['archivo_mime'] = $mimeBase;
             $datos['archivo_tamano'] = $archivo->getSize();
         }
 
@@ -156,6 +159,14 @@ class Chat extends BaseController
         $directorio = realpath(WRITEPATH . 'uploads/chat');
         if (!$ruta || !$directorio || dirname($ruta) !== $directorio || !is_file($ruta)) {
             return $this->response->setStatusCode(404)->setBody('Archivo no encontrado.');
+        }
+
+        if ($this->request->getGet('inline') === '1') {
+            $nombre = str_replace(['"', "\r", "\n"], '', $mensaje['archivo_nombre'] ?: basename($ruta));
+            return $this->response
+                ->setContentType($mensaje['archivo_mime'] ?: 'application/octet-stream')
+                ->setHeader('Content-Disposition', 'inline; filename="' . $nombre . '"')
+                ->setBody((string) file_get_contents($ruta));
         }
 
         return $this->response->download($ruta, null)->setFileName($mensaje['archivo_nombre'] ?: basename($ruta));

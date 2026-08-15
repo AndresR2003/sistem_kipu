@@ -1,5 +1,5 @@
 (function() {
-    var panel, messagesBox, input, fileInput, preview, attachmentName, badge, conversationsBox;
+    var panel, messagesBox, input, fileInput, preview, attachmentName, badge, conversationsBox, recordButton;
     var mode = 'grupo';
     var targetId = null;
     var lastId = 0;
@@ -10,6 +10,9 @@
     var conversationLastIds = {};
     var unreadByConversation = {};
     var conversationsLoaded = false;
+    var mediaRecorder = null;
+    var recordingStream = null;
+    var recordingChunks = [];
 
     function escapeHtml(value) {
         return $('<div>').text(value == null ? '' : String(value)).html();
@@ -126,7 +129,11 @@
 
         if (message.archivo_nombre) {
             var icon = (message.archivo_mime || '').indexOf('image/') === 0 ? 'bi-image' : 'bi-file-earmark-arrow-down';
-            attachment = '<a class="chat-attachment" href="' + window.BASE_URL + 'chat/archivo/' + Number(message.id) + '" target="_blank" rel="noopener">' +
+            var attachmentUrl = window.BASE_URL + 'chat/archivo/' + Number(message.id);
+            if ((message.archivo_mime || '').indexOf('audio/') === 0) {
+                attachment = '<audio class="chat-audio" controls preload="none" src="' + attachmentUrl + '?inline=1"></audio>';
+            }
+            attachment += '<a class="chat-attachment" href="' + attachmentUrl + '" target="_blank" rel="noopener">' +
                 '<i class="bi ' + icon + '"></i><span>' + escapeHtml(message.archivo_nombre) + '</span>' +
                 '<small>' + formatSize(Number(message.archivo_tamano)) + '</small></a>';
         }
@@ -191,6 +198,42 @@
         attachmentName.text('');
     }
 
+    function toggleRecording() {
+        if (!window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            if (window.Swal) Swal.fire({ icon: 'info', title: 'Audio no disponible', text: 'Tu navegador no permite grabar audio. Puedes adjuntar un archivo de audio.' });
+            return;
+        }
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+            recordingStream = stream;
+            recordingChunks = [];
+            var options = window.MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? { mimeType: 'audio/webm;codecs=opus' } : {};
+            mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorder.ondataavailable = function(event) {
+                if (event.data.size) recordingChunks.push(event.data);
+            };
+            mediaRecorder.onstop = function() {
+                var blob = new Blob(recordingChunks, { type: 'audio/webm' });
+                var audioFile = new File([blob], 'audio_' + Date.now() + '.webm', { type: 'audio/webm' });
+                var transfer = new DataTransfer();
+                transfer.items.add(audioFile);
+                fileInput[0].files = transfer.files;
+                attachmentName.text(audioFile.name + ' (' + formatSize(audioFile.size) + ')');
+                preview.addClass('show');
+                recordButton.removeClass('recording').attr('title', 'Grabar audio').find('i').attr('class', 'bi bi-mic-fill');
+                if (recordingStream) recordingStream.getTracks().forEach(function(track) { track.stop(); });
+                recordingStream = null;
+            };
+            mediaRecorder.start();
+            recordButton.addClass('recording').attr('title', 'Detener grabación').find('i').attr('class', 'bi bi-stop-fill');
+        }).catch(function() {
+            if (window.Swal) Swal.fire({ icon: 'error', title: 'Micrófono bloqueado', text: 'Permite el acceso al micrófono para grabar un audio.' });
+        });
+    }
+
     $(function() {
         panel = $('#chatPanel');
         messagesBox = $('#chatMessages');
@@ -200,6 +243,7 @@
         attachmentName = $('#chatAttachmentName');
         badge = $('#chatBadge');
         conversationsBox = $('#chatConversations');
+        recordButton = $('#chatRecordButton');
 
         $('#chatToggle').on('click', function() {
             panel.toggleClass('is-open');
@@ -213,6 +257,7 @@
         $('#chatClose').on('click', function() { panel.removeClass('is-open room-open'); });
         $('#chatBack').on('click', function() { panel.removeClass('room-open'); });
         $('#chatFileButton').on('click', function() { fileInput.trigger('click'); });
+        recordButton.on('click', toggleRecording);
         $('#chatAttachmentRemove').on('click', clearAttachment);
         fileInput.on('change', function() {
             var file = this.files[0];
