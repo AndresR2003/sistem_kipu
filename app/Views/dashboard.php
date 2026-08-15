@@ -170,6 +170,11 @@ try {
     .alert-card--petic   { --alert-color:#fbbf24; --alert-bg:#2a2410; --alert-border:#78350f7f; --alert-icon-bg:#451a0366; }
     .alert-card--turnos  { --alert-color:#60a5fa; --alert-bg:#101c2e; --alert-border:#1e3a5f7f; --alert-icon-bg:#17255466; }
 
+    [data-theme="light"] .alert-card--tareas  { --alert-color:#dc2626; --alert-bg:#fff7f7; --alert-border:#fecaca; --alert-icon-bg:#fee2e2; }
+    [data-theme="light"] .alert-card--repar   { --alert-color:#ea580c; --alert-bg:#fff8f1; --alert-border:#fed7aa; --alert-icon-bg:#ffedd5; }
+    [data-theme="light"] .alert-card--petic   { --alert-color:#b45309; --alert-bg:#fffbeb; --alert-border:#fde68a; --alert-icon-bg:#fef3c7; }
+    [data-theme="light"] .alert-card--turnos  { --alert-color:#2563eb; --alert-bg:#f5f8ff; --alert-border:#bfdbfe; --alert-icon-bg:#dbeafe; }
+
     @media (max-width: 992px){
         .alert-row{grid-template-columns:repeat(2,1fr);}
     }
