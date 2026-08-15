@@ -65,6 +65,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('colaboradores/obtener/(:num)', 'Colaboradores::obtener/$1');
     $routes->post('colaboradores/guardar', 'Colaboradores::guardar');
     $routes->post('colaboradores/eliminar/(:num)', 'Colaboradores::eliminar/$1');
+    $routes->post('colaboradores/subir-foto/(:num)', 'Colaboradores::subirFoto/$1');
     $routes->get('colaboradores/departamentos', 'Colaboradores::departamentos');
     $routes->get('borradores', 'Borradores::index');
     $routes->get('borradores/listar', 'Borradores::listar');

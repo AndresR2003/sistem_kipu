@@ -1,6 +1,11 @@
 var tablaColaboradores = null;
+var esAdminColaboradores = typeof USUARIO_ROL !== "undefined" && (USUARIO_ROL === "admin" || USUARIO_ROL === "superadmin");
+var fotoColaboradorPendiente = null;
 
 $(document).ready(function () {
+  if (!esAdminColaboradores) {
+    $("#btnNuevoColaborador").hide();
+  }
   cargarColaboradores();
 });
 
@@ -31,12 +36,21 @@ function cargarColaboradores() {
         var estado = c.activo
           ? '<span class="badge" style="background:rgba(34,197,94,0.15);color:#22c55e;font-size:0.7rem;">Activo</span>'
           : '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;font-size:0.7rem;">Inactivo</span>';
-        var btnEliminar =
-          c.id == USUARIO_ID
-            ? '<button class="btn-sm-icon" disabled style="opacity:0.3;" title="No puedes eliminarte"><i class="bi bi-trash"></i></button>'
-            : '<button class="btn-sm-icon" onclick="eliminarColaborador(' +
-              c.id +
-              ')" title="Eliminar"><i class="bi bi-trash" style="color:var(--danger);"></i></button>';
+
+        var acciones = '<span class="text-muted">-</span>';
+        if (c.puede_gestionar) {
+          var btnEliminar =
+            c.id == USUARIO_ID
+              ? '<button class="btn-sm-icon" disabled style="opacity:0.3;" title="No puedes eliminarte"><i class="bi bi-trash"></i></button>'
+              : '<button class="btn-sm-icon" onclick="eliminarColaborador(' +
+                c.id +
+                ')" title="Eliminar"><i class="bi bi-trash" style="color:var(--danger);"></i></button>';
+          acciones =
+            '<button class="btn-sm-icon" onclick="editarColaborador(' +
+            c.id +
+            ')" title="Editar"><i class="bi bi-pencil-fill"></i></button> ' +
+            btnEliminar;
+        }
 
         var tr =
           "<tr>" +
@@ -67,10 +81,7 @@ function cargarColaboradores() {
           estado +
           "</td>" +
           "<td>" +
-          '<button class="btn-sm-icon" onclick="editarColaborador(' +
-          c.id +
-          ')" title="Editar"><i class="bi bi-pencil-fill"></i></button> ' +
-          btnEliminar +
+          acciones +
           "</td>" +
           "</tr>";
         tbody.append(tr);
@@ -84,8 +95,18 @@ function cargarColaboradores() {
         order: [[1, "asc"]],
         columnDefs: [
           { orderable: false, targets: [8] }
-        ]
+        ],
+        createdRow: function (row) {
+          if (!esAdminColaboradores) {
+            $("td:nth-child(9)", row).hide();
+          }
+        }
       });
+
+      if (!esAdminColaboradores) {
+        $("#tablaColaboradores th:last-child").hide();
+        tablaColaboradores.columns(8).visible(false);
+      }
     },
     error: function () {
       hideLoading();
@@ -111,6 +132,20 @@ function cargarDepartamentos() {
   });
 }
 
+function previsualizarFotoColaborador(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var preview = $("#colFotoPreview");
+      preview.empty();
+      var img = $('<img alt="Foto">').attr("src", e.target.result);
+      preview.append(img);
+    };
+    reader.readAsDataURL(input.files[0]);
+    fotoColaboradorPendiente = input.files[0];
+  }
+}
+
 function nuevoColaborador() {
   $("#colaboradorId").val("");
   $("#colUsername").val("").prop("readonly", false);
@@ -124,6 +159,9 @@ function nuevoColaborador() {
   $("#colTelefono").val("");
   $("#colFechaNac").val("");
   $("#colFechaCont").val("");
+  $("#colFoto").val("");
+  fotoColaboradorPendiente = null;
+  $("#colFotoPreview").empty().html('<i class="bi bi-person-fill"></i>');
   $("#modalTitle").text("Nuevo Empleado");
   $("#passLabel").text("(dejar vacio = se genera automatica)");
   cargarDepartamentos();
@@ -150,6 +188,15 @@ function editarColaborador(id) {
       $("#colTelefono").val(c.telefono || "");
       $("#colFechaNac").val(c.fecha_nacimiento || "");
       $("#colFechaCont").val(c.fecha_contratacion || "");
+      $("#colFoto").val("");
+      fotoColaboradorPendiente = null;
+      var preview = $("#colFotoPreview");
+      preview.empty();
+      if (c.foto) {
+        preview.append($('<img alt="Foto">').attr("src", BASE_URL + c.foto));
+      } else {
+        preview.html('<i class="bi bi-person-fill"></i>');
+      }
       $("#modalTitle").text("Editar Empleado");
       $("#passLabel").text("(dejar vacio para mantener)");
       cargarDepartamentos();
@@ -208,24 +255,66 @@ function guardarColaborador() {
     data: JSON.stringify(datos),
     dataType: "json",
     success: function (response) {
-      hideLoading();
       if (response.success) {
-        $("#modalColaborador").modal("hide");
-        Swal.fire({
-          icon: "success",
-          title: "Guardado",
-          text: response.message,
-          timer: 1500,
-          showConfirmButton: false,
-        });
-        cargarColaboradores();
+        var nuevoId = response.id || null;
+        if (fotoColaboradorPendiente) {
+          subirFotoColaborador(nuevoId, response.message);
+        } else {
+          hideLoading();
+          $("#modalColaborador").modal("hide");
+          Swal.fire({
+            icon: "success",
+            title: "Guardado",
+            text: response.message,
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          cargarColaboradores();
+        }
       } else {
+        hideLoading();
         Swal.fire("Error", response.message, "error");
       }
     },
     error: function () {
       hideLoading();
       Swal.fire("Error", "Error de conexion.", "error");
+    },
+  });
+}
+
+function subirFotoColaborador(id, mensaje) {
+  var formData = new FormData();
+  formData.append("foto", fotoColaboradorPendiente);
+
+  $.ajax({
+    url: BASE_URL + "colaboradores/subir-foto/" + (id || 0),
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (response) {
+      hideLoading();
+      if (response.success) {
+        $("#modalColaborador").modal("hide");
+        Swal.fire({
+          icon: "success",
+          title: "Guardado",
+          text: mensaje + " Foto subida.",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        cargarColaboradores();
+      } else {
+        Swal.fire("Advertencia", "Colaborador guardado, pero la foto fallo: " + response.message, "warning");
+        cargarColaboradores();
+      }
+    },
+    error: function () {
+      hideLoading();
+      Swal.fire("Advertencia", "Colaborador guardado, pero la foto no pudo subirse.", "warning");
+      cargarColaboradores();
     },
   });
 }

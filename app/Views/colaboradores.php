@@ -7,6 +7,10 @@
 .badge-rol.soporte { background: rgba(99,102,241,0.15); color: #6366f1; }
 .badge-rol.vendedor { background: rgba(236,72,153,0.15); color: #ec4899; }
 .badge-rol.tecnico { background: rgba(251,146,60,0.15); color: #fb923c; }
+.col-foto-preview { width: 76px; height: 76px; border-radius: 50%; overflow: hidden; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); background: var(--bg-card-alt); flex-shrink: 0; }
+.col-foto-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.btn-outline-primary-custom { border: 1px solid var(--primary); color: var(--primary); background: transparent; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-outline-primary-custom:hover { background: var(--primary); color: #fff; }
 </style>
 
 <div class="table-container">
@@ -16,7 +20,7 @@
                 <h5 class="mb-0"><i class="bi bi-person-badge-fill"></i> Personal / Empleados</h5>
                 <small class="text-muted">Gestión de empleados del sistema</small>
             </div>
-            <button class="btn btn-primary-custom btn-sm" onclick="nuevoColaborador()">
+            <button class="btn btn-primary-custom btn-sm" id="btnNuevoColaborador" onclick="nuevoColaborador()">
                 <i class="bi bi-plus-lg"></i> Nuevo
             </button>
         </div>
@@ -51,6 +55,21 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="colaboradorId">
+                <div class="col-foto-wrap mb-3">
+                    <label class="form-label small">Foto del empleado</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="col-foto-preview" id="colFotoPreview">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <label class="btn btn-outline-primary-custom btn-sm col-foto-btn">
+                                <i class="bi bi-cloud-arrow-up"></i> Seleccionar imagen
+                                <input type="file" id="colFoto" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="previsualizarFotoColaborador(this)">
+                            </label>
+                            <div class="small text-muted mt-1">JPG, PNG, WebP o GIF. Máximo 2MB.</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row g-2">
                     <div class="col-md-6">
                         <div class="mb-2">

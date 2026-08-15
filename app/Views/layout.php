@@ -1304,6 +1304,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         var CSRF_TOKEN = '<?= csrf_hash() ?>';
         var BASE_URL = '<?= base_url() ?>';
         var USUARIO_ID = <?= (int) session()->get('usuario_id') ?>;
+        var USUARIO_ROL = '<?= esc(session()->get('admin_rol') ?? 'empleado') ?>';
 
         $.ajaxSetup({
             beforeSend: function(xhr) {
