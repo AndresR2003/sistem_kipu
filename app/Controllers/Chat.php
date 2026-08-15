@@ -19,10 +19,33 @@ class Chat extends BaseController
         'audio/mpeg', 'audio/ogg', 'audio/wav', 'video/mp4', 'video/webm',
     ];
 
+    public function usuarios(): ResponseInterface
+    {
+        $usuarioId = $this->usuarioActual();
+
+        try {
+            return $this->response->setJSON([
+                'success' => true,
+                'data'    => (new ChatModel())->obtenerUsuarios($usuarioId),
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Chat usuarios: {message}', ['message' => $e->getMessage()]);
+            return $this->respuestaError('No se pudieron cargar los usuarios. Verifica la base de datos.');
+        }
+    }
+
     public function listar(): ResponseInterface
     {
+        $usuarioId = $this->usuarioActual();
         $desde = max(0, (int) $this->request->getGet('desde'));
-        $mensajes = (new ChatModel())->obtenerRecientes($desde);
+        $destinatarioId = $this->destinatario();
+
+        try {
+            $mensajes = (new ChatModel())->obtenerRecientes($usuarioId, $destinatarioId, $desde);
+        } catch (\Throwable $e) {
+            log_message('error', 'Chat listar: {message}', ['message' => $e->getMessage()]);
+            return $this->respuestaError('No se pudo cargar el chat. Ejecuta la migración de chat_mensajes.');
+        }
 
         return $this->response->setJSON([
             'success' => true,
@@ -32,18 +55,30 @@ class Chat extends BaseController
 
     public function enviar(): ResponseInterface
     {
-        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $usuarioId = $this->usuarioActual();
+        $destinatarioId = $this->destinatario();
         $mensaje = trim((string) $this->request->getPost('mensaje'));
         $archivo = $this->request->getFile('archivo');
+
+        if ($destinatarioId === $usuarioId) {
+            return $this->respuestaError('No puedes iniciar una conversación contigo mismo.');
+        }
+        if ($destinatarioId !== null) {
+            $destinatario = (new \App\Models\AdminModel())->where('id', $destinatarioId)->where('activo', 1)->first();
+            if (!$destinatario) {
+                return $this->respuestaError('El usuario seleccionado no está disponible.');
+            }
+        }
 
         if ($mensaje === '' && (!$archivo || $archivo->getError() === UPLOAD_ERR_NO_FILE)) {
             return $this->respuestaError('Escribe un mensaje o selecciona un archivo.');
         }
 
         $datos = [
-            'usuario_id' => $usuarioId,
-            'mensaje'   => mb_substr($mensaje, 0, 2000),
-            'creado_en' => date('Y-m-d H:i:s'),
+            'usuario_id'      => $usuarioId,
+            'destinatario_id' => $destinatarioId,
+            'mensaje'         => mb_substr($mensaje, 0, 2000),
+            'creado_en'       => date('Y-m-d H:i:s'),
         ];
 
         if ($archivo && $archivo->getError() !== UPLOAD_ERR_NO_FILE) {
@@ -71,9 +106,15 @@ class Chat extends BaseController
         }
 
         $model = new ChatModel();
-        $id = $model->insert($datos, true);
+        try {
+            $id = $model->insert($datos, true);
+        } catch (\Throwable $e) {
+            log_message('error', 'Chat enviar: {message}', ['message' => $e->getMessage()]);
+            return $this->respuestaError('No se pudo enviar. Ejecuta la migración de chat_mensajes.');
+        }
         if (!$id) {
-            return $this->respuestaError('No se pudo enviar el mensaje.');
+            log_message('error', 'Chat enviar: ' . json_encode($model->errors()));
+            return $this->respuestaError('No se pudo guardar el mensaje. Revisa la tabla chat_mensajes.');
         }
 
         return $this->response->setJSON([
@@ -84,7 +125,7 @@ class Chat extends BaseController
 
     public function archivo(int $id)
     {
-        $mensaje = (new ChatModel())->obtenerPorId($id);
+        $mensaje = (new ChatModel())->obtenerPorId($id, $this->usuarioActual());
         if (!$mensaje || empty($mensaje['archivo_ruta'])) {
             return $this->response->setStatusCode(404)->setBody('Archivo no encontrado.');
         }
@@ -104,5 +145,16 @@ class Chat extends BaseController
             'success' => false,
             'message' => $mensaje,
         ])->setStatusCode(422);
+    }
+
+    private function usuarioActual(): int
+    {
+        return (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+    }
+
+    private function destinatario(): ?int
+    {
+        $valor = $this->request->getPost('destinatario_id') ?? $this->request->getGet('destinatario_id');
+        return $valor === null || $valor === '' ? null : max(0, (int) $valor);
     }
 }

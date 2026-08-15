@@ -512,6 +512,13 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         .chat-header-title small { display: block; margin-top: 1px; opacity: 0.8; font-size: 0.67rem; }
         .chat-header-close { border: 0; background: transparent; color: #fff; opacity: 0.8; font-size: 1.1rem; cursor: pointer; }
         .chat-header-close:hover { opacity: 1; }
+        .chat-mode-switch { display: flex; gap: 5px; padding: 8px 10px 0; background: var(--modal-bg); }
+        .chat-mode-button { flex: 1; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-muted); font-size: 0.68rem; font-weight: 700; cursor: pointer; }
+        .chat-mode-button.active { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); background: color-mix(in srgb, var(--primary) 12%, var(--bg-card)); color: var(--primary); }
+        .chat-recipient { display: none; padding: 8px 10px 0; background: var(--modal-bg); }
+        .chat-recipient.show { display: block; }
+        .chat-recipient select { width: 100%; padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 8px; outline: none; background: var(--bg-input); color: var(--text); font: inherit; font-size: 0.7rem; }
+        .chat-recipient select:focus { border-color: var(--primary); }
 
         .chat-messages {
             flex: 1;
@@ -1209,6 +1216,15 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                 <div><strong>Chat grupal</strong><small>Comunicación del equipo</small></div>
             </div>
             <button class="chat-header-close" id="chatClose" type="button" aria-label="Cerrar chat"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="chat-mode-switch">
+            <button class="chat-mode-button active" type="button" data-chat-mode="grupo"><i class="bi bi-people-fill"></i> Chat grupal</button>
+            <button class="chat-mode-button" type="button" data-chat-mode="individual"><i class="bi bi-person-fill"></i> Chat individual</button>
+        </div>
+        <div class="chat-recipient" id="chatRecipient">
+            <select id="chatUserSelect" aria-label="Seleccionar usuario">
+                <option value="">Selecciona un usuario...</option>
+            </select>
         </div>
         <div class="chat-messages" id="chatMessages">
             <div class="chat-empty"><i class="bi bi-chat-square-text"></i>Cargando mensajes...</div>

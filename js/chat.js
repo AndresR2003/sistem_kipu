@@ -6,6 +6,9 @@
     var preview;
     var attachmentName;
     var badge;
+    var userSelect;
+    var mode = 'grupo';
+    var targetId = null;
     var lastId = 0;
     var unread = 0;
     var firstLoad = true;
@@ -64,9 +67,22 @@
         }
     }
 
+    function showChatMessage(html) {
+        messagesBox.html('<div class="chat-empty">' + html + '</div>');
+    }
+
     function loadMessages() {
+        if (mode === 'individual' && !targetId) {
+            firstLoad = false;
+            showChatMessage('<i class="bi bi-person-plus"></i>Selecciona un usuario para comenzar.');
+            return;
+        }
+
         var since = lastId > 0 ? lastId : 0;
-        $.getJSON(window.BASE_URL + 'chat/listar', { desde: since })
+        $.getJSON(window.BASE_URL + 'chat/listar', {
+            desde: since,
+            destinatario_id: mode === 'individual' ? targetId : ''
+        })
             .done(function(response) {
                 if (!response.success || !Array.isArray(response.data)) return;
                 var messages = response.data;
@@ -91,8 +107,32 @@
             })
             .fail(function() {
                 if (firstLoad) {
-                    messagesBox.html('<div class="chat-empty"><i class="bi bi-exclamation-circle"></i>No se pudo cargar el chat.</div>');
+                    showChatMessage('<i class="bi bi-exclamation-circle"></i>No se pudo cargar el chat. Ejecuta la migración de la tabla.');
                 }
+            });
+    }
+
+    function resetConversation() {
+        lastId = 0;
+        firstLoad = true;
+        showChatMessage('<i class="bi bi-hourglass-split"></i>Cargando mensajes...');
+        loadMessages();
+    }
+
+    function loadUsers() {
+        $.getJSON(window.BASE_URL + 'chat/usuarios')
+            .done(function(response) {
+                if (!response.success || !Array.isArray(response.data)) return;
+                userSelect.find('option:not(:first)').remove();
+                response.data.forEach(function(user) {
+                    userSelect.append($('<option>', {
+                        value: user.id,
+                        text: user.nombre + (user.puesto ? ' · ' + user.puesto : '')
+                    }));
+                });
+            })
+            .fail(function() {
+                userSelect.html('<option value="">No se pudieron cargar los usuarios</option>');
             });
     }
 
@@ -110,6 +150,7 @@
         preview = $('#chatAttachmentPreview');
         attachmentName = $('#chatAttachmentName');
         badge = $('#chatBadge');
+        userSelect = $('#chatUserSelect');
 
         $('#chatToggle').on('click', function() {
             panel.toggleClass('is-open');
@@ -120,6 +161,23 @@
             }
         });
         $('#chatClose').on('click', function() { panel.removeClass('is-open'); });
+        $('[data-chat-mode]').on('click', function() {
+            mode = $(this).data('chat-mode');
+            targetId = mode === 'individual' ? Number(userSelect.val()) || null : null;
+            $('[data-chat-mode]').removeClass('active');
+            $(this).addClass('active');
+            $('#chatRecipient').toggleClass('show', mode === 'individual');
+            $('.chat-header-title strong').text(mode === 'individual' ? 'Chat individual' : 'Chat grupal');
+            $('.chat-header-title small').text(mode === 'individual' ? 'Conversación privada' : 'Comunicación del equipo');
+            $('#chatToggle').attr('aria-label', mode === 'individual' ? 'Abrir chat individual' : 'Abrir chat grupal');
+            clearAttachment();
+            resetConversation();
+        });
+        userSelect.on('change', function() {
+            targetId = Number(this.value) || null;
+            resetConversation();
+            input.trigger('focus');
+        });
         $('#chatFileButton').on('click', function() { fileInput.trigger('click'); });
         $('#chatAttachmentRemove').on('click', clearAttachment);
         fileInput.on('change', function() {
@@ -150,11 +208,17 @@
             var form = this;
             var sendButton = $('#chatSend');
             if (!$.trim(input.val()) && !fileInput[0].files.length) return;
+            if (mode === 'individual' && !targetId) {
+                if (window.Swal) Swal.fire({ icon: 'info', title: 'Selecciona un usuario', text: 'Elige con quién quieres conversar.' });
+                return;
+            }
+            var formData = new FormData(form);
+            if (mode === 'individual') formData.append('destinatario_id', targetId);
             sendButton.prop('disabled', true);
             $.ajax({
                 url: window.BASE_URL + 'chat/enviar',
                 type: 'POST',
-                data: new FormData(form),
+                data: formData,
                 processData: false,
                 contentType: false,
                 dataType: 'json'
@@ -172,6 +236,7 @@
             }).always(function() { sendButton.prop('disabled', false); });
         });
 
+        loadUsers();
         loadMessages();
         window.setInterval(loadMessages, 12000);
     });
