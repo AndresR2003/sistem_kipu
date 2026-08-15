@@ -4,14 +4,19 @@ Sistema de gestion interna para el hotel Kipucloud, desarrollado con **CodeIgnit
 
 ## Funcionalidades
 
-- **Inicio**: Bienvenida con accesos rapidos a las secciones
-- **Noticias / Ideas / Manual / Tareas**: Publicaciones con destinatarios (todos, individual, departamento) y comentarios
-- **Tareas**: Marcar como realizadas mediante checkbox
+- **Inicio (Dashboard)**: Bienvenida con accesos rapidos a las secciones y estadisticas
+- **Noticias / Ideas / Manual**: Publicaciones con destinatarios (todos, individual, departamento), comentarios y tarjetas en dos columnas con autor, fecha y hora
+- **Noticias - Vista de detalle**: Pagina dedicada por noticia con contenido, acciones (recordatorio, marcador, comentarios) y metadatos del autor
+- **Tareas**: Gestion por departamentos, prioridades, fechas limite, modalidad de completado, asignacion de usuarios y seguimiento de progreso
+- **Pases de turno**: Intercambio de informacion entre turnos con puntos por area, revisiones y comentarios
 - **Recordatorios / Marcadores**: Personales por usuario
-- **Borradores**: Flujo de trabajo borrador -> publicacion
+- **Borradores**: Flujo de trabajo borrador -> publicacion, con fijar, destinatarios y comentarios
 - **Calendario**: Eventos y reuniones
+- **Reparaciones / Peticiones de huespedes**: Solicitudes internas y de huespedes
 - **Colaboradores / Personal**: Gestion de empleados con roles y departamentos
-- **Configuracion Visual**: Colores del sistema personalizables
+- **Configuracion**: Colores del sistema personalizables y logo de marca
+- **Perfil**: Edicion de datos y foto de perfil
+- **Soporte**: Centro de ayuda, contacto, reportes, terminos y privacidad
 - **Usuarios / Pagos** (solo admin): Control de pagos con comprobantes
 
 ## Requisitos
@@ -134,6 +139,7 @@ app/
   Config/         # Configuracion (rutas, filtros, etc.)
 js/               # Archivos JavaScript por seccion
 public/           # Archivos publicos (fotos de perfil, etc.)
+uploads/          # Archivos subidos por usuarios (comprobantes, fotos)
 database_*.sql    # Migraciones y seeds de base de datos
 ```
 
