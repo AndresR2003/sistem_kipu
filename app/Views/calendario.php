@@ -17,6 +17,60 @@
     </div>
 </div>
 
+<!-- Modal para ver detalle del evento (invitados) -->
+<div class="modal fade" id="modalEventoDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content evento-detalle-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleEventoTitulo">
+                    <i class="bi bi-calendar3"></i> Detalle del Evento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="evento-detalle">
+                    <div class="evento-detalle-cabecera">
+                        <div class="evento-detalle-barra" id="detalleEventoBarra"></div>
+                        <div class="evento-detalle-titulo" id="detalleEventoTituloTexto"></div>
+                    </div>
+                    <div class="evento-detalle-body">
+                        <div class="evento-detalle-descripcion" id="detalleEventoDescripcion"></div>
+                        <div class="evento-detalle-filas">
+                            <div class="evento-detalle-fila">
+                                <div class="evento-detalle-icono"><i class="bi bi-calendar-event"></i></div>
+                                <div>
+                                    <div class="evento-detalle-lbl">Inicio</div>
+                                    <div class="evento-detalle-val" id="detalleEventoInicio"></div>
+                                </div>
+                            </div>
+                            <div class="evento-detalle-fila">
+                                <div class="evento-detalle-icono"><i class="bi bi-calendar-check"></i></div>
+                                <div>
+                                    <div class="evento-detalle-lbl">Fin</div>
+                                    <div class="evento-detalle-val" id="detalleEventoFin"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="evento-detalle-publicado">
+                        <div class="evento-detalle-pub-lbl"><i class="bi bi-person-badge"></i> Publicado por</div>
+                        <div class="evento-detalle-pub-row">
+                            <div class="evento-detalle-pub-avatar" id="detalleEventoAvatar"></div>
+                            <div>
+                                <div class="evento-detalle-pub-nombre" id="detalleEventoPublicadoPor"></div>
+                                <div class="evento-detalle-pub-fecha" id="detalleEventoPublicadoEn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para crear/editar eventos -->
 <div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -288,13 +342,27 @@
         border-color: var(--border) !important;
     }
 
-    /* Info del creador en el modal */
-    .evento-info-creador{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;}
-    .evento-info-creador-row{display:flex;align-items:center;gap:10px;}
-    .evento-info-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:#fff;}
-    .evento-info-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
-    .evento-info-nombre{font-size:0.82rem;font-weight:600;color:var(--text);}
-    .evento-info-creado{font-size:0.72rem;color:var(--text-muted);margin-top:2px;}
+    /* Detalle del evento (tarjeta de solo lectura) */
+    .evento-detalle-content{overflow:hidden;}
+    .evento-detalle{display:flex;flex-direction:column;}
+    .evento-detalle-cabecera{position:relative;padding:18px 22px 16px;display:flex;align-items:center;gap:14px;}
+    .evento-detalle-barra{width:5px;align-self:stretch;border-radius:4px;flex-shrink:0;}
+    .evento-detalle-titulo{font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.35;}
+    .evento-detalle-body{padding:6px 22px 18px;}
+    .evento-detalle-descripcion{font-size:0.85rem;color:var(--text);white-space:pre-line;line-height:1.6;margin-bottom:16px;}
+    .evento-detalle-filas{display:flex;flex-direction:column;gap:10px;}
+    .evento-detalle-fila{display:flex;align-items:center;gap:12px;background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;}
+    .evento-detalle-icono{width:36px;height:36px;border-radius:9px;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
+    .evento-detalle-lbl{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;}
+    .evento-detalle-val{font-size:0.85rem;font-weight:600;color:var(--text);margin-top:1px;}
+    .evento-detalle-publicado{border-top:1px solid var(--border);padding:14px 22px;background:var(--bg-card-alt);}
+    .evento-detalle-pub-lbl{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+    .evento-detalle-pub-row{display:flex;align-items:center;gap:10px;}
+    .evento-detalle-pub-avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;}
+    .evento-detalle-pub-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+    .evento-detalle-pub-nombre{font-size:0.85rem;font-weight:600;color:var(--text);}
+    .evento-detalle-pub-rol{font-size:0.72rem;font-weight:500;color:var(--text-muted);margin-left:4px;}
+    .evento-detalle-pub-fecha{font-size:0.72rem;color:var(--text-muted);margin-top:2px;}
 
     /* Invitados */
     .invitados-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}

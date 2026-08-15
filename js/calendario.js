@@ -240,16 +240,19 @@ function abrirModalNuevoDesdeFecha(fechaInicio, fechaFin) {
 // =====================================================
 
 function abrirModalEditar(event) {
+    var puedeEditar = event.extendedProps.puede_editar === true;
+
+    if (!puedeEditar) {
+        abrirModalDetalle(event);
+        return;
+    }
+
     var eventId = event.id;
     var titulo = event.title;
     var descripcion = event.extendedProps.description || '';
     var start = event.startStr;
     var end = event.endStr || '';
     var color = event.backgroundColor || '#4669FA';
-    var puedeEditar = event.extendedProps.puede_editar === true;
-    var creador = event.extendedProps.creador || null;
-    var creadoEn = event.extendedProps.created_at || '';
-    var invitados = event.extendedProps.invitados || null;
 
     $('#eventoId').val(eventId);
     $('#eventoTitulo').val(titulo);
@@ -268,64 +271,77 @@ function abrirModalEditar(event) {
         $('#btnEliminarEvento').remove();
     }
 
-    if (puedeEditar) {
-        // Modo edicion: campos habilitados, boton guardar visible
-        $('#modalEventoTitulo').html('<i class="bi bi-pencil-fill"></i> Editar Evento');
-        $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Actualizar Evento').show();
-        $('#formEvento').find('input, textarea').prop('disabled', false);
-        $('.invitados-wrap').css('opacity', '');
-        $('.invitados-wrap .pub-check input').prop('disabled', false);
+    // Modo edicion: campos habilitados, boton guardar visible
+    $('#modalEventoTitulo').html('<i class="bi bi-pencil-fill"></i> Editar Evento');
+    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Actualizar Evento').show();
+    $('#formEvento').find('input, textarea').prop('disabled', false);
+    $('.invitados-wrap').css('opacity', '');
+    $('.invitados-wrap .pub-check input').prop('disabled', false);
+    $('#infoEvento').remove();
 
-        var btnEliminar = '<button type="button" class="btn btn-danger-custom" id="btnEliminarEvento" onclick="eliminarEvento(' + eventId + ')">';
-        btnEliminar += '<i class="bi bi-trash"></i> Eliminar';
-        btnEliminar += '</button>';
-        $('#modalEvento .modal-footer').prepend(btnEliminar);
-    } else {
-        // Modo detalle: solo lectura
-        $('#modalEventoTitulo').html('<i class="bi bi-calendar3"></i> Detalle del Evento');
-        $('#btnGuardarEvento').hide();
-        $('#formEvento').find('input, textarea').prop('disabled', true);
-        $('.invitados-wrap').css('opacity', '0.7');
-        $('.invitados-wrap .pub-check input').prop('disabled', true);
-    }
+    var btnEliminar = '<button type="button" class="btn btn-danger-custom" id="btnEliminarEvento" onclick="eliminarEvento(' + eventId + ')">';
+    btnEliminar += '<i class="bi bi-trash"></i> Eliminar';
+    btnEliminar += '</button>';
+    $('#modalEvento .modal-footer').prepend(btnEliminar);
 
-    cargarInvitados(invitados);
-    mostrarInfoEvento(creador, creadoEn);
+    cargarInvitados(event.extendedProps.invitados || null);
 
     $('#modalEvento').modal('show');
 }
 
 // =====================================================
-// INFO DEL CREADOR EN EL MODAL
+// ABRIR MODAL - DETALLE DEL EVENTO (solo lectura)
 // =====================================================
 
-function mostrarInfoEvento(creador, creadoEn) {
-    $('#infoEvento').remove();
+function abrirModalDetalle(event) {
+    var titulo = event.title;
+    var descripcion = event.extendedProps.description || '';
+    var start = event.startStr;
+    var end = event.endStr || '';
+    var color = event.backgroundColor || '#4669FA';
+    var creador = event.extendedProps.creador || null;
+    var creadoEn = event.extendedProps.created_at || '';
 
-    var html = '<div class="evento-info-creador" id="infoEvento">';
+    $('#detalleEventoTituloTexto').text(titulo);
+    $('#detalleEventoBarra').css('background', color);
+    $('#detalleEventoDescripcion').text(descripcion || 'Sin descripcion.');
 
-    if (creador) {
-        var nombre = escHtml(creador.nombre || 'Usuario');
-        var rol = escHtml(rolLegible(creador.rol || ''));
+    $('#detalleEventoInicio').text(formatearDetalleFecha(start));
+    $('#detalleEventoFin').text(end ? formatearDetalleFecha(end) : 'Sin fecha de fin');
+
+    // Publicado por: nombre, rol y foto
+    var nombre = creador && creador.nombre ? escHtml(creador.nombre) : 'Usuario';
+    var rol = creador ? rolLegible(creador.rol || '') : '';
+    $('#detalleEventoPublicadoPor').html(nombre + (rol ? ' <span class="evento-detalle-pub-rol">' + escHtml(rol) + '</span>' : ''));
+
+    var fechaPub = creadoEn ? 'Publicado el ' + formatearFechaHora(creadoEn) : '';
+    $('#detalleEventoPublicadoEn').text(fechaPub);
+
+    var avatarHtml = '';
+    if (creador && creador.foto) {
         var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
-        var avatar = '';
-        if (creador.foto) {
-            var foto = creador.foto.indexOf('http') === 0 ? creador.foto : base + creador.foto;
-            avatar = '<img src="' + foto + '" alt="" onerror="this.outerHTML=\'<span>\' + \'' + (creador.nombre ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A') + '\' + \'</span>\';">';
-        } else {
-            avatar = '<span>' + (creador.nombre ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A') + '</span>';
-        }
-        html += '<div class="evento-info-creador-row">' +
-                '<div class="evento-info-avatar">' + avatar + '</div>' +
-                '<div>' +
-                '<div class="evento-info-nombre">' + nombre + (rol ? ' &bull; ' + rol : '') + '</div>' +
-                '<div class="evento-info-creado">Creado el ' + (creadoEn ? escHtml(formatearFechaHora(creadoEn)) : '') + '</div>' +
-                '</div>' +
-                '</div>';
+        var foto = creador.foto.indexOf('http') === 0 ? creador.foto : base + creador.foto;
+        var inicial = (creador.nombre && creador.nombre.charAt(0)) ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A';
+        avatarHtml = '<img src="' + foto + '" alt="" onerror="this.outerHTML=\'<span>\' + \'' + inicial + '\' + \'</span>\';">';
+    } else {
+        var inicial = (creador && creador.nombre && creador.nombre.charAt(0)) ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A';
+        avatarHtml = '<span>' + inicial + '</span>';
     }
+    $('#detalleEventoAvatar').html(avatarHtml);
 
-    html += '</div>';
-    $('#eventoDescripcion').closest('.mb-3').before(html);
+    $('#modalEventoDetalle').modal('show');
+}
+
+function formatearDetalleFecha(str) {
+    if (!str) return '';
+    var d = new Date(str);
+    if (isNaN(d.getTime())) return str;
+    var dias = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+    var meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    var dd = String(d.getDate()).padStart(2, '0');
+    var hh = String(d.getHours()).padStart(2, '0');
+    var mi = String(d.getMinutes()).padStart(2, '0');
+    return dias[d.getDay()] + ' ' + dd + ' de ' + meses[d.getMonth()] + ' de ' + d.getFullYear() + ', ' + hh + ':' + mi + ' hrs';
 }
 
 function rolLegible(rol) {
