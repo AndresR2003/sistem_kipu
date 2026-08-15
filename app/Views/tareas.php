@@ -83,6 +83,7 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-autor-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
 .tarea-autor-nombre{font-size:0.82rem;font-weight:600;color:var(--text);line-height:1.25;}
 .tarea-autor-rol{font-size:0.7rem;color:var(--text-muted);margin-top:2px;}
+.tarea-autor-fecha{font-size:0.7rem;color:var(--text-muted);margin-top:3px;}
 .tarea-fecha-item{display:flex;align-items:center;gap:8px;font-size:0.76rem;color:var(--text);padding:4px 0;}
 .tarea-fecha-item i{color:var(--primary);}
 .tarea-fecha-item .lbl{color:var(--text-muted);font-size:0.66rem;display:block;}

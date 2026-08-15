@@ -268,6 +268,8 @@ function tareaAutorCard(t) {
         avatar = '<span>' + escHtml(inicial) + '</span>';
     }
     var rol = rolLegible(t.creador_rol);
+    var fecha = t.created_at ? formatearFechaTarea(t.created_at) : '';
+    var hora = t.created_at ? formatearHoraTarea(t.created_at) : '';
     return '<div class="tarea-side-card">' +
         '<div class="tarea-side-label">Publicado por</div>' +
         '<div class="tarea-autor-row">' +
@@ -275,6 +277,7 @@ function tareaAutorCard(t) {
         '<div>' +
         '<div class="tarea-autor-nombre">' + escHtml(nombre) + '</div>' +
         '<div class="tarea-autor-rol">' + escHtml(rol) + '</div>' +
+        (fecha ? '<div class="tarea-autor-fecha">' + fecha + (hora ? ' &bull; ' + hora + ' hrs' : '') + '</div>' : '') +
         '</div>' +
         '</div>' +
         '</div>';
@@ -283,6 +286,23 @@ function tareaAutorCard(t) {
 function rolLegible(rol) {
     var map = { 'superadmin': 'Administrador', 'admin': 'Administrador', 'empleado': 'Empleado', 'soporte': 'Soporte', 'vendedor': 'Vendedor', 'tecnico': 'Tecnico' };
     return map[rol] || '';
+}
+
+function formatearFechaTarea(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var dd = ('0' + d.getDate()).slice(-2);
+    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    var yy = d.getFullYear();
+    return dd + '/' + mm + '/' + yy;
+}
+
+function formatearHoraTarea(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var hh = ('0' + d.getHours()).slice(-2);
+    var mi = ('0' + d.getMinutes()).slice(-2);
+    return hh + ':' + mi;
 }
 
 
