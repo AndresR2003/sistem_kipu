@@ -288,6 +288,14 @@
         border-color: var(--border) !important;
     }
 
+    /* Info del creador en el modal */
+    .evento-info-creador{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;}
+    .evento-info-creador-row{display:flex;align-items:center;gap:10px;}
+    .evento-info-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--primary-gradient);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:#fff;}
+    .evento-info-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+    .evento-info-nombre{font-size:0.82rem;font-weight:600;color:var(--text);}
+    .evento-info-creado{font-size:0.72rem;color:var(--text-muted);margin-top:2px;}
+
     /* Invitados */
     .invitados-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
     .invitados-titulo{font-size:0.72rem;font-weight:600;color:var(--text-muted);margin-bottom:5px;display:flex;align-items:center;gap:5px;}

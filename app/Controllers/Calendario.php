@@ -33,14 +33,42 @@ class Calendario extends BaseController
         ]);
     }
 
+    private function usuarioActual(): int
+    {
+        return (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+    }
+
+    private function esAdmin(): bool
+    {
+        return in_array(session()->get('admin_rol') ?? 'empleado', ['admin', 'superadmin'], true);
+    }
+
     public function listar(): \CodeIgniter\HTTP\Response
     {
         $inicio = $this->request->getGet('start') ?? date('Y-m-01');
         $fin    = $this->request->getGet('end') ?? date('Y-m-t');
 
-        $eventos = $this->eventoModel->ObtenerPorRango($inicio, $fin);
+        $usuarioId     = $this->usuarioActual();
+        $esAdmin       = $this->esAdmin();
+        $departamentoId = null;
 
-        $data = array_map(function ($e) {
+        if (!$esAdmin) {
+            $db = \Config\Database::connect();
+            $usuario = $db->table('admin_usuarios')
+                          ->select('id_departamento')
+                          ->where('id', $usuarioId)
+                          ->get()
+                          ->getRowArray();
+            $departamentoId = $usuario['id_departamento'] ?? null;
+        }
+
+        $eventos = $this->eventoModel->ObtenerVisibles($usuarioId, $departamentoId, $esAdmin, $inicio, $fin);
+
+        $data = array_map(function ($e) use ($usuarioId, $esAdmin) {
+            $esCreador   = $e['usuario_id'] && (int) $e['usuario_id'] === $usuarioId;
+            $invitados   = $this->eventoModel->ObtenerInvitados((int) $e['id']);
+            $creador     = $this->eventoModel->ObtenerCreador((int) $e['usuario_id']);
+
             return [
                 'id'          => (int) $e['id'],
                 'title'       => $e['titulo'],
@@ -49,7 +77,11 @@ class Calendario extends BaseController
                 'color'       => $e['color'] ?? '#4669FA',
                 'description' => $e['descripcion'] ?? '',
                 'usuario_id'  => $e['usuario_id'] ? (int) $e['usuario_id'] : null,
-                'invitados'   => $this->eventoModel->ObtenerInvitados((int) $e['id']),
+                'es_creador'  => $esCreador,
+                'puede_editar'=> $esAdmin || $esCreador,
+                'creador'     => $creador,
+                'created_at'  => $e['created_at'] ?? '',
+                'invitados'   => $invitados,
             ];
         }, $eventos);
 
@@ -86,6 +118,27 @@ class Calendario extends BaseController
             ]);
         }
 
+        $usuarioId = $this->usuarioActual();
+        $esAdmin   = $this->esAdmin();
+
+        // Validar permiso si es edicion de un evento existente
+        if (!empty($json['id'])) {
+            $existente = $this->eventoModel->ObtenerPorId((int) $json['id']);
+            if (!$existente) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Evento no encontrado.',
+                ]);
+            }
+            $esCreador = $existente['usuario_id'] && (int) $existente['usuario_id'] === $usuarioId;
+            if (!$esAdmin && !$esCreador) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No tienes permisos para editar este evento.',
+                ]);
+            }
+        }
+
         $datos = [
             'id'           => $json['id'] ?? null,
             'titulo'       => $json['titulo'],
@@ -93,7 +146,7 @@ class Calendario extends BaseController
             'fecha_inicio' => $json['fecha_inicio'],
             'fecha_fin'    => $json['fecha_fin'] ?? null,
             'color'        => $json['color'] ?? '#4669FA',
-            'usuario_id'   => $json['usuario_id'] ?? null,
+            'usuario_id'   => !empty($json['id']) ? null : $usuarioId,
         ];
 
         if (empty($datos['id'])) {
@@ -102,8 +155,8 @@ class Calendario extends BaseController
         if (empty($datos['fecha_fin'])) {
             $datos['fecha_fin'] = null;
         }
-        if (empty($datos['usuario_id'])) {
-            $datos['usuario_id'] = null;
+        if ($datos['usuario_id'] === null) {
+            unset($datos['usuario_id']);
         }
 
         if (!$this->eventoModel->GuardarEvento($datos)) {
@@ -145,6 +198,16 @@ class Calendario extends BaseController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Evento no encontrado.',
+            ]);
+        }
+
+        $usuarioId = $this->usuarioActual();
+        $esAdmin   = $this->esAdmin();
+        $esCreador = $evento['usuario_id'] && (int) $evento['usuario_id'] === $usuarioId;
+        if (!$esAdmin && !$esCreador) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No tienes permisos para eliminar este evento.',
             ]);
         }
 

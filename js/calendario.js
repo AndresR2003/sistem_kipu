@@ -174,7 +174,11 @@ function abrirModalNuevo() {
     $('#formEvento')[0].reset();
     $('#eventoId').val('');
     $('#modalEventoTitulo').html('<i class="bi bi-calendar-plus"></i> Nuevo Evento');
-    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Guardar Evento');
+    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Guardar Evento').show();
+    $('#formEvento').find('input, textarea').prop('disabled', false);
+    $('.invitados-wrap').css('opacity', '');
+    $('.invitados-wrap .pub-check input').prop('disabled', false);
+    $('#infoEvento').remove();
 
     // Resetear color al default
     $('#eventoColor').val('#4669FA');
@@ -202,7 +206,11 @@ function abrirModalNuevoDesdeFecha(fechaInicio, fechaFin) {
     $('#formEvento')[0].reset();
     $('#eventoId').val('');
     $('#modalEventoTitulo').html('<i class="bi bi-calendar-plus"></i> Nuevo Evento');
-    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Guardar Evento');
+    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Guardar Evento').show();
+    $('#formEvento').find('input, textarea').prop('disabled', false);
+    $('.invitados-wrap').css('opacity', '');
+    $('.invitados-wrap .pub-check input').prop('disabled', false);
+    $('#infoEvento').remove();
 
     // Convertir a formato datetime-local
     var startLocal = fechaInicio.slice(0, 16);
@@ -238,18 +246,16 @@ function abrirModalEditar(event) {
     var start = event.startStr;
     var end = event.endStr || '';
     var color = event.backgroundColor || '#4669FA';
+    var puedeEditar = event.extendedProps.puede_editar === true;
+    var creador = event.extendedProps.creador || null;
+    var creadoEn = event.extendedProps.created_at || '';
+    var invitados = event.extendedProps.invitados || null;
 
     $('#eventoId').val(eventId);
     $('#eventoTitulo').val(titulo);
     $('#eventoDescripcion').val(descripcion);
-    $('#modalEventoTitulo').html('<i class="bi bi-pencil-fill"></i> Editar Evento');
-    $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Actualizar Evento');
-
-    // Fechas
-    var startLocal = start ? start.slice(0, 16) : '';
-    var endLocal = end ? end.slice(0, 16) : '';
-    $('#eventoFechaInicio').val(startLocal);
-    $('#eventoFechaFin').val(endLocal);
+    $('#eventoFechaInicio').val(start ? start.slice(0, 16) : '');
+    $('#eventoFechaFin').val(end ? end.slice(0, 16) : '');
 
     // Color
     $('#eventoColor').val(color);
@@ -257,19 +263,85 @@ function abrirModalEditar(event) {
     $('.color-preset').removeClass('active');
     $('.color-preset[data-color="' + color + '"]').addClass('active');
 
-    // Agregar boton de eliminar si no existe
-    if (!$('#btnEliminarEvento').length) {
+    // Quitar boton de eliminar previo
+    if ($('#btnEliminarEvento').length) {
+        $('#btnEliminarEvento').remove();
+    }
+
+    if (puedeEditar) {
+        // Modo edicion: campos habilitados, boton guardar visible
+        $('#modalEventoTitulo').html('<i class="bi bi-pencil-fill"></i> Editar Evento');
+        $('#btnGuardarEvento').html('<i class="bi bi-check-lg"></i> Actualizar Evento').show();
+        $('#formEvento').find('input, textarea').prop('disabled', false);
+        $('.invitados-wrap').css('opacity', '');
+        $('.invitados-wrap .pub-check input').prop('disabled', false);
+
         var btnEliminar = '<button type="button" class="btn btn-danger-custom" id="btnEliminarEvento" onclick="eliminarEvento(' + eventId + ')">';
         btnEliminar += '<i class="bi bi-trash"></i> Eliminar';
         btnEliminar += '</button>';
         $('#modalEvento .modal-footer').prepend(btnEliminar);
     } else {
-        $('#btnEliminarEvento').attr('onclick', 'eliminarEvento(' + eventId + ')');
+        // Modo detalle: solo lectura
+        $('#modalEventoTitulo').html('<i class="bi bi-calendar3"></i> Detalle del Evento');
+        $('#btnGuardarEvento').hide();
+        $('#formEvento').find('input, textarea').prop('disabled', true);
+        $('.invitados-wrap').css('opacity', '0.7');
+        $('.invitados-wrap .pub-check input').prop('disabled', true);
     }
 
-    cargarInvitados(event.extendedProps.invitados || null);
+    cargarInvitados(invitados);
+    mostrarInfoEvento(creador, creadoEn);
 
     $('#modalEvento').modal('show');
+}
+
+// =====================================================
+// INFO DEL CREADOR EN EL MODAL
+// =====================================================
+
+function mostrarInfoEvento(creador, creadoEn) {
+    $('#infoEvento').remove();
+
+    var html = '<div class="evento-info-creador" id="infoEvento">';
+
+    if (creador) {
+        var nombre = escHtml(creador.nombre || 'Usuario');
+        var rol = escHtml(rolLegible(creador.rol || ''));
+        var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
+        var avatar = '';
+        if (creador.foto) {
+            var foto = creador.foto.indexOf('http') === 0 ? creador.foto : base + creador.foto;
+            avatar = '<img src="' + foto + '" alt="" onerror="this.outerHTML=\'<span>\' + \'' + (creador.nombre ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A') + '\' + \'</span>\';">';
+        } else {
+            avatar = '<span>' + (creador.nombre ? escHtml(creador.nombre.charAt(0).toUpperCase()) : 'A') + '</span>';
+        }
+        html += '<div class="evento-info-creador-row">' +
+                '<div class="evento-info-avatar">' + avatar + '</div>' +
+                '<div>' +
+                '<div class="evento-info-nombre">' + nombre + (rol ? ' &bull; ' + rol : '') + '</div>' +
+                '<div class="evento-info-creado">Creado el ' + (creadoEn ? escHtml(formatearFechaHora(creadoEn)) : '') + '</div>' +
+                '</div>' +
+                '</div>';
+    }
+
+    html += '</div>';
+    $('#eventoDescripcion').closest('.mb-3').before(html);
+}
+
+function rolLegible(rol) {
+    var map = { 'superadmin': 'Administrador', 'admin': 'Administrador', 'empleado': 'Empleado', 'soporte': 'Soporte', 'vendedor': 'Vendedor', 'tecnico': 'Tecnico' };
+    return map[rol] || '';
+}
+
+function formatearFechaHora(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var dd = ('0' + d.getDate()).slice(-2);
+    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    var yy = d.getFullYear();
+    var hh = ('0' + d.getHours()).slice(-2);
+    var mi = ('0' + d.getMinutes()).slice(-2);
+    return dd + '/' + mm + '/' + yy + ' a las ' + hh + ':' + mi;
 }
 
 // =====================================================

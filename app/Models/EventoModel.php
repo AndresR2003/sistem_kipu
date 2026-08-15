@@ -73,6 +73,35 @@ class EventoModel extends Model
     }
 
     /**
+     * Obtener eventos visibles para un usuario en un rango.
+     * El creador y los invitados (por usuario o por departamento) lo ven.
+     * Los administradores ven todos.
+     */
+    public function ObtenerVisibles(int $usuarioId, ?int $departamentoId, bool $esAdmin, string $inicio, string $fin): array
+    {
+        if ($esAdmin) {
+            return $this->ObtenerPorRango($inicio, $fin);
+        }
+
+        $db = \Config\Database::connect();
+        $subDept = $db->table('evento_invitados_departamentos')->select('evento_id')->where('departamento_id', $departamentoId);
+        $subUsr  = $db->table('evento_invitados_usuarios')->select('evento_id')->where('usuario_id', $usuarioId);
+
+        return $db->table('eventos e')
+                  ->select('e.*')
+                  ->where('e.fecha_inicio >=', $inicio)
+                  ->where('e.fecha_inicio <=', $fin)
+                  ->groupStart()
+                      ->where('e.usuario_id', $usuarioId)
+                      ->orWhereIn('e.id', $subUsr, true)
+                      ->orWhereIn('e.id', $subDept, true)
+                  ->groupEnd()
+                  ->orderBy('e.fecha_inicio', 'ASC')
+                  ->get()
+                  ->getResultArray();
+    }
+
+    /**
      * Contar eventos a partir de una fecha (hoy en adelante)
      */
     public function ContarProximos(string $fecha): int
@@ -147,6 +176,23 @@ class EventoModel extends Model
                 'usuario_id' => $uid,
             ]);
         }
+    }
+
+    /**
+     * Obtener datos del creador (nombre y rol legible)
+     */
+    public function ObtenerCreador(?int $usuarioId): ?array
+    {
+        if (!$usuarioId) {
+            return null;
+        }
+
+        $db = \Config\Database::connect();
+        return $db->table('admin_usuarios')
+                  ->select('id, nombre, foto, rol')
+                  ->where('id', $usuarioId)
+                  ->get()
+                  ->getRowArray();
     }
 
     /**
