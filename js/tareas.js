@@ -253,6 +253,7 @@ function renderizarTarjeta(t) {
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
+        (t.descripcion ? '<div class="tarea-descripcion">' + escHtml(t.descripcion) + '</div>' : '') +
         '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + deptBadges + '</div>' +
         estadoHtml +
         '</div>' +

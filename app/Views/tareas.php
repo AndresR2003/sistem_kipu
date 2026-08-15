@@ -54,6 +54,7 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-check input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--success);}
 .tarea-info{flex:1;min-width:0;}
 .tarea-titulo{font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;}
+.tarea-descripcion{font-size:0.8rem;color:var(--text-muted);white-space:pre-line;line-height:1.5;margin-bottom:4px;}
 .tarea-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px;}
 .tarea-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:10px;}
 .badge-alta{background:rgba(239,68,68,0.15);color:#ef4444;}
