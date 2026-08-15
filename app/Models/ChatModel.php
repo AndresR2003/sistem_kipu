@@ -71,6 +71,8 @@ class ChatModel extends Model
             'foto'           => null,
             'ultimo_mensaje' => $ultimoGrupalMensaje,
             'ultimo_en'      => $grupal['creado_en'] ?? null,
+            'ultimo_id'      => (int) ($grupal['id'] ?? 0),
+            'ultimo_usuario_id' => (int) ($grupal['usuario_id'] ?? 0),
         ];
 
         foreach ($this->obtenerUsuarios($usuarioId) as $usuario) {
@@ -94,6 +96,8 @@ class ChatModel extends Model
                 'foto'           => $usuario['foto'],
                 'ultimo_mensaje' => $ultimo ? ($ultimo['mensaje'] ?: 'Archivo adjunto') : 'Iniciar conversación',
                 'ultimo_en'      => $ultimo['creado_en'] ?? null,
+                'ultimo_id'      => (int) ($ultimo['id'] ?? 0),
+                'ultimo_usuario_id' => (int) ($ultimo['usuario_id'] ?? 0),
             ];
         }
 

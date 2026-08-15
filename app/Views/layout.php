@@ -508,6 +508,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         .chat-conversation-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 0.72rem; font-weight: 700; }
         .chat-conversation-preview { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; color: var(--text-muted); font-size: 0.63rem; }
         .chat-conversation-time { align-self: flex-start; color: var(--text-muted); font-size: 0.56rem; white-space: nowrap; }
+        .chat-conversation-unread { display: block; min-width: 17px; margin-top: 5px; padding: 2px 4px; border-radius: 10px; background: var(--primary); color: #fff; font-size: 0.54rem; text-align: center; }
         .chat-main { display: flex; flex: 1; min-width: 0; flex-direction: column; }
         .chat-main .chat-header { flex-shrink: 0; }
         .chat-back { display: none; border: 0; background: transparent; color: #fff; font-size: 1rem; cursor: pointer; }
@@ -1268,7 +1269,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
                         <div class="chat-input-row">
                             <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
                             <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
-                            <input type="file" id="chatFile" name="archivo" hidden>
+                            <input type="file" id="chatFile" name="archivo" accept="image/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.mp3,.ogg,.wav,.mp4,.webm" hidden>
                             <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
                             <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
                         </div>

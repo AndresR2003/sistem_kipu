@@ -17,6 +17,13 @@ class Chat extends BaseController
         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         'audio/mpeg', 'audio/ogg', 'audio/wav', 'video/mp4', 'video/webm',
+        'application/x-rar-compressed', 'application/vnd.rar', 'application/octet-stream',
+    ];
+
+    private const ALLOWED_EXTENSIONS = [
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'txt', 'csv',
+        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar',
+        'mp3', 'ogg', 'wav', 'mp4', 'webm',
     ];
 
     public function usuarios(): ResponseInterface
@@ -101,7 +108,9 @@ class Chat extends BaseController
             if ($archivo->getSize() > self::MAX_FILE_SIZE) {
                 return $this->respuestaError('El archivo debe pesar como máximo 10 MB.');
             }
-            if (!in_array($archivo->getMimeType(), self::ALLOWED_MIMES, true)) {
+            $extension = strtolower($archivo->getExtension());
+            $mime = $archivo->getMimeType();
+            if (!in_array($extension, self::ALLOWED_EXTENSIONS, true) || !in_array($mime, self::ALLOWED_MIMES, true)) {
                 return $this->respuestaError('Este tipo de archivo no está permitido.');
             }
 
@@ -110,7 +119,7 @@ class Chat extends BaseController
                 return $this->respuestaError('No se pudo preparar el almacenamiento del archivo.');
             }
 
-            $nombreGuardado = bin2hex(random_bytes(16)) . '.' . strtolower($archivo->getExtension());
+            $nombreGuardado = bin2hex(random_bytes(16)) . '.' . $extension;
             $archivo->move($directorio, $nombreGuardado);
             $datos['archivo_nombre'] = $archivo->getClientName();
             $datos['archivo_ruta'] = $nombreGuardado;

@@ -7,6 +7,9 @@
     var firstLoad = true;
     var messagesRequest = false;
     var conversationsRequest = false;
+    var conversationLastIds = {};
+    var unreadByConversation = {};
+    var conversationsLoaded = false;
 
     function escapeHtml(value) {
         return $('<div>').text(value == null ? '' : String(value)).html();
@@ -35,13 +38,36 @@
     }
 
     function renderConversation(item) {
+        var key = item.tipo + ':' + (item.usuario_id || 0);
+        var unreadCount = unreadByConversation[key] || 0;
         var active = (mode === item.tipo && Number(targetId || 0) === Number(item.usuario_id || 0));
         var previewText = item.ultimo_mensaje || 'Iniciar conversación';
         return '<button type="button" class="chat-conversation' + (active ? ' active' : '') + '" data-chat-type="' + item.tipo + '" data-chat-user="' + (item.usuario_id || '') + '">' +
             '<span class="chat-conversation-avatar">' + avatarHtml(item, item.tipo === 'grupo') + '</span>' +
             '<span class="chat-conversation-body"><span class="chat-conversation-name">' + escapeHtml(item.nombre) + '</span>' +
             '<span class="chat-conversation-preview">' + escapeHtml(previewText) + '</span></span>' +
-            '<span class="chat-conversation-time">' + formatTime(item.ultimo_en) + '</span></button>';
+            '<span class="chat-conversation-time">' + formatTime(item.ultimo_en) + (unreadCount ? '<b class="chat-conversation-unread">' + (unreadCount > 99 ? '99+' : unreadCount) + '</b>' : '') + '</span></button>';
+    }
+
+    function conversationKey(item) { return item.tipo + ':' + (item.usuario_id || 0); }
+
+    function isCurrentConversation(item) {
+        return mode === item.tipo && Number(targetId || 0) === Number(item.usuario_id || 0);
+    }
+
+    function totalUnread() {
+        return Object.keys(unreadByConversation).reduce(function(total, key) {
+            return total + (unreadByConversation[key] || 0);
+        }, 0);
+    }
+
+    function notifyNewMessage(item) {
+        var title = item.tipo === 'grupo' ? 'Nuevo mensaje en el chat grupal' : 'Nuevo mensaje de ' + item.nombre;
+        if (window.Notification && Notification.permission === 'granted') {
+            new Notification(title, { body: item.ultimo_mensaje || 'Archivo adjunto', icon: window.BASE_URL + 'favicon.ico' });
+        } else if (window.Swal) {
+            Swal.fire({ toast: true, position: 'bottom-end', timer: 4500, showConfirmButton: false, icon: 'info', title: title, text: item.ultimo_mensaje || 'Archivo adjunto' });
+        }
     }
 
     function loadConversations() {
@@ -50,10 +76,24 @@
         $.getJSON(window.BASE_URL + 'chat/conversaciones')
             .done(function(response) {
                 if (!response.success || !Array.isArray(response.data)) return;
+                response.data.forEach(function(item) {
+                    var key = conversationKey(item);
+                    var previousId = conversationLastIds[key] || 0;
+                    var newFromOtherUser = Number(item.ultimo_usuario_id) !== Number(window.USUARIO_ID);
+                    if (conversationsLoaded && Number(item.ultimo_id) > previousId && newFromOtherUser && !isCurrentConversation(item)) {
+                        unreadByConversation[key] = (unreadByConversation[key] || 0) + 1;
+                        notifyNewMessage(item);
+                    }
+                    conversationLastIds[key] = Number(item.ultimo_id) || previousId;
+                    if (isCurrentConversation(item) && panel.hasClass('is-open')) unreadByConversation[key] = 0;
+                });
+                conversationsLoaded = true;
+                showBadge(totalUnread());
                 conversationsBox.html(response.data.map(renderConversation).join(''));
                 conversationsBox.find('.chat-conversation').on('click', function() {
                     mode = $(this).data('chat-type');
                     targetId = mode === 'individual' ? Number($(this).data('chat-user')) : null;
+                    unreadByConversation[mode + ':' + (targetId || 0)] = 0;
                     panel.addClass('room-open');
                     updateHeader();
                     resetConversation();
@@ -164,6 +204,7 @@
         $('#chatToggle').on('click', function() {
             panel.toggleClass('is-open');
             if (panel.hasClass('is-open')) {
+                if (window.Notification && Notification.permission === 'default') Notification.requestPermission();
                 loadConversations();
                 loadMessages();
                 input.trigger('focus');
