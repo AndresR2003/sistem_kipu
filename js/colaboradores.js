@@ -32,7 +32,6 @@ function cargarColaboradores() {
       }
 
       data.forEach(function (c) {
-        var rolClass = c.rol === "superadmin" ? "superadmin" : c.rol === "admin" ? "admin" : c.rol === "soporte" ? "soporte" : c.rol === "vendedor" ? "vendedor" : c.rol === "tecnico" ? "tecnico" : "empleado";
         var estado = c.activo
           ? '<span class="badge" style="background:rgba(34,197,94,0.15);color:#22c55e;font-size:0.7rem;">Activo</span>'
           : '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;font-size:0.7rem;">Inactivo</span>';
@@ -69,11 +68,6 @@ function cargarColaboradores() {
           "<td><small>" +
           escHtml(c.puesto) +
           "</small></td>" +
-          '<td><span class="badge-rol ' +
-          rolClass +
-          '">' +
-          c.rol +
-          "</span></td>" +
           "<td><small>" +
           escHtml(c.telefono) +
           "</small></td>" +
@@ -94,18 +88,18 @@ function cargarColaboradores() {
         pageLength: 25,
         order: [[1, "asc"]],
         columnDefs: [
-          { orderable: false, targets: [8] }
+          { orderable: false, targets: [7] }
         ],
         createdRow: function (row) {
           if (!esAdminColaboradores) {
-            $("td:nth-child(9)", row).hide();
+            $("td:nth-child(8)", row).hide();
           }
         }
       });
 
       if (!esAdminColaboradores) {
         $("#tablaColaboradores th:last-child").hide();
-        tablaColaboradores.columns(8).visible(false);
+        tablaColaboradores.columns(7).visible(false);
       }
     },
     error: function () {

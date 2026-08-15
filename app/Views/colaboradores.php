@@ -34,7 +34,6 @@
                     <th>Email</th>
                     <th>Departamento</th>
                     <th>Puesto</th>
-                    <th>Rol</th>
                     <th>Telefono</th>
                     <th>Estado</th>
                     <th>Acciones</th>
