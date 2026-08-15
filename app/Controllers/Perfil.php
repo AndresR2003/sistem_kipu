@@ -42,11 +42,30 @@ class Perfil extends BaseController
         $model = new ColaboradorModel();
         $datos = [];
 
-        if (!empty($json['nombre'])) {
+        if (array_key_exists('nombre', $json) && $json['nombre'] !== '') {
             $datos['nombre'] = $json['nombre'];
         }
-        if (!empty($json['email'])) {
+        if (array_key_exists('email', $json) && $json['email'] !== '') {
             $datos['email'] = $json['email'];
+        }
+        if (array_key_exists('telefono', $json)) {
+            $datos['telefono'] = $json['telefono'] !== '' ? $json['telefono'] : null;
+        }
+        if (array_key_exists('puesto', $json)) {
+            $datos['puesto'] = $json['puesto'] !== '' ? $json['puesto'] : null;
+        }
+        if (array_key_exists('fecha_nacimiento', $json)) {
+            $datos['fecha_nacimiento'] = $json['fecha_nacimiento'] !== '' ? $json['fecha_nacimiento'] : null;
+        }
+        if (array_key_exists('fecha_contratacion', $json)) {
+            $datos['fecha_contratacion'] = $json['fecha_contratacion'] !== '' ? $json['fecha_contratacion'] : null;
+        }
+        if (array_key_exists('idioma', $json) && $json['idioma'] !== '') {
+            $datos['idioma'] = in_array($json['idioma'], ['es', 'en'], true) ? $json['idioma'] : 'es';
+        }
+        if (array_key_exists('preferencias_notificacion', $json)) {
+            $prefs = $json['preferencias_notificacion'];
+            $datos['preferencias_notificacion'] = is_array($prefs) ? json_encode($prefs) : ($prefs ?: null);
         }
         if (!empty($json['password'])) {
             $datos['password'] = $json['password'];

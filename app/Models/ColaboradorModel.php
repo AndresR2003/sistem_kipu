@@ -17,6 +17,7 @@ class ColaboradorModel extends Model
         'username', 'email', 'password', 'nombre', 'rol', 'activo',
         'ultimo_acceso', 'foto', 'id_departamento',
         'telefono', 'puesto', 'fecha_nacimiento', 'fecha_contratacion',
+        'idioma', 'preferencias_notificacion',
     ];
 
     protected $validationRules = [
