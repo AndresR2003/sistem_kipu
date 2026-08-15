@@ -62,11 +62,19 @@ class Tareas extends BaseController
         foreach ($departamentos as $d) {
             $deptId = $d['id'];
             if (isset($porDept[$deptId]) && count($porDept[$deptId]) > 0) {
+                $totalAsign = 0;
+                $totalComp  = 0;
+                foreach ($porDept[$deptId] as $t) {
+                    $totalAsign += (int) ($t['total_asignados'] ?? 0);
+                    $totalComp  += (int) ($t['total_completados'] ?? 0);
+                }
                 $resultado[] = [
-                    'id'        => $deptId,
-                    'nombre'    => $d['descripcion'],
-                    'pendientes'=> $pendientes[$deptId] ?? 0,
-                    'tareas'    => $porDept[$deptId],
+                    'id'          => $deptId,
+                    'nombre'      => $d['descripcion'],
+                    'pendientes'  => $pendientes[$deptId] ?? 0,
+                    'total_asign' => $totalAsign,
+                    'total_comp'  => $totalComp,
+                    'tareas'      => $porDept[$deptId],
                 ];
             }
         }

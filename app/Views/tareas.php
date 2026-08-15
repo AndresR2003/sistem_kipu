@@ -38,16 +38,14 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-main{display:flex;align-items:flex-start;gap:10px;min-width:0;}
 .tarea-side{display:flex;flex-direction:column;gap:10px;min-width:0;}
 
-/* Fila de chips: prioridad, fecha limite, departamentos */
-.tarea-chips{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0 0;margin-top:2px;border-top:1px dashed var(--border);}
 .tarea-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:10px;}
 .badge-alta{background:rgba(239,68,68,0.15);color:#ef4444;}
 .badge-media{background:rgba(234,179,8,0.15);color:#eab308;}
 .badge-baja{background:rgba(34,197,94,0.15);color:#22c55e;}
 .badge-dept{background:rgba(70,105,250,0.15);color:#4669FA;}
-.tarea-fecha{font-size:0.72rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;}
-.tarea-fecha.vencida{color:#ef4444;font-weight:600;}
-.tarea-fecha.hoy{color:#eab308;font-weight:600;}
+
+/* Progreso en el header del acordeon */
+.tarea-progreso-txt{font-size:0.7rem;font-weight:600;color:var(--primary);display:inline-flex;align-items:center;gap:5px;margin-right:8px;white-space:nowrap;}
 
 /* Seccion de estado con divisor claro */
 .tarea-estado-section{grid-column:1 / -1;padding-top:10px;margin-top:2px;border-top:1px dashed var(--border);}

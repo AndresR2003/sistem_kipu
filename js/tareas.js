@@ -88,12 +88,18 @@ function renderizarTareas(departamentos) {
         var pendClass = dept.pendientes > 0 ? '' : ' vacio';
         var pendText = dept.pendientes > 0 ? dept.pendientes + ' pendiente' + (dept.pendientes > 1 ? 's' : '') : 'Completado';
 
+        var progText = '';
+        if (dept.total_asign > 0) {
+            progText = ' <span class="tarea-progreso-txt"><i class="bi bi-people"></i> ' + (dept.total_comp || 0) + '/' + dept.total_asign + ' completadas</span>';
+        }
+
         var html = '<div class="tarea-acordeon' + (isOpen ? ' open' : '') + '" data-dept="' + dept.id + '">' +
             '<div class="tarea-acordeon-header" onclick="toggleAcordeon(' + dept.id + ')">' +
             '<div class="tarea-acordeon-icon" style="background:' + color + '20;color:' + color + ';">' +
             '<i class="bi ' + icono + '"></i></div>' +
             '<div class="tarea-acordeon-nombre">' + escHtml(dept.nombre) + '</div>' +
             '<span class="tarea-acordeon-pendientes' + pendClass + '">' + pendText + '</span>' +
+            progText +
             '<i class="bi bi-chevron-down tarea-acordeon-chevron"></i>' +
             '</div>' +
             '<div class="tarea-acordeon-body">';
@@ -186,13 +192,6 @@ function renderizarTarjeta(t) {
     else if (t.prioridad === 'media') badgePrioridad = '<span class="tarea-badge badge-media"><i class="bi bi-dash"></i> Media</span>';
     else badgePrioridad = '<span class="tarea-badge badge-baja"><i class="bi bi-arrow-down"></i> Baja</span>';
 
-    var deptBadges = '';
-    if (t.departamentos_nombres) {
-        t.departamentos_nombres.split(', ').forEach(function(n) {
-            if (n) deptBadges += '<span class="tarea-badge badge-dept"><i class="bi bi-building"></i> ' + escHtml(n) + '</span>';
-        });
-    }
-
     var estadoHtml = '';
     if (t.modalidad === 'single_completes_all') {
         if (completada && t.completada_por_nombre) {
@@ -203,11 +202,8 @@ function renderizarTarjeta(t) {
         }
     } else {
         var total = parseInt(t.total_asignados) || 0;
-        var comps = parseInt(t.total_completados) || 0;
         if (completada) {
             estadoHtml = '<div class="tarea-estado"><span class="completado-por"><i class="bi bi-check-circle-fill"></i> Completada por todos (' + total + '/' + total + ')</span></div>';
-        } else if (total > 0) {
-            estadoHtml = '<div class="tarea-estado"><span class="progreso"><i class="bi bi-people"></i> Progreso: ' + comps + '/' + total + ' completadas</span></div>';
         }
     }
 
@@ -239,9 +235,6 @@ function renderizarTarjeta(t) {
         '</div>' +
         '<div class="tarea-side">' +
         tareaAutorCard(t) +
-        '</div>' +
-        '<div class="tarea-chips">' +
-        deptBadges +
         '</div>' +
         (estadoHtml ? '<div class="tarea-estado-section">' + estadoHtml + '</div>' : '') +
         '<div class="tarea-acciones">' +
