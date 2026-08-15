@@ -21,6 +21,7 @@ class ColaboradorModel extends Model
     ];
 
     protected $validationRules = [
+        'id'       => 'permit_empty|is_natural_no_zero',
         'username' => 'required|max_length[50]|is_unique[admin_usuarios.username,id,{id}]',
         'email'    => 'required|valid_email|max_length[100]|is_unique[admin_usuarios.email,id,{id}]',
         'nombre'   => 'required|max_length[100]',
@@ -43,14 +44,17 @@ class ColaboradorModel extends Model
     public function Guardar(array $datos): bool
     {
         if (!empty($datos['id'])) {
-            $id = $datos['id'];
+            $id = (int) $datos['id'];
             unset($datos['id']);
             if (empty($datos['password'])) {
                 unset($datos['password']);
             } else {
                 $datos['password'] = password_hash($datos['password'], PASSWORD_BCRYPT);
             }
-            return $this->update($id, $datos);
+            $datos['id'] = $id;
+            $ok = $this->update($id, $datos);
+            unset($datos['id']);
+            return $ok;
         }
 
         if (!empty($datos['password'])) {
