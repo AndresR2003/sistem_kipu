@@ -193,28 +193,6 @@ function renderizarTarjeta(t) {
         });
     }
 
-    var fechaHtml = '';
-    if (t.fecha_limite) {
-        var fechaLimite = new Date(t.fecha_limite);
-        var ahora = new Date();
-        var diffMs = fechaLimite - ahora;
-        var diffHoras = diffMs / (1000 * 60 * 60);
-        var fechaStr = '';
-        var fechaClass = '';
-
-        if (diffMs < 0 && !completada) {
-            fechaStr = 'Vencida';
-            fechaClass = ' vencida';
-        } else if (diffHoras < 24 && diffHoras >= 0) {
-            fechaStr = 'Hoy, ' + fechaLimite.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-            fechaClass = ' hoy';
-        } else {
-            fechaStr = fechaLimite.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' }) +
-                ', ' + fechaLimite.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
-        }
-        fechaHtml = '<span class="tarea-fecha' + fechaClass + '"><i class="bi bi-clock"></i> ' + fechaStr + '</span>';
-    }
-
     var estadoHtml = '';
     if (t.modalidad === 'single_completes_all') {
         if (completada && t.completada_por_nombre) {
@@ -263,7 +241,7 @@ function renderizarTarjeta(t) {
         tareaAutorCard(t) +
         '</div>' +
         '<div class="tarea-chips">' +
-        fechaHtml + deptBadges +
+        deptBadges +
         '</div>' +
         (estadoHtml ? '<div class="tarea-estado-section">' + estadoHtml + '</div>' : '') +
         '<div class="tarea-acciones">' +
