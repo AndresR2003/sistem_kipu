@@ -54,6 +54,52 @@ class ChatModel extends Model
             ->getResultArray();
     }
 
+    public function obtenerConversaciones(int $usuarioId): array
+    {
+        $conversaciones = [];
+        $grupal = $this->where('destinatario_id', null)
+            ->orderBy('id', 'DESC')
+            ->first();
+        $ultimoGrupalMensaje = $grupal
+            ? ($grupal['mensaje'] ?: ($grupal['archivo_nombre'] ? 'Archivo adjunto' : 'Aún no hay mensajes'))
+            : 'Aún no hay mensajes';
+
+        $conversaciones[] = [
+            'tipo'           => 'grupo',
+            'usuario_id'     => null,
+            'nombre'         => 'Chat grupal',
+            'foto'           => null,
+            'ultimo_mensaje' => $ultimoGrupalMensaje,
+            'ultimo_en'      => $grupal['creado_en'] ?? null,
+        ];
+
+        foreach ($this->obtenerUsuarios($usuarioId) as $usuario) {
+            $ultimo = $this->groupStart()
+                ->groupStart()
+                    ->where('usuario_id', $usuarioId)
+                    ->where('destinatario_id', $usuario['id'])
+                ->groupEnd()
+                ->orGroupStart()
+                    ->where('usuario_id', $usuario['id'])
+                    ->where('destinatario_id', $usuarioId)
+                ->groupEnd()
+            ->groupEnd()
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            $conversaciones[] = [
+                'tipo'           => 'individual',
+                'usuario_id'     => (int) $usuario['id'],
+                'nombre'         => $usuario['nombre'],
+                'foto'           => $usuario['foto'],
+                'ultimo_mensaje' => $ultimo ? ($ultimo['mensaje'] ?: 'Archivo adjunto') : 'Iniciar conversación',
+                'ultimo_en'      => $ultimo['creado_en'] ?? null,
+            ];
+        }
+
+        return $conversaciones;
+    }
+
     public function obtenerPorId(int $id, ?int $usuarioId = null): ?array
     {
         $builder = $this->where('chat_mensajes.id', $id);

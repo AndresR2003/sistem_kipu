@@ -34,6 +34,19 @@ class Chat extends BaseController
         }
     }
 
+    public function conversaciones(): ResponseInterface
+    {
+        try {
+            return $this->response->setJSON([
+                'success' => true,
+                'data'    => (new ChatModel())->obtenerConversaciones($this->usuarioActual()),
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Chat conversaciones: {message}', ['message' => $e->getMessage()]);
+            return $this->respuestaError('No se pudieron cargar las conversaciones.');
+        }
+    }
+
     public function listar(): ResponseInterface
     {
         $usuarioId = $this->usuarioActual();

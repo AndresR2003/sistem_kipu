@@ -482,7 +482,7 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             right: 24px;
             bottom: 92px;
             z-index: 1040;
-            width: 380px;
+            width: 700px;
             height: min(590px, calc(100vh - 120px));
             display: none;
             flex-direction: column;
@@ -495,6 +495,22 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         }
 
         .chat-panel.is-open { display: flex; }
+        .chat-layout { display: flex; flex: 1; min-height: 0; }
+        .chat-sidebar { width: 230px; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border); background: var(--modal-bg); }
+        .chat-sidebar-title { padding: 14px 15px 10px; color: var(--text); font-size: 0.82rem; font-weight: 800; }
+        .chat-conversations { padding: 0 7px 8px; }
+        .chat-conversation { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 8px; border: 0; border-radius: 9px; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+        .chat-conversation:hover { background: var(--bg-input); }
+        .chat-conversation.active { background: color-mix(in srgb, var(--primary) 12%, var(--bg-card)); }
+        .chat-conversation-avatar { width: 36px; height: 36px; flex: 0 0 36px; overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--primary) 18%, var(--bg-card)); color: var(--primary); font-size: 0.75rem; font-weight: 800; }
+        .chat-conversation-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .chat-conversation-body { min-width: 0; flex: 1; }
+        .chat-conversation-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-size: 0.72rem; font-weight: 700; }
+        .chat-conversation-preview { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; color: var(--text-muted); font-size: 0.63rem; }
+        .chat-conversation-time { align-self: flex-start; color: var(--text-muted); font-size: 0.56rem; white-space: nowrap; }
+        .chat-main { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+        .chat-main .chat-header { flex-shrink: 0; }
+        .chat-back { display: none; border: 0; background: transparent; color: #fff; font-size: 1rem; cursor: pointer; }
         .chat-header {
             flex-shrink: 0;
             display: flex;
@@ -576,6 +592,15 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         @media (max-width: 576px) {
             .chat-fab { right: 16px; bottom: 16px; }
             .chat-panel { right: 10px; bottom: 82px; width: calc(100vw - 20px); height: min(600px, calc(100vh - 100px)); }
+            .chat-sidebar { width: 100%; border-right: 0; }
+            .chat-main { display: none; }
+            .chat-panel.room-open .chat-sidebar { display: none; }
+            .chat-panel.room-open .chat-main { display: flex; }
+            .chat-panel.room-open .chat-back { display: inline-block; }
+        }
+
+        @media (min-width: 577px) and (max-width: 760px) {
+            .chat-panel { right: 12px; width: calc(100vw - 24px); }
         }
 
         .user-dropdown {
@@ -1210,44 +1235,46 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
     </button>
 
     <section class="chat-panel" id="chatPanel" aria-label="Chat grupal">
-        <div class="chat-header">
-            <div class="chat-header-title">
-                <i class="bi bi-people-fill"></i>
-                <div><strong>Chat grupal</strong><small>Comunicación del equipo</small></div>
-            </div>
-            <button class="chat-header-close" id="chatClose" type="button" aria-label="Cerrar chat"><i class="bi bi-x-lg"></i></button>
-        </div>
-        <div class="chat-mode-switch">
-            <button class="chat-mode-button active" type="button" data-chat-mode="grupo"><i class="bi bi-people-fill"></i> Chat grupal</button>
-            <button class="chat-mode-button" type="button" data-chat-mode="individual"><i class="bi bi-person-fill"></i> Chat individual</button>
-        </div>
-        <div class="chat-recipient" id="chatRecipient">
-            <select id="chatUserSelect" aria-label="Seleccionar usuario">
-                <option value="">Selecciona un usuario...</option>
-            </select>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-empty"><i class="bi bi-chat-square-text"></i>Cargando mensajes...</div>
-        </div>
-        <div class="chat-composer">
-            <div class="chat-attachment-preview" id="chatAttachmentPreview">
-                <i class="bi bi-paperclip"></i><span id="chatAttachmentName"></span>
-                <button class="chat-attachment-remove" id="chatAttachmentRemove" type="button" aria-label="Quitar archivo"><i class="bi bi-x"></i></button>
-            </div>
-            <div class="chat-emoji-picker" id="chatEmojiPicker" aria-label="Emojis">
-                <?php foreach (['😀','😂','😍','😎','🤔','😅','🙌','👏','👍','👎','❤️','🔥','✅','🎉','🚀','💡','👋','🙏','😴','😢','😡','💬','📌','⭐','🎯','💪','🤝','📎'] as $emoji): ?>
-                    <button type="button" class="chat-emoji" data-emoji="<?= $emoji ?>"><?= $emoji ?></button>
-                <?php endforeach; ?>
-            </div>
-            <form id="chatForm" enctype="multipart/form-data">
-                <div class="chat-input-row">
-                    <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
-                    <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
-                    <input type="file" id="chatFile" name="archivo" hidden>
-                    <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
-                    <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
+        <div class="chat-layout">
+            <aside class="chat-sidebar" id="chatSidebar">
+                <div class="chat-sidebar-title"><i class="bi bi-chat-square-text"></i> Conversaciones</div>
+                <div class="chat-conversations" id="chatConversations">
+                    <div class="chat-empty"><i class="bi bi-hourglass-split"></i>Cargando...</div>
                 </div>
-            </form>
+            </aside>
+            <div class="chat-main" id="chatMain">
+                <div class="chat-header">
+                    <button class="chat-back" id="chatBack" type="button" aria-label="Volver a conversaciones"><i class="bi bi-arrow-left"></i></button>
+                    <div class="chat-header-title">
+                        <i class="bi bi-people-fill" id="chatHeaderIcon"></i>
+                        <div><strong id="chatHeaderName">Chat grupal</strong><small id="chatHeaderStatus">Comunicación del equipo</small></div>
+                    </div>
+                    <button class="chat-header-close" id="chatClose" type="button" aria-label="Cerrar chat"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-empty"><i class="bi bi-chat-square-text"></i>Cargando mensajes...</div>
+                </div>
+                <div class="chat-composer">
+                    <div class="chat-attachment-preview" id="chatAttachmentPreview">
+                        <i class="bi bi-paperclip"></i><span id="chatAttachmentName"></span>
+                        <button class="chat-attachment-remove" id="chatAttachmentRemove" type="button" aria-label="Quitar archivo"><i class="bi bi-x"></i></button>
+                    </div>
+                    <div class="chat-emoji-picker" id="chatEmojiPicker" aria-label="Emojis">
+                        <?php foreach (['😀','😂','😍','😎','🤔','😅','🙌','👏','👍','👎','❤️','🔥','✅','🎉','🚀','💡','👋','🙏','😴','😢','😡','💬','📌','⭐','🎯','💪','🤝','📎'] as $emoji): ?>
+                            <button type="button" class="chat-emoji" data-emoji="<?= $emoji ?>"><?= $emoji ?></button>
+                        <?php endforeach; ?>
+                    </div>
+                    <form id="chatForm" enctype="multipart/form-data">
+                        <div class="chat-input-row">
+                            <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
+                            <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
+                            <input type="file" id="chatFile" name="archivo" hidden>
+                            <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
+                            <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 
