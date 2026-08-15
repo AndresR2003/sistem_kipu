@@ -71,8 +71,10 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-check{flex-shrink:0;padding-top:2px;}
 .tarea-check input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--success);}
 .tarea-info{flex:1;min-width:0;}
-.tarea-titulo{font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;}
-.tarea-descripcion{font-size:0.8rem;color:var(--text-muted);white-space:pre-line;line-height:1.5;margin-bottom:4px;}
+.tarea-titulo-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.tarea-titulo{font-size:0.88rem;font-weight:600;color:var(--text);line-height:1.3;}
+.tarea-titulo-row .tarea-badge{flex-shrink:0;}
+.tarea-descripcion{font-size:0.8rem;color:var(--text-muted);white-space:pre-line;line-height:1.55;margin:6px 0 0 0;padding-left:2px;}
 .tarea-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px;}
 
 /* Tarjeta lateral: autor y fecha */
@@ -118,10 +120,10 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-comentario-fecha{color:var(--text-muted);font-size:0.65rem;margin-left:6px;}
 .tarea-comentario-texto{color:var(--text);margin-top:2px;line-height:1.4;}
 .tarea-comentario-vacio{text-align:center;color:var(--text-muted);font-size:0.78rem;padding:12px 0;}
-.comentarios-form{margin-top:8px;display:flex;flex-direction:column;}
-.comentarios-form textarea{font-size:0.78rem;background:var(--bg-input);color:var(--text);border-color:var(--border);border-radius:var(--radius);}
+.comentarios-form{margin-top:10px;display:flex;flex-direction:row;align-items:stretch;gap:8px;}
+.comentarios-form textarea{font-size:0.78rem;background:var(--bg-input);color:var(--text);border-color:var(--border);border-radius:var(--radius);flex:1;resize:vertical;}
 .comentarios-form textarea:focus{border-color:var(--primary);box-shadow:none;}
-.comentario-enviar{align-self:flex-end;background:var(--primary);color:#fff;border:none;padding:6px 12px;border-radius:var(--radius);font-size:0.75rem;margin-top:6px;cursor:pointer;transition:all 0.15s;}
+.comentario-enviar{background:var(--primary);color:#fff;border:none;padding:6px 14px;border-radius:var(--radius);font-size:0.75rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;}
 .comentario-enviar:hover{opacity:0.9;}
 </style>
 

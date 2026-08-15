@@ -252,16 +252,18 @@ function renderizarTarjeta(t) {
         '<div class="tarea-main">' +
         '<div class="tarea-check">' + checkbox + '</div>' +
         '<div class="tarea-info">' +
+        '<div class="tarea-titulo-row">' +
+        badgePrioridad +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
+        '</div>' +
         (t.descripcion ? '<div class="tarea-descripcion">' + escHtml(t.descripcion) + '</div>' : '') +
         '</div>' +
         '</div>' +
         '<div class="tarea-side">' +
         tareaAutorCard(t) +
-        tareaFechaCard(t) +
         '</div>' +
         '<div class="tarea-chips">' +
-        badgePrioridad + ' ' + fechaHtml + deptBadges +
+        fechaHtml + deptBadges +
         '</div>' +
         (estadoHtml ? '<div class="tarea-estado-section">' + estadoHtml + '</div>' : '') +
         '<div class="tarea-acciones">' +
@@ -307,37 +309,11 @@ function tareaAutorCard(t) {
         '</div>';
 }
 
-function tareaFechaCard(t) {
-    var creado = t.created_at ? formatearFechaTarea(t.created_at) : '';
-    var hora = t.created_at ? formatearHoraTarea(t.created_at) : '';
-    return '<div class="tarea-side-card">' +
-        '<div class="tarea-side-label">Fecha de publicacion</div>' +
-        '<div class="tarea-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + creado + '</span></span></div>' +
-        '<div class="tarea-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + hora + ' hrs</span></span></div>' +
-        '</div>';
-}
-
 function rolLegible(rol) {
     var map = { 'superadmin': 'Administrador', 'admin': 'Administrador', 'empleado': 'Empleado', 'soporte': 'Soporte', 'vendedor': 'Vendedor', 'tecnico': 'Tecnico' };
     return map[rol] || '';
 }
 
-function formatearFechaTarea(iso) {
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    var dd = ('0' + d.getDate()).slice(-2);
-    var mm = ('0' + (d.getMonth() + 1)).slice(-2);
-    var yy = d.getFullYear();
-    return dd + '/' + mm + '/' + yy;
-}
-
-function formatearHoraTarea(iso) {
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    var hh = ('0' + d.getHours()).slice(-2);
-    var mi = ('0' + d.getMinutes()).slice(-2);
-    return hh + ':' + mi;
-}
 
 // ─── Toggle acordeón ───
 
