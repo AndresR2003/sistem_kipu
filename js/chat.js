@@ -130,7 +130,9 @@
         if (message.archivo_nombre) {
             var icon = (message.archivo_mime || '').indexOf('image/') === 0 ? 'bi-image' : 'bi-file-earmark-arrow-down';
             var attachmentUrl = window.BASE_URL + 'chat/archivo/' + Number(message.id);
-            if ((message.archivo_mime || '').indexOf('audio/') === 0) {
+            if ((message.archivo_mime || '').indexOf('image/') === 0) {
+                attachment = '<a class="chat-image-link" href="' + attachmentUrl + '?inline=1" target="_blank" rel="noopener"><img class="chat-image" src="' + attachmentUrl + '?inline=1" alt="' + escapeHtml(message.archivo_nombre) + '"></a>';
+            } else if ((message.archivo_mime || '').indexOf('audio/') === 0) {
                 attachment = '<audio class="chat-audio" controls preload="none" src="' + attachmentUrl + '?inline=1"></audio>';
             }
             attachment += '<a class="chat-attachment" href="' + attachmentUrl + '" target="_blank" rel="noopener">' +
@@ -142,7 +144,7 @@
             '<div class="chat-avatar">' + avatar + '</div><div class="chat-bubble">' +
             (mine ? '' : '<div class="chat-author">' + escapeHtml(nombre) + '</div>') +
             (message.mensaje ? '<div class="chat-text">' + escapeHtml(message.mensaje) + '</div>' : '') + attachment +
-            '<div class="chat-meta">' + formatTime(message.creado_en) + '</div></div></div>';
+            '<div class="chat-meta">' + formatTime(message.creado_en) + (mine ? '<span class="chat-checks' + (Number(message.leido) === 1 ? ' read' : '') + '">' + (Number(message.leido) === 1 ? '✓✓' : '✓') + '</span>' : '') + '</div></div></div>';
     }
 
     function scrollToBottom() { messagesBox.scrollTop(messagesBox[0].scrollHeight); }
@@ -157,24 +159,24 @@
         if (messagesRequest || (mode === 'individual' && !targetId)) return;
         messagesRequest = true;
         $.getJSON(window.BASE_URL + 'chat/listar', {
-            desde: lastId > 0 ? lastId : 0,
-            destinatario_id: mode === 'individual' ? targetId : ''
+            desde: 0,
+            destinatario_id: mode === 'individual' ? targetId : '',
+            marcar_leido: panel.hasClass('is-open') && (panel.hasClass('room-open') || window.innerWidth > 576) ? 1 : 0
         }).done(function(response) {
             if (!response.success || !Array.isArray(response.data)) return;
             var messages = response.data;
+            var oldLastId = lastId;
+            var wasNearBottom = messagesBox.length && (messagesBox[0].scrollHeight - messagesBox[0].scrollTop - messagesBox[0].clientHeight < 40);
             if (firstLoad) {
                 messagesBox.empty();
                 if (messages.length) messagesBox.html(messages.map(renderMessage).join(''));
                 else messagesBox.html('<div class="chat-empty"><i class="bi bi-chat-square-text"></i>Aún no hay mensajes. ¡Inicia la conversación!</div>');
                 firstLoad = false;
                 if (messages.length) scrollToBottom();
-            } else if (messages.length) {
+            } else {
                 if (messagesBox.find('.chat-empty').length) messagesBox.empty();
-                messages.forEach(function(message) { messagesBox.append(renderMessage(message)); });
-                if (!panel.hasClass('is-open')) showBadge(unread + messages.filter(function(message) {
-                    return Number(message.usuario_id) !== Number(window.USUARIO_ID);
-                }).length);
-                scrollToBottom();
+                messagesBox.html(messages.length ? messages.map(renderMessage).join('') : '<div class="chat-empty"><i class="bi bi-chat-square-text"></i>Aún no hay mensajes. ¡Inicia la conversación!</div>');
+                if (messages.length && (Number(messages[messages.length - 1].id) > oldLastId || wasNearBottom)) scrollToBottom();
             }
             messages.forEach(function(message) { lastId = Math.max(lastId, Number(message.id)); });
         }).fail(function(xhr) {

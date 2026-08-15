@@ -569,9 +569,14 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         .chat-author { margin-bottom: 3px; color: var(--primary); font-size: 0.65rem; font-weight: 700; }
         .chat-text { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); font-size: 0.77rem; line-height: 1.4; }
         .chat-meta { margin-top: 4px; color: var(--text-muted); font-size: 0.58rem; text-align: right; }
+        .chat-checks { margin-left: 5px; color: var(--text-muted); font-size: 0.72rem; letter-spacing: -2px; }
+        .chat-checks.read { color: #2196f3; }
         .chat-attachment { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; margin-top: 6px; padding: 6px 8px; border-radius: 8px; background: var(--bg-input); color: var(--primary); font-size: 0.68rem; text-decoration: none; }
         .chat-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .chat-attachment:hover { color: var(--primary-light); }
+        .chat-image-link { display: block; max-width: 220px; margin-top: 6px; overflow: hidden; border-radius: 9px; }
+        .chat-image { display: block; width: 100%; max-height: 220px; object-fit: cover; transition: opacity 0.2s; }
+        .chat-image:hover { opacity: 0.85; }
         .chat-audio { display: block; width: 220px; max-width: 100%; height: 34px; margin-top: 6px; }
 
         .chat-composer { position: relative; flex-shrink: 0; padding: 10px; border-top: 1px solid var(--border); background: var(--modal-bg); }

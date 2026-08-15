@@ -17,7 +17,7 @@ class ChatModel extends Model
 
     public function obtenerRecientes(int $usuarioId, ?int $destinatarioId = null, int $desde = 0, int $limite = 80): array
     {
-        $builder = $this->select('chat_mensajes.*, admin_usuarios.nombre AS usuario_nombre, admin_usuarios.foto AS usuario_foto')
+        $builder = $this->select('chat_mensajes.*, admin_usuarios.nombre AS usuario_nombre, admin_usuarios.foto AS usuario_foto, CASE WHEN EXISTS (SELECT 1 FROM chat_lecturas WHERE chat_lecturas.mensaje_id = chat_mensajes.id AND chat_lecturas.usuario_id != chat_mensajes.usuario_id) THEN 1 ELSE 0 END AS leido')
             ->join('admin_usuarios', 'admin_usuarios.id = chat_mensajes.usuario_id', 'inner')
             ->where('admin_usuarios.activo', 1);
 
@@ -41,6 +41,20 @@ class ChatModel extends Model
         }
 
         return array_reverse($builder->orderBy('chat_mensajes.id', 'DESC')->limit($limite)->findAll());
+    }
+
+    public function marcarComoLeidos(int $usuarioId, ?int $destinatarioId = null): void
+    {
+        if ($destinatarioId === null) {
+            $sql = 'INSERT IGNORE INTO chat_lecturas (mensaje_id, usuario_id, leido_en) '
+                . 'SELECT id, ?, NOW() FROM chat_mensajes WHERE destinatario_id IS NULL AND usuario_id != ?';
+            $this->db->query($sql, [$usuarioId, $usuarioId]);
+            return;
+        }
+
+        $sql = 'INSERT IGNORE INTO chat_lecturas (mensaje_id, usuario_id, leido_en) '
+            . 'SELECT id, ?, NOW() FROM chat_mensajes WHERE usuario_id != ? AND destinatario_id = ?';
+        $this->db->query($sql, [$usuarioId, $usuarioId, $usuarioId]);
     }
 
     public function obtenerUsuarios(int $usuarioId): array

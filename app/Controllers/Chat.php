@@ -61,6 +61,9 @@ class Chat extends BaseController
         $destinatarioId = $this->destinatario();
 
         try {
+            if ((int) $this->request->getGet('marcar_leido') === 1) {
+                (new ChatModel())->marcarComoLeidos($usuarioId, $destinatarioId);
+            }
             $mensajes = (new ChatModel())->obtenerRecientes($usuarioId, $destinatarioId, $desde);
         } catch (\Throwable $e) {
             log_message('error', 'Chat listar: {message}', ['message' => $e->getMessage()]);
