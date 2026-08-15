@@ -38,6 +38,24 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-main{display:flex;align-items:flex-start;gap:10px;min-width:0;}
 .tarea-side{display:flex;flex-direction:column;gap:10px;min-width:0;}
 
+/* Fila de chips: prioridad, fecha limite, departamentos */
+.tarea-chips{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0 0;margin-top:2px;border-top:1px dashed var(--border);}
+.tarea-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:10px;}
+.badge-alta{background:rgba(239,68,68,0.15);color:#ef4444;}
+.badge-media{background:rgba(234,179,8,0.15);color:#eab308;}
+.badge-baja{background:rgba(34,197,94,0.15);color:#22c55e;}
+.badge-dept{background:rgba(70,105,250,0.15);color:#4669FA;}
+.tarea-fecha{font-size:0.72rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;}
+.tarea-fecha.vencida{color:#ef4444;font-weight:600;}
+.tarea-fecha.hoy{color:#eab308;font-weight:600;}
+
+/* Seccion de estado con divisor claro */
+.tarea-estado-section{grid-column:1 / -1;padding-top:10px;margin-top:2px;border-top:1px dashed var(--border);}
+.tarea-estado{font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+.tarea-estado .completado-por{color:#22c55e;font-weight:600;}
+.tarea-estado .solo-mi{color:var(--primary);font-weight:500;}
+.tarea-estado .progreso{color:var(--primary);font-weight:500;}
+
 .tarea-acciones{display:flex;flex-wrap:wrap;align-items:center;gap:4px;grid-column:1 / -1;margin-top:6px;padding-top:10px;border-top:1px solid var(--border);}
 .tarea-accion{background:transparent;border:none;padding:3px 8px;border-radius:5px;font-size:0.7rem;color:var(--text-muted);transition:all 0.15s;cursor:pointer;}
 .tarea-accion:hover{background:var(--bg-input);color:var(--text);}
@@ -56,18 +74,6 @@ var USUARIO_ROL = '<?= session()->get("admin_rol") ?? "empleado" ?>';
 .tarea-titulo{font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;}
 .tarea-descripcion{font-size:0.8rem;color:var(--text-muted);white-space:pre-line;line-height:1.5;margin-bottom:4px;}
 .tarea-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px;}
-.tarea-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:10px;}
-.badge-alta{background:rgba(239,68,68,0.15);color:#ef4444;}
-.badge-media{background:rgba(234,179,8,0.15);color:#eab308;}
-.badge-baja{background:rgba(34,197,94,0.15);color:#22c55e;}
-.badge-dept{background:rgba(70,105,250,0.15);color:#4669FA;}
-.tarea-fecha{font-size:0.7rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;}
-.tarea-fecha.vencida{color:#ef4444;font-weight:600;}
-.tarea-fecha.hoy{color:#eab308;font-weight:600;}
-.tarea-estado{font-size:0.7rem;margin-top:4px;color:var(--text-muted);}
-.tarea-estado .completado-por{color:#22c55e;font-weight:600;}
-.tarea-estado .solo-mi{color:var(--primary);font-weight:500;}
-.tarea-estado .progreso{color:var(--primary);font-weight:500;}
 
 /* Tarjeta lateral: autor y fecha */
 .tarea-side-card{background:transparent;border:none;padding:2px 0;font-size:0.9em;}

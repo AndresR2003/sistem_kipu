@@ -254,14 +254,16 @@ function renderizarTarjeta(t) {
         '<div class="tarea-info">' +
         '<div class="tarea-titulo">' + escHtml(t.titulo) + '</div>' +
         (t.descripcion ? '<div class="tarea-descripcion">' + escHtml(t.descripcion) + '</div>' : '') +
-        '<div class="tarea-meta">' + badgePrioridad + ' ' + fechaHtml + deptBadges + '</div>' +
-        estadoHtml +
         '</div>' +
         '</div>' +
         '<div class="tarea-side">' +
         tareaAutorCard(t) +
         tareaFechaCard(t) +
         '</div>' +
+        '<div class="tarea-chips">' +
+        badgePrioridad + ' ' + fechaHtml + deptBadges +
+        '</div>' +
+        (estadoHtml ? '<div class="tarea-estado-section">' + estadoHtml + '</div>' : '') +
         '<div class="tarea-acciones">' +
         '<button class="tarea-accion rec" onclick="guardarComoTarea(\'recordatorio\', ' + t.id + ')" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="tarea-accion mar" onclick="guardarComoTarea(\'marcador\', ' + t.id + ')" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
