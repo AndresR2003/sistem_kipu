@@ -80,4 +80,22 @@ INSERT INTO `usuarios` (`nombre`, `telefono`, `token`, `activo`) VALUES
 INSERT INTO `admin_usuarios` (`username`, `email`, `password`, `nombre`, `rol`) VALUES
 ('admin', 'admin@sistemalito.com', '$2y$10$BrC9y1qYQ9OwqES86rAFluao7jFX.J7DaRUKv6HxsY7eC1/8pXA5W', 'Administrador', 'superadmin');
 
+-- =====================================================
+-- Tabla: chat_mensajes (chat grupal del sistema)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS `chat_mensajes` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `usuario_id` INT(11) NOT NULL,
+    `mensaje` VARCHAR(2000) NOT NULL DEFAULT '',
+    `archivo_nombre` VARCHAR(255) DEFAULT NULL,
+    `archivo_ruta` VARCHAR(255) DEFAULT NULL,
+    `archivo_mime` VARCHAR(120) DEFAULT NULL,
+    `archivo_tamano` INT UNSIGNED DEFAULT NULL,
+    `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_chat_creado_en` (`creado_en`),
+    KEY `idx_chat_usuario` (`usuario_id`),
+    CONSTRAINT `fk_chat_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `admin_usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;

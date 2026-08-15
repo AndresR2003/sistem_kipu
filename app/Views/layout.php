@@ -437,6 +437,140 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
             background: var(--modal-bg);
         }
 
+        /* Chat grupal flotante */
+        .chat-fab {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 1040;
+            width: 56px;
+            height: 56px;
+            border: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: 0 8px 22px rgba(70,105,250,0.35);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .chat-fab:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(70,105,250,0.45); }
+        .chat-fab .chat-fab-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border: 2px solid var(--bg-body);
+            border-radius: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.58rem;
+            font-weight: 800;
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 24px;
+            bottom: 92px;
+            z-index: 1040;
+            width: 380px;
+            height: min(590px, calc(100vh - 120px));
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            background: var(--modal-bg);
+            color: var(--text);
+            box-shadow: 0 18px 55px rgba(0,0,0,0.28);
+        }
+
+        .chat-panel.is-open { display: flex; }
+        .chat-header {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 16px;
+            color: #fff;
+            background: var(--primary-gradient);
+        }
+
+        .chat-header-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .chat-header-title > i { font-size: 1.3rem; }
+        .chat-header-title strong { display: block; font-size: 0.9rem; }
+        .chat-header-title small { display: block; margin-top: 1px; opacity: 0.8; font-size: 0.67rem; }
+        .chat-header-close { border: 0; background: transparent; color: #fff; opacity: 0.8; font-size: 1.1rem; cursor: pointer; }
+        .chat-header-close:hover { opacity: 1; }
+
+        .chat-messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 14px 12px;
+            background: var(--bg-body);
+        }
+
+        .chat-empty { padding: 40px 20px; color: var(--text-muted); text-align: center; font-size: 0.76rem; }
+        .chat-empty i { display: block; margin-bottom: 8px; font-size: 1.8rem; opacity: 0.45; }
+        .chat-message { display: flex; align-items: flex-end; gap: 7px; margin-bottom: 11px; }
+        .chat-message.mine { flex-direction: row-reverse; }
+        .chat-avatar {
+            flex: 0 0 28px;
+            width: 28px;
+            height: 28px;
+            overflow: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--primary) 18%, var(--bg-card));
+            color: var(--primary);
+            font-size: 0.65rem;
+            font-weight: 800;
+        }
+        .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .chat-bubble { max-width: 78%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 13px 13px 13px 4px; background: var(--bg-card); }
+        .chat-message.mine .chat-bubble { border-color: color-mix(in srgb, var(--primary) 22%, var(--border)); border-radius: 13px 13px 4px 13px; background: color-mix(in srgb, var(--primary) 10%, var(--bg-card)); }
+        .chat-author { margin-bottom: 3px; color: var(--primary); font-size: 0.65rem; font-weight: 700; }
+        .chat-text { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); font-size: 0.77rem; line-height: 1.4; }
+        .chat-meta { margin-top: 4px; color: var(--text-muted); font-size: 0.58rem; text-align: right; }
+        .chat-attachment { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; margin-top: 6px; padding: 6px 8px; border-radius: 8px; background: var(--bg-input); color: var(--primary); font-size: 0.68rem; text-decoration: none; }
+        .chat-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-attachment:hover { color: var(--primary-light); }
+
+        .chat-composer { position: relative; flex-shrink: 0; padding: 10px; border-top: 1px solid var(--border); background: var(--modal-bg); }
+        .chat-attachment-preview { display: none; align-items: center; gap: 7px; margin-bottom: 7px; padding: 6px 8px; border-radius: 7px; background: var(--bg-input); color: var(--text-muted); font-size: 0.68rem; }
+        .chat-attachment-preview.show { display: flex; }
+        .chat-attachment-preview span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-attachment-remove { border: 0; background: transparent; color: var(--danger); cursor: pointer; }
+        .chat-input-row { display: flex; align-items: flex-end; gap: 6px; }
+        .chat-input { flex: 1; min-height: 38px; max-height: 100px; resize: none; padding: 9px 10px; border: 1px solid var(--border-light); border-radius: 10px; outline: none; background: var(--bg-input); color: var(--text); font: inherit; font-size: 0.76rem; }
+        .chat-input:focus { border-color: var(--primary); }
+        .chat-tool { width: 32px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer; }
+        .chat-tool:hover { background: var(--bg-input); color: var(--primary); }
+        .chat-send { width: 36px; height: 34px; border: 0; border-radius: 9px; background: var(--primary); color: #fff; cursor: pointer; }
+        .chat-send:disabled { opacity: 0.55; cursor: wait; }
+        .chat-emoji-picker { position: absolute; right: 48px; bottom: 56px; display: none; width: 220px; padding: 9px; border: 1px solid var(--border-light); border-radius: 10px; background: var(--modal-bg); box-shadow: var(--shadow-lg); }
+        .chat-emoji-picker.show { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+        .chat-emoji-picker button { padding: 5px 2px; border: 0; border-radius: 6px; background: transparent; font-size: 1.1rem; cursor: pointer; }
+        .chat-emoji-picker button:hover { background: var(--bg-input); }
+
+        @media (max-width: 576px) {
+            .chat-fab { right: 16px; bottom: 16px; }
+            .chat-panel { right: 10px; bottom: 82px; width: calc(100vw - 20px); height: min(600px, calc(100vh - 100px)); }
+        }
+
         .user-dropdown {
             display: flex;
             align-items: center;
@@ -1063,6 +1197,44 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         </div>
     </div>
 
+    <button class="chat-fab" id="chatToggle" type="button" aria-label="Abrir chat grupal" title="Chat grupal">
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="chat-fab-badge" id="chatBadge">0</span>
+    </button>
+
+    <section class="chat-panel" id="chatPanel" aria-label="Chat grupal">
+        <div class="chat-header">
+            <div class="chat-header-title">
+                <i class="bi bi-people-fill"></i>
+                <div><strong>Chat grupal</strong><small>Comunicación del equipo</small></div>
+            </div>
+            <button class="chat-header-close" id="chatClose" type="button" aria-label="Cerrar chat"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-empty"><i class="bi bi-chat-square-text"></i>Cargando mensajes...</div>
+        </div>
+        <div class="chat-composer">
+            <div class="chat-attachment-preview" id="chatAttachmentPreview">
+                <i class="bi bi-paperclip"></i><span id="chatAttachmentName"></span>
+                <button class="chat-attachment-remove" id="chatAttachmentRemove" type="button" aria-label="Quitar archivo"><i class="bi bi-x"></i></button>
+            </div>
+            <div class="chat-emoji-picker" id="chatEmojiPicker" aria-label="Emojis">
+                <?php foreach (['😀','😂','😍','😎','🤔','😅','🙌','👏','👍','👎','❤️','🔥','✅','🎉','🚀','💡','👋','🙏','😴','😢','😡','💬','📌','⭐','🎯','💪','🤝','📎'] as $emoji): ?>
+                    <button type="button" class="chat-emoji" data-emoji="<?= $emoji ?>"><?= $emoji ?></button>
+                <?php endforeach; ?>
+            </div>
+            <form id="chatForm" enctype="multipart/form-data">
+                <div class="chat-input-row">
+                    <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
+                    <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
+                    <input type="file" id="chatFile" name="archivo" hidden>
+                    <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
+                    <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </section>
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner-litio"></div>
     </div>
@@ -1071,8 +1243,9 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/sweetalert2.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/jquery.dataTables.min.js') ?>"></script>
-    <script src="<?= base_url('assets/js/dataTables.bootstrap5.min.js') ?>"></script>
-    <script src="<?= base_url('js/theme.js') ?>"></script>
+        <script src="<?= base_url('assets/js/dataTables.bootstrap5.min.js') ?>"></script>
+        <script src="<?= base_url('js/theme.js') ?>"></script>
+        <script src="<?= base_url('js/chat.js') ?>?v=<?= filemtime(FCPATH . 'js/chat.js') ?>"></script>
 
     <script>
         var CSRF_TOKEN = '<?= csrf_hash() ?>';
