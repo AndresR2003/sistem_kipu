@@ -5,6 +5,7 @@
 
 var calendar = null;
 var calendarEl = document.getElementById('calendar');
+var invitadosCache = null;
 
 // Inicializar tooltips de color presets
 $(document).ready(function() {
@@ -129,6 +130,46 @@ function recargarEventos() {
 // ABRIR MODAL - NUEVO EVENTO
 // =====================================================
 
+// =====================================================
+// INVITADOS (departamentos y usuarios)
+// =====================================================
+
+function cargarInvitados(seleccionados) {
+    if (!invitadosCache) {
+        $.ajax({
+            url: BASE_URL + '/calendario/destinatarios',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                invitadosCache = data;
+                cargarInvitados(seleccionados);
+            }
+        });
+        return;
+    }
+
+    var selDept = seleccionados ? (seleccionados.departamentos || []) : [];
+    var selUsr = seleccionados ? (seleccionados.usuarios || []) : [];
+
+    var dep = $('#invitadosDepartamentos');
+    dep.empty();
+    (invitadosCache.departamentos || []).forEach(function(d) {
+        var checked = selDept.some(function(s) { return String(s.id) === String(d.id); }) ? ' checked' : '';
+        dep.append(
+            '<label class="pub-check"><input type="checkbox" class="inv-dept" value="' + d.id + '"' + checked + '> ' + escHtml(d.descripcion) + '</label>'
+        );
+    });
+
+    var usr = $('#invitadosUsuarios');
+    usr.empty();
+    (invitadosCache.usuarios || []).forEach(function(u) {
+        var checked = selUsr.some(function(s) { return String(s.id) === String(u.id); }) ? ' checked' : '';
+        usr.append(
+            '<label class="pub-check"><input type="checkbox" class="inv-usr" value="' + u.id + '"' + checked + '> ' + escHtml(u.nombre) + '</label>'
+        );
+    });
+}
+
 function abrirModalNuevo() {
     $('#formEvento')[0].reset();
     $('#eventoId').val('');
@@ -151,6 +192,8 @@ function abrirModalNuevo() {
     if ($('#btnEliminarEvento').length) {
         $('#btnEliminarEvento').remove();
     }
+
+    cargarInvitados(null);
 
     $('#modalEvento').modal('show');
 }
@@ -178,6 +221,8 @@ function abrirModalNuevoDesdeFecha(fechaInicio, fechaFin) {
     if ($('#btnEliminarEvento').length) {
         $('#btnEliminarEvento').remove();
     }
+
+    cargarInvitados(null);
 
     $('#modalEvento').modal('show');
 }
@@ -222,6 +267,8 @@ function abrirModalEditar(event) {
         $('#btnEliminarEvento').attr('onclick', 'eliminarEvento(' + eventId + ')');
     }
 
+    cargarInvitados(event.extendedProps.invitados || null);
+
     $('#modalEvento').modal('show');
 }
 
@@ -249,13 +296,24 @@ $('#formEvento').on('submit', function(e) {
         return;
     }
 
+    var departamentosInvitados = [];
+    $('.inv-dept:checked').each(function() {
+        departamentosInvitados.push(parseInt($(this).val()));
+    });
+    var usuariosInvitados = [];
+    $('.inv-usr:checked').each(function() {
+        usuariosInvitados.push(parseInt($(this).val()));
+    });
+
     var datos = {
         id: id ? parseInt(id) : null,
         titulo: titulo,
         descripcion: descripcion,
         fecha_inicio: fechaInicio,
         fecha_fin: fechaFin || null,
-        color: color
+        color: color,
+        departamentos_invitados: departamentosInvitados,
+        usuarios_invitados: usuariosInvitados
     };
 
     showLoading();
@@ -352,4 +410,9 @@ function formatearFechaLocal(fecha) {
     var hours = String(fecha.getHours()).padStart(2, '0');
     var minutes = String(fecha.getMinutes()).padStart(2, '0');
     return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+}
+
+function escHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

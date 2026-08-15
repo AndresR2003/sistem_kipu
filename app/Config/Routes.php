@@ -125,6 +125,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
 
     // API AJAX - Calendario / Eventos
     $routes->get('calendario/listar', 'Calendario::listar');
+    $routes->get('calendario/destinatarios', 'Calendario::destinatarios');
     $routes->post('calendario/guardar', 'Calendario::guardar');
     $routes->post('calendario/eliminar/(:num)', 'Calendario::eliminar/$1');
 

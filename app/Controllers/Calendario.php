@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\EventoModel;
+use App\Models\DepartamentoModel;
 
 class Calendario extends BaseController
 {
@@ -48,10 +49,30 @@ class Calendario extends BaseController
                 'color'       => $e['color'] ?? '#4669FA',
                 'description' => $e['descripcion'] ?? '',
                 'usuario_id'  => $e['usuario_id'] ? (int) $e['usuario_id'] : null,
+                'invitados'   => $this->eventoModel->ObtenerInvitados((int) $e['id']),
             ];
         }, $eventos);
 
         return $this->response->setJSON($data);
+    }
+
+    public function destinatarios(): \CodeIgniter\HTTP\Response
+    {
+        $db = \Config\Database::connect();
+
+        $usuarios = $db->table('admin_usuarios')
+                       ->where('activo', 1)
+                       ->orderBy('nombre', 'ASC')
+                       ->get()
+                       ->getResultArray();
+
+        $deptoModel = new DepartamentoModel();
+        $deptos = $deptoModel->ObtenerTodos();
+
+        return $this->response->setJSON([
+            'usuarios'      => $usuarios,
+            'departamentos' => $deptos,
+        ]);
     }
 
     public function guardar(): \CodeIgniter\HTTP\Response
@@ -96,6 +117,12 @@ class Calendario extends BaseController
         $eventoId = $datos['id'] ?? $this->eventoModel->getInsertID();
         $evento   = $this->eventoModel->ObtenerPorId($eventoId);
 
+        $this->eventoModel->GuardarInvitados(
+            (int) $eventoId,
+            $json['departamentos_invitados'] ?? [],
+            $json['usuarios_invitados'] ?? []
+        );
+
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Evento guardado correctamente.',
@@ -106,6 +133,7 @@ class Calendario extends BaseController
                 'end'         => $evento['fecha_fin'],
                 'color'       => $evento['color'] ?? '#4669FA',
                 'description' => $evento['descripcion'] ?? '',
+                'invitados'   => $this->eventoModel->ObtenerInvitados((int) $eventoId),
             ],
         ]);
     }

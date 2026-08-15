@@ -51,6 +51,22 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Invitados <span class="text-muted">(departamentos y/o usuarios)</span></label>
+                        <div class="invitados-wrap">
+                            <div class="invitados-cols">
+                                <div>
+                                    <div class="invitados-titulo"><i class="bi bi-building"></i> Departamentos</div>
+                                    <div class="pub-checks" id="invitadosDepartamentos"></div>
+                                </div>
+                                <div>
+                                    <div class="invitados-titulo"><i class="bi bi-people"></i> Usuarios</div>
+                                    <div class="pub-checks" id="invitadosUsuarios"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small text-muted mt-1"><i class="bi bi-info-circle"></i> Puedes mezclar departamentos y usuarios. Si no eliges invitados, el evento no estara restringido.</div>
+                    </div>
+                    <div class="mb-3">
                         <label for="eventoColor" class="form-label">Color</label>
                         <div class="d-flex align-items-center gap-2">
                             <input type="color" class="form-control form-control-color" id="eventoColor" name="color"
@@ -270,6 +286,18 @@
 
     .fc .fc-scrollgrid {
         border-color: var(--border) !important;
+    }
+
+    /* Invitados */
+    .invitados-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .invitados-titulo{font-size:0.72rem;font-weight:600;color:var(--text-muted);margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+    .pub-checks{max-height:130px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);padding:6px 8px;display:flex;flex-direction:column;gap:2px;}
+    .pub-check{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--text);padding:2px 4px;border-radius:4px;cursor:pointer;}
+    .pub-check:hover{background:var(--bg-input);}
+    .pub-check input{accent-color:var(--primary);}
+
+    @media (max-width: 576px) {
+        .invitados-cols{grid-template-columns:1fr;}
     }
 
     /* Color presets */

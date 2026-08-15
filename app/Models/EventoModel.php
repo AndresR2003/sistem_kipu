@@ -123,4 +123,58 @@ class EventoModel extends Model
     {
         return $this->delete($id);
     }
+
+    /**
+     * Guardar invitados (departamentos y usuarios) de un evento
+     * Patron delete-all + reinsert (igual que tareas/borradores)
+     */
+    public function GuardarInvitados(int $eventoId, array $departamentoIds, array $usuarioIds): void
+    {
+        $db = \Config\Database::connect();
+
+        $db->table('evento_invitados_departamentos')->where('evento_id', $eventoId)->delete();
+        foreach (array_unique(array_filter(array_map('intval', $departamentoIds))) as $did) {
+            $db->table('evento_invitados_departamentos')->insert([
+                'evento_id'       => $eventoId,
+                'departamento_id' => $did,
+            ]);
+        }
+
+        $db->table('evento_invitados_usuarios')->where('evento_id', $eventoId)->delete();
+        foreach (array_unique(array_filter(array_map('intval', $usuarioIds))) as $uid) {
+            $db->table('evento_invitados_usuarios')->insert([
+                'evento_id'  => $eventoId,
+                'usuario_id' => $uid,
+            ]);
+        }
+    }
+
+    /**
+     * Obtener invitados de un evento (departamentos y usuarios)
+     */
+    public function ObtenerInvitados(int $eventoId): array
+    {
+        $db = \Config\Database::connect();
+
+        $departamentos = $db->table('evento_invitados_departamentos')
+                            ->select('d.id, d.descripcion')
+                            ->join('departamentos d', 'd.id = evento_invitados_departamentos.departamento_id', 'inner')
+                            ->where('evento_invitados_departamentos.evento_id', $eventoId)
+                            ->orderBy('d.descripcion', 'ASC')
+                            ->get()
+                            ->getResultArray();
+
+        $usuarios = $db->table('evento_invitados_usuarios')
+                       ->select('u.id, u.nombre')
+                       ->join('admin_usuarios u', 'u.id = evento_invitados_usuarios.usuario_id', 'inner')
+                       ->where('evento_invitados_usuarios.evento_id', $eventoId)
+                       ->orderBy('u.nombre', 'ASC')
+                       ->get()
+                       ->getResultArray();
+
+        return [
+            'departamentos' => $departamentos,
+            'usuarios'      => $usuarios,
+        ];
+    }
 }
