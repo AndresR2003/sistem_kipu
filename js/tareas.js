@@ -247,8 +247,11 @@ function renderizarTarjeta(t) {
         '<div class="comentarios-lista"></div>' +
         '<div class="comentarios-form">' +
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorTarea(' + t.id + ')" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>' +
+        '<input type="file" class="com-input-adjunto" data-com="' + t.id + '" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
         '<button type="button" class="comentario-enviar" onclick="guardarComentarioTarea(' + t.id + ', this)"><i class="bi bi-send-fill"></i> Enviar</button>' +
         '</div>' +
+        '<div class="com-adjuntos-form" data-compre="' + t.id + '"></div>' +
         '</div>' +
         '</div>';
 
@@ -629,8 +632,39 @@ function toggleComentariosTarea(id) {
     if (!visible) cargarComentariosTarea(id);
 }
 
+function comAbrirSelectorTarea(id) {
+    $('#comentarios-tarea-' + id + ' .com-input-adjunto').trigger('click');
+}
+
+function comVinculaInput(id) {
+    var input = $('#comentarios-tarea-' + id + ' .com-input-adjunto');
+    if (input.data('com-vinculado')) return;
+    input.data('com-vinculado', true);
+    input.on('change', function () {
+        var preview = $('#comentarios-tarea-' + id + ' .com-adjuntos-form');
+        preview.empty();
+        var files = this.files || [];
+        Array.prototype.forEach.call(files, function (file) {
+            var ext = (file.name.split('.').pop() || '').toLowerCase();
+            var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
+            var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
+            var muestra = '<div class="com-adjunto-preview">' +
+                icono +
+                '<span>' + escHtml(file.name) + '</span>' +
+                '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+                '</div>';
+            $(muestra).appendTo(preview);
+        });
+    });
+}
+
+function comQuitarArchivo(icono) {
+    $(icono).closest('.com-adjunto-preview').remove();
+}
+
 function cargarComentariosTarea(id) {
     var lista = $('#comentarios-tarea-' + id + ' .comentarios-lista');
+    comVinculaInput(id);
     $.ajax({
         url: BASE_URL + '/tareas/listar-comentarios/' + id,
         type: 'POST',
@@ -655,6 +689,7 @@ function cargarComentariosTarea(id) {
                     '<span class="tarea-comentario-autor">' + escHtml(c.autor_nombre) +
                     '<span class="tarea-comentario-fecha">' + fecha + '</span></span>' +
                     '<div class="tarea-comentario-texto">' + escHtml(c.comentario) + '</div>' +
+                    comRenderAdjuntos(c) +
                     '</div></div>'
                 );
             });
@@ -666,30 +701,43 @@ function guardarComentarioTarea(id, btn) {
     var wrap = $('#comentarios-tarea-' + id);
     var ta = wrap.find('textarea');
     var texto = ta.val().trim();
-    if (!texto) return;
+    var input = wrap.find('.com-input-adjunto');
+    if (!texto && (!input[0] || !input[0].files.length)) return;
 
     $(btn).prop('disabled', true);
-    $.ajax({
-        url: BASE_URL + '/tareas/guardar-comentario',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ tarea_id: id, comentario: texto }),
-        dataType: 'json',
-        success: function(res) {
-            if (res.success) {
-                ta.val('');
-                cargarComentariosTarea(id);
-            } else {
-                Swal.fire('Error', res.message, 'error');
+    var subir = function (archivos) {
+        $.ajax({
+            url: BASE_URL + '/tareas/guardar-comentario',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ tarea_id: id, comentario: texto, archivos: archivos }),
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    ta.val('');
+                    if (input[0]) { input[0].value = ''; }
+                    wrap.find('.com-adjuntos-form').empty();
+                    cargarComentariosTarea(id);
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Error', 'Error de conexion.', 'error');
+            },
+            complete: function() {
+                $(btn).prop('disabled', false);
             }
-        },
-        error: function() {
-            Swal.fire('Error', 'Error de conexion.', 'error');
-        },
-        complete: function() {
-            $(btn).prop('disabled', false);
-        }
-    });
+        });
+    };
+    if (input[0] && input[0].files.length) {
+        comPrepararSubida(input[0], function (archivos) {
+            subir(archivos);
+            input[0].value = '';
+        });
+    } else {
+        subir([]);
+    }
 }
 
 // ─── Guardar como recordatorio / marcador ───

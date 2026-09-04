@@ -36,6 +36,9 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     // API AJAX - Notificaciones
     $routes->post('api/notificaciones', 'Api::notificaciones');
 
+    // API AJAX - Adjuntos de comentarios
+    $routes->post('comentarios/subir-archivo', 'Comentarios::subirArchivo');
+
     // API AJAX - Chat grupal
     $routes->get('chat/usuarios', 'Chat::usuarios');
     $routes->get('chat/conversaciones', 'Chat::conversaciones');

@@ -217,21 +217,26 @@ class PaseTurnoModel extends Model
     public function ListarComentarios(int $puntoId): array
     {
         $db = \Config\Database::connect();
-        $sql = "SELECT c.*, u.nombre AS autor_nombre
+        $sql = "SELECT c.*, u.nombre AS autor_nombre, u.foto AS autor_foto
                 FROM pase_punto_comentarios c
                 LEFT JOIN admin_usuarios u ON u.id = c.usuario_id
                 WHERE c.punto_id = ?
                 ORDER BY c.created_at ASC";
-        return $db->query($sql, [$puntoId])->getResultArray();
+        $filas = $db->query($sql, [$puntoId])->getResultArray();
+        foreach ($filas as &$fila) {
+            $fila['archivos'] = !empty($fila['archivos']) ? (json_decode($fila['archivos'], true) ?: []) : [];
+        }
+        return $filas;
     }
 
-    public function GuardarComentario(int $puntoId, int $usuarioId, string $comentario): bool
+    public function GuardarComentario(int $puntoId, int $usuarioId, string $comentario, ?array $archivos = null): bool
     {
         $db = \Config\Database::connect();
         return (bool) $db->table('pase_punto_comentarios')->insert([
             'punto_id'   => $puntoId,
             'usuario_id' => $usuarioId,
             'comentario' => $comentario,
+            'archivos'   => !empty($archivos) ? json_encode(array_values($archivos)) : null,
             'created_at' => date('Y-m-d H:i:s'),
         ]);
     }

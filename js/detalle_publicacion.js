@@ -7,6 +7,7 @@ function toggleComentariosDetalle() {
 
 function cargarComentariosDetalle() {
     var lista = $('#detalleComentariosLista');
+    comVinculaInputDetalle();
     $.ajax({
         url: BASE_URL + 'borradores/listar-comentarios/' + DETALLE_PUB_ID,
         type: 'GET',
@@ -27,11 +28,34 @@ function cargarComentariosDetalle() {
                     '<div class="comentario-body">' +
                     '<div class="comentario-autor">' + escHtmlDetalle(nombre) + '<span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtmlDetalle(c.comentario) + '</div>' +
+                    comRenderAdjuntos(c) +
                     '</div>' +
                     '</div>'
                 );
             });
         }
+    });
+}
+
+function comVinculaInputDetalle() {
+    var input = $('#detalleComAdjunto');
+    if (input.data('com-vinculado')) return;
+    input.data('com-vinculado', true);
+    input.on('change', function () {
+        var preview = $('#detalleComPreview');
+        preview.empty();
+        var files = this.files || [];
+        Array.prototype.forEach.call(files, function (file) {
+            var ext = (file.name.split('.').pop() || '').toLowerCase();
+            var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
+            var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
+            var muestra = '<div class="com-adjunto-preview">' +
+                icono +
+                '<span>' + escHtmlDetalle(file.name) + '</span>' +
+                '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+                '</div>';
+            $(muestra).appendTo(preview);
+        });
     });
 }
 
@@ -45,36 +69,50 @@ function setComentariosCountDetalle(count) {
 function guardarComentarioDetalle(btn) {
     var ta = $('#detalleComentarioTexto');
     var texto = ta.val().trim();
-    if (!texto) return;
+    var input = $('#detalleComAdjunto')[0];
+    var tieneArchivos = input && input.files.length;
+    if (!texto && !tieneArchivos) return;
 
     $(btn).prop('disabled', true);
-    $.ajax({
-        url: BASE_URL + 'borradores/guardar-comentario',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ borrador_id: DETALLE_PUB_ID, comentario: texto }),
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                ta.val('');
-                cargarComentariosDetalle();
-            } else {
-                Swal.fire('Error', response.message, 'error');
+    var subir = function (archivos) {
+        $.ajax({
+            url: BASE_URL + 'borradores/guardar-comentario',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ borrador_id: DETALLE_PUB_ID, comentario: texto, archivos: archivos }),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    ta.val('');
+                    if (input) input.value = '';
+                    $('#detalleComPreview').empty();
+                    cargarComentariosDetalle();
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(jqXHR) {
+                var msg = 'Error de conexion.';
+                try {
+                    var r = JSON.parse(jqXHR.responseText);
+                    if (r.message) msg = r.message;
+                    else if (r.error) msg = r.error;
+                } catch(e) { /* ignore */ }
+                Swal.fire('Error (' + jqXHR.status + ')', msg, 'error');
+            },
+            complete: function() {
+                $(btn).prop('disabled', false);
             }
-        },
-        error: function(jqXHR) {
-            var msg = 'Error de conexion.';
-            try {
-                var r = JSON.parse(jqXHR.responseText);
-                if (r.message) msg = r.message;
-                else if (r.error) msg = r.error;
-            } catch(e) { /* ignore */ }
-            Swal.fire('Error (' + jqXHR.status + ')', msg, 'error');
-        },
-        complete: function() {
-            $(btn).prop('disabled', false);
-        }
-    });
+        });
+    };
+    if (tieneArchivos) {
+        comPrepararSubida(input, function (archivos) {
+            subir(archivos);
+            input.value = '';
+        });
+    } else {
+        subir([]);
+    }
 }
 
 function guardarComoDetalle(tipo) {

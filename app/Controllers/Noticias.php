@@ -12,7 +12,8 @@ class Noticias extends BaseController
         return view('layout', [
             'contenido'  => view('seccion_publicaciones', ['seccion' => 'noticias']),
             'titulo'     => 'Noticias - Kipucloud',
-            'pageScripts' => '<script src="' . base_url('js/publicaciones.js') . '?v=' . time() . '"></script>',
+            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                         . '<script src="' . base_url('js/publicaciones.js') . '?v=' . time() . '"></script>',
         ]);
     }
 
@@ -38,7 +39,8 @@ class Noticias extends BaseController
                 'tituloPagina' => 'Noticias - Kipucloud',
             ]),
             'titulo'     => 'Noticias - Kipucloud',
-            'pageScripts' => '<script src="' . base_url('js/detalle_publicacion.js') . '?v=' . time() . '"></script>',
+            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                         . '<script src="' . base_url('js/detalle_publicacion.js') . '?v=' . time() . '"></script>',
         ]);
     }
 }

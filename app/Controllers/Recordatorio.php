@@ -15,7 +15,8 @@ class Recordatorio extends BaseController
 
     public function index(): string
     {
-        $pageScripts = '<script src="' . base_url('js/recordatorio.js') . '?v=' . time() . '"></script>';
+        $pageScripts = '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                     . '<script src="' . base_url('js/recordatorio.js') . '?v=' . time() . '"></script>';
 
         return view('layout', [
             'contenido'   => view('recordatorios'),

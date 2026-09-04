@@ -301,8 +301,11 @@ $comentarios = (int) ($publicacion['comentarios_count'] ?? 0);
                     <?php endif; ?>
                 </div>
                 <textarea id="detalleComentarioTexto" rows="2" placeholder="Escribe un comentario..."></textarea>
+                <button type="button" class="com-adjuntar-btn" onclick="document.getElementById('detalleComAdjunto').click()" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
+                <input type="file" id="detalleComAdjunto" class="com-input-adjunto" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">
                 <button class="comentario-enviar" onclick="guardarComentarioDetalle(this)">Enviar</button>
             </div>
+            <div class="com-adjuntos-form" id="detalleComPreview"></div>
             <div class="nd-comentarios-lista" id="detalleComentariosLista">
                 <div class="comentario-vacio">Sin comentarios</div>
             </div>

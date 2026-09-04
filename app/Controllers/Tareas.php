@@ -19,7 +19,8 @@ class Tareas extends BaseController
 
     public function index(): string
     {
-        $pageScripts = '<script src="' . base_url('js/tareas.js') . '?v=' . time() . '"></script>';
+        $pageScripts = '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                     . '<script src="' . base_url('js/tareas.js') . '?v=' . time() . '"></script>';
 
         return view('layout', [
             'contenido'   => view('tareas'),
@@ -273,11 +274,7 @@ class Tareas extends BaseController
     public function listarComentarios(int $id): \CodeIgniter\HTTP\Response
     {
         $model = new ComentarioModel();
-        $comentarios = $model->select('comentarios.*, admin_usuarios.nombre as autor_nombre, admin_usuarios.foto as autor_foto')
-                             ->join('admin_usuarios', 'admin_usuarios.id = comentarios.usuario_id', 'left')
-                             ->where('comentarios.tarea_id', $id)
-                             ->orderBy('comentarios.created_at', 'ASC')
-                             ->findAll();
+        $comentarios = $model->ObtenerPorTarea($id);
 
         return $this->response->setJSON(['success' => true, 'data' => $comentarios]);
     }
@@ -286,18 +283,22 @@ class Tareas extends BaseController
     {
         $json = $this->request->getJSON(true);
 
-        if (!$json || empty($json['tarea_id']) || empty($json['comentario'])) {
+        if (!$json || empty($json['tarea_id']) || trim($json['comentario'] ?? '') === '') {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Faltan datos.',
             ]);
         }
 
+        $archivos = $json['archivos'] ?? [];
+        $archivos = is_array($archivos) ? array_values($archivos) : [];
+
         $model = new ComentarioModel();
         $ok = $model->Guardar([
             'tarea_id'   => (int) $json['tarea_id'],
             'usuario_id' => session()->get('usuario_id') ?? session()->get('admin_id'),
             'comentario' => $json['comentario'],
+            'archivos'   => !empty($archivos) ? json_encode($archivos) : null,
         ]);
 
         return $this->response->setJSON([

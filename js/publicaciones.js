@@ -217,8 +217,11 @@ function noticiaCard(p, seccion) {
         '<div class="comentarios-lista"></div>' +
         '<div class="comentarios-form">' +
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorPub(' + p.id + ')" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>' +
+        '<input type="file" class="com-input-adjunto" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
         '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentario(' + p.id + ', this)">Enviar</button>' +
         '</div>' +
+        '<div class="com-adjuntos-form"></div>' +
         '</div>' +
         '</div>';
 }
@@ -238,8 +241,35 @@ function toggleComentarios(id) {
     if (!visible) cargarComentarios(id);
 }
 
+function comAbrirSelectorPub(id) {
+    $('#comentarios-' + id + ' .com-input-adjunto').trigger('click');
+}
+
+function comVinculaInputPub(id, wrap) {
+    var input = wrap.find('.com-input-adjunto');
+    if (input.data('com-vinculado')) return;
+    input.data('com-vinculado', true);
+    input.on('change', function () {
+        var preview = wrap.find('.com-adjuntos-form');
+        preview.empty();
+        var files = this.files || [];
+        Array.prototype.forEach.call(files, function (file) {
+            var ext = (file.name.split('.').pop() || '').toLowerCase();
+            var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
+            var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
+            var muestra = '<div class="com-adjunto-preview">' +
+                icono +
+                '<span>' + escHtml(file.name) + '</span>' +
+                '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+                '</div>';
+            $(muestra).appendTo(preview);
+        });
+    });
+}
+
 function cargarComentarios(id) {
     var lista = $('#comentarios-' + id + ' .comentarios-lista');
+    comVinculaInputPub(id, $('#comentarios-' + id));
     $.ajax({
         url: BASE_URL + 'borradores/listar-comentarios/' + id,
         type: 'GET',
@@ -260,6 +290,7 @@ function cargarComentarios(id) {
                     '<div class="comentario-body">' +
                     '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtml(c.comentario) + '</div>' +
+                    comRenderAdjuntos(c) +
                     '</div>' +
                     '</div>'
                 );
@@ -272,38 +303,51 @@ function guardarComentario(id, btn) {
     var wrap = $('#comentarios-' + id);
     var ta   = wrap.find('textarea');
     var texto = ta.val().trim();
-    if (!texto) return;
+    var input = wrap.find('.com-input-adjunto');
+    if (!texto && (!input[0] || !input[0].files.length)) return;
 
     $(btn).prop('disabled', true);
-    $.ajax({
-        url: BASE_URL + 'borradores/guardar-comentario',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ borrador_id: id, comentario: texto }),
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                ta.val('');
-                cargarComentarios(id);
-            } else {
-                Swal.fire('Error', response.message, 'error');
+    var subir = function (archivos) {
+        $.ajax({
+            url: BASE_URL + 'borradores/guardar-comentario',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ borrador_id: id, comentario: texto, archivos: archivos }),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    ta.val('');
+                    if (input[0]) { input[0].value = ''; }
+                    wrap.find('.com-adjuntos-form').empty();
+                    cargarComentarios(id);
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(jqXHR) {
+                var msg = 'Error de conexion.';
+                try {
+                    var r = JSON.parse(jqXHR.responseText);
+                    if (r.message) msg = r.message;
+                    else if (r.error) msg = r.error;
+                } catch(e) {
+                    if (jqXHR.responseText) msg = jqXHR.status + ': ' + jqXHR.responseText.slice(0,200);
+                }
+                Swal.fire('Error (' + jqXHR.status + ')', msg, 'error');
+            },
+            complete: function() {
+                $(btn).prop('disabled', false);
             }
-        },
-        error: function(jqXHR) {
-            var msg = 'Error de conexion.';
-            try {
-                var r = JSON.parse(jqXHR.responseText);
-                if (r.message) msg = r.message;
-                else if (r.error) msg = r.error;
-            } catch(e) {
-                if (jqXHR.responseText) msg = jqXHR.status + ': ' + jqXHR.responseText.slice(0,200);
-            }
-            Swal.fire('Error (' + jqXHR.status + ')', msg, 'error');
-        },
-        complete: function() {
-            $(btn).prop('disabled', false);
-        }
-    });
+        });
+    };
+    if (input[0] && input[0].files.length) {
+        comPrepararSubida(input[0], function (archivos) {
+            subir(archivos);
+            input[0].value = '';
+        });
+    } else {
+        subir([]);
+    }
 }
 
 function formatearFecha(f) {

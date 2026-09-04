@@ -18,7 +18,8 @@ class Borradores extends BaseController
         return view('layout', [
             'contenido'   => view('borradores'),
             'titulo'      => 'Borradores - Kipucloud',
-            'pageScripts' => '<script src="' . base_url('js/borradores.js') . '?v=' . filemtime(FCPATH . 'js/borradores.js') . '"></script>',
+            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                         . '<script src="' . base_url('js/borradores.js') . '?v=' . filemtime(FCPATH . 'js/borradores.js') . '"></script>',
         ]);
     }
 
@@ -261,18 +262,22 @@ class Borradores extends BaseController
     {
         $json = $this->request->getJSON(true);
 
-        if (!$json || empty($json['borrador_id']) || empty($json['comentario'])) {
+        if (!$json || empty($json['borrador_id']) || trim($json['comentario'] ?? '') === '') {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Faltan datos.',
             ]);
         }
 
+        $archivos = $json['archivos'] ?? [];
+        $archivos = is_array($archivos) ? array_values($archivos) : [];
+
         $model = new ComentarioModel();
         $ok    = $model->Guardar([
             'borrador_id' => (int) $json['borrador_id'],
             'usuario_id'  => session()->get('usuario_id') ?? session()->get('admin_id'),
             'comentario'  => $json['comentario'],
+            'archivos'    => !empty($archivos) ? json_encode($archivos) : null,
         ]);
 
         return $this->response->setJSON([

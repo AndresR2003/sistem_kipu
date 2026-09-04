@@ -153,10 +153,16 @@ function renderCardRec(r) {
         '<div class="comentarios-lista"></div>' +
         '<div class="comentarios-form">' +
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
+        '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorRec(' +
+        r.id +
+        ')" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>' +
+        '<input type="file" class="com-input-adjunto" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
         '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentarioRec(' +
         r.id +
         ', this, event)">Enviar</button>' +
-        "</div></div>"
+        '</div>' +
+        '<div class="com-adjuntos-form"></div>' +
+        "</div>"
       : "") +
     '</div>'
   );
@@ -198,9 +204,37 @@ function toggleComentariosRec(id) {
   if (!visible) cargarComentariosRec(id);
 }
 
+function comAbrirSelectorRec(id) {
+  $("#comentarios-rec-" + id + " .com-input-adjunto").trigger("click");
+}
+
+function comVinculaInputRec(id, wrap) {
+  var input = wrap.find(".com-input-adjunto");
+  if (input.data("com-vinculado")) return;
+  input.data("com-vinculado", true);
+  input.on("change", function () {
+    var preview = wrap.find(".com-adjuntos-form");
+    preview.empty();
+    var files = this.files || [];
+    Array.prototype.forEach.call(files, function (file) {
+      var ext = (file.name.split(".").pop() || "").toLowerCase();
+      var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
+      var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
+      var muestra = '<div class="com-adjunto-preview">' +
+        icono +
+        "<span>" + escHtml(file.name) + "</span>" +
+        '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+        "</div>";
+      $(muestra).appendTo(preview);
+    });
+  });
+}
+
 function cargarComentariosRec(id) {
   var card = $("#rec-" + id);
-  var lista = $("#comentarios-rec-" + id + " .comentarios-lista");
+  var wrap = $("#comentarios-rec-" + id);
+  var lista = wrap.find(".comentarios-lista");
+  comVinculaInputRec(id, wrap);
   var origenTipo = card.data("origen") || "borrador";
   var origenId = card.data("origen-id");
 
@@ -237,6 +271,7 @@ function cargarComentariosRec(id) {
             '<div class="comentario-body">' +
             '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + "</span></div>" +
             '<div class="comentario-texto">' + escHtml(c.comentario) + "</div>" +
+            comRenderAdjuntos(c) +
             "</div></div>",
         );
       });
@@ -256,46 +291,59 @@ function guardarComentarioRec(id, btn, ev) {
   var wrap = $("#comentarios-rec-" + id);
   var ta = wrap.find("textarea");
   var texto = ta.val().trim();
-  if (!texto) return;
+  var input = wrap.find(".com-input-adjunto");
+  if (!texto && (!input[0] || !input[0].files.length)) return;
 
   var card = $("#rec-" + id);
   var origenTipo = card.data("origen") || "borrador";
   var origenId = card.data("origen-id");
-  var payload, url;
-  if (origenTipo === "entrega") {
-    payload = { entrega_id: origenId, comentario: texto };
-    url = BASE_URL + "entregas/comentario";
-  } else if (origenTipo === "tarea") {
-    payload = { tarea_id: origenId, comentario: texto };
-    url = BASE_URL + "tareas/guardar-comentario";
-  } else {
-    payload = { borrador_id: origenId, comentario: texto };
-    url = BASE_URL + "borradores/guardar-comentario";
-  }
 
   if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
   $(btn).prop("disabled", true);
-  $.ajax({
-    url: url,
-    type: "POST",
-    contentType: "application/json",
-    data: JSON.stringify(payload),
-    dataType: "json",
-    success: function (response) {
-      if (response.success) {
-        ta.val("");
-        cargarComentariosRec(id);
-      } else {
-        Swal.fire("Error", response.message, "error");
-      }
-    },
-    error: function () {
-      Swal.fire("Error", "Error de conexion.", "error");
-    },
-    complete: function () {
-      $(btn).prop("disabled", false);
-    },
-  });
+  var subir = function (archivos) {
+    var payload, url;
+    if (origenTipo === "entrega") {
+      payload = { entrega_id: origenId, comentario: texto, archivos: archivos };
+      url = BASE_URL + "entregas/comentario";
+    } else if (origenTipo === "tarea") {
+      payload = { tarea_id: origenId, comentario: texto, archivos: archivos };
+      url = BASE_URL + "tareas/guardar-comentario";
+    } else {
+      payload = { borrador_id: origenId, comentario: texto, archivos: archivos };
+      url = BASE_URL + "borradores/guardar-comentario";
+    }
+    $.ajax({
+      url: url,
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(payload),
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          ta.val("");
+          if (input[0]) { input[0].value = ""; }
+          wrap.find(".com-adjuntos-form").empty();
+          cargarComentariosRec(id);
+        } else {
+          Swal.fire("Error", response.message, "error");
+        }
+      },
+      error: function () {
+        Swal.fire("Error", "Error de conexion.", "error");
+      },
+      complete: function () {
+        $(btn).prop("disabled", false);
+      },
+    });
+  };
+  if (input[0] && input[0].files.length) {
+    comPrepararSubida(input[0], function (archivos) {
+      subir(archivos);
+      input[0].value = "";
+    });
+  } else {
+    subir([]);
+  }
 }
 
 function eliminarRecordatorio(id) {

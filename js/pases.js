@@ -403,38 +403,88 @@ function cargarComentarios(puntoId) {
                     '<span class="autor-c"><i class="bi bi-person-fill"></i> ' + escHtml(c.autor_nombre) + '</span>' +
                     '<span class="fecha-c">' + formatearFecha(c.created_at) + '</span>' +
                     '<div>' + escHtml(c.comentario) + '</div>' +
+                    comRenderAdjuntos(c) +
                     '</div>';
             });
         } else {
             html = '<div class="small text-muted">Sin comentarios todavia.</div>';
         }
         html += '<div class="comentario-input">' +
+            '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorPase(' + puntoId + ')" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>' +
             '<input type="text" class="form-control form-control-sm" id="comentarioInput-' + puntoId + '" placeholder="Escribe un comentario...">' +
+            '<input type="file" class="com-input-adjunto" id="comAdjuntoInput-' + puntoId + '" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
             '<button class="btn btn-primary-custom btn-sm" onclick="guardarComentario(' + puntoId + ')"><i class="bi bi-send-fill"></i></button>' +
-            '</div>';
+            '</div>' +
+            '<div class="com-adjuntos-form" id="comPreview-' + puntoId + '"></div>';
         $('#comentarios-' + puntoId).html(html);
+    });
+}
+
+function comAbrirSelectorPase(puntoId) {
+    $('#comAdjuntoInput-' + puntoId).trigger('click');
+}
+
+function comVinculaInputPase(puntoId) {
+    var input = $('#comAdjuntoInput-' + puntoId);
+    if (input.data('com-vinculado')) return;
+    input.data('com-vinculado', true);
+    input.on('change', function () {
+        var preview = $('#comPreview-' + puntoId);
+        preview.empty();
+        var files = this.files || [];
+        Array.prototype.forEach.call(files, function (file) {
+            var ext = (file.name.split('.').pop() || '').toLowerCase();
+            var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
+            var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
+            var muestra = '<div class="com-adjunto-preview">' +
+                icono +
+                '<span>' + escHtml(file.name) + '</span>' +
+                '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+                '</div>';
+            $(muestra).appendTo(preview);
+        });
     });
 }
 
 function guardarComentario(puntoId) {
     var texto = $('#comentarioInput-' + puntoId).val().trim();
-    if (!texto) return;
+    var input = $('#comAdjuntoInput-' + puntoId)[0];
+    var tieneArchivos = input && input.files.length;
+    if (!texto && !tieneArchivos) return;
     showLoading();
-    $.ajax({
-        url: BASE + 'comentario',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ punto_id: puntoId, comentario: texto }),
-        dataType: 'json',
-        success: function (res) {
-            hideLoading();
-            if (res.success) {
-                cargarComentarios(puntoId);
-            } else {
-                Swal.fire('Error', res.message, 'error');
+    var subir = function (archivos) {
+        $.ajax({
+            url: BASE + 'comentario',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ punto_id: puntoId, comentario: texto, archivos: archivos }),
+            dataType: 'json',
+            success: function (res) {
+                hideLoading();
+                if (res.success) {
+                    $('#comentarioInput-' + puntoId).val('');
+                    if (input) input.value = '';
+                    $('#comPreview-' + puntoId).empty();
+                    cargarComentarios(puntoId);
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            },
+            error: function () {
+                hideLoading();
+                Swal.fire('Error', 'Error de conexion.', 'error');
             }
-        }
-    });
+        });
+    };
+    if (tieneArchivos) {
+        comVinculaInputPase(puntoId);
+        comPrepararSubida(input, function (archivos) {
+            subir(archivos);
+            input.value = '';
+        });
+    } else {
+        subir([]);
+    }
 }
 
 // ─── Convertir en tarea ───

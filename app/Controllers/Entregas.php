@@ -32,7 +32,8 @@ class Entregas extends BaseController
 
     public function index()
     {
-        $pageScripts = '<script src="' . base_url('js/pases.js') . '?v=' . filemtime(FCPATH . 'js/pases.js') . '"></script>';
+        $pageScripts = '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+                     . '<script src="' . base_url('js/pases.js') . '?v=' . filemtime(FCPATH . 'js/pases.js') . '"></script>';
 
         return view('layout', [
             'contenido'   => view('entregas', ['esAdmin' => $this->esAdmin()]),
@@ -339,7 +340,9 @@ class Entregas extends BaseController
             ]);
         }
 
-        $ok = $this->model->GuardarComentario((int) $json['punto_id'], $this->usuarioId(), trim($json['comentario']));
+        $archivos = $json['archivos'] ?? [];
+        $archivos = is_array($archivos) ? array_values($archivos) : [];
+        $ok = $this->model->GuardarComentario((int) $json['punto_id'], $this->usuarioId(), trim($json['comentario']), $archivos);
         return $this->response->setJSON([
             'success' => $ok,
             'message' => $ok ? 'Comentario agregado.' : 'Error al guardar.',
