@@ -17,7 +17,7 @@ class AuthFilter implements FilterInterface
         $rol = session('admin_rol') ?? '';
         if ($rol !== 'superadmin') {
             $ruta = trim((string) $request->getUri()->getPath(), '/');
-            if ($ruta !== '' && in_array($ruta, menu_oculto(), true)) {
+            if ($ruta !== '' && in_array($ruta, menu_oculto_para(), true)) {
                 return redirect()->to('/dashboard');
             }
         }

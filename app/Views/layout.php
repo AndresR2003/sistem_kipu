@@ -18,7 +18,7 @@ $marcaNombre = ($marcaActiva && !empty($cfg['marca_nombre'])) ? $cfg['marca_nomb
 $marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['marca_logo']) : '';
 $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
 $esSuperadmin = (session('admin_rol') ?? '') === 'superadmin';
-$menuOculto   = $esSuperadmin ? [] : menu_oculto();
+$menuOculto   = $esSuperadmin ? [] : menu_oculto_para();
 ?>
 <head>
     <meta charset="UTF-8">

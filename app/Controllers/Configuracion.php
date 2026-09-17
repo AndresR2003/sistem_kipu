@@ -17,16 +17,32 @@ class Configuracion extends BaseController
     {
         $pageScripts = '<script src="' . base_url('js/configuracion.js') . '?v=' . filemtime(FCPATH . 'js/configuracion.js') . '"></script>';
 
+        $usuarios = [];
+        try {
+            $usuarios = (new \App\Models\ColaboradorModel())
+                ->select('id, nombre, username, rol')
+                ->orderBy('nombre', 'ASC')
+                ->findAll();
+        } catch (\Throwable $e) {
+            $usuarios = [];
+        }
+
         return view('layout', [
-            'contenido'   => view('configuracion'),
-            'titulo'      => 'Configuración - Kipucloud',
-            'pageScripts' => $pageScripts,
+            'contenido'    => view('configuracion', [
+                'menuRoles'    => menu_roles(),
+                'menuUsuarios' => $usuarios,
+            ]),
+            'titulo'       => 'Configuración - Kipucloud',
+            'pageScripts'  => $pageScripts,
         ]);
     }
 
     public function obtener(): \CodeIgniter\HTTP\Response
     {
-        return $this->response->setJSON($this->model->Obtener());
+        $data = $this->model->Obtener();
+        $data['menu_permisos'] = menu_config();
+
+        return $this->response->setJSON($data);
     }
 
     public function guardar(): \CodeIgniter\HTTP\Response
@@ -62,12 +78,52 @@ class Configuracion extends BaseController
 
     private function sanitizarMenu($valor): string
     {
-        $lista = is_array($valor) ? $valor : json_decode((string) $valor, true);
-        if (!is_array($lista)) {
-            $lista = [];
+        $data = is_array($valor) ? $valor : json_decode((string) $valor, true);
+        if (!is_array($data)) {
+            $data = [];
         }
 
-        return json_encode(array_values(array_intersect($lista, menu_keys())));
+        $keysValidas  = menu_keys();
+        $rolesValidos = array_keys(menu_roles());
+        $idsValidos   = $this->usuariosValidos();
+
+        $out = [];
+        foreach ($data as $key => $conf) {
+            if (!in_array($key, $keysValidas, true) || !is_array($conf)) {
+                continue;
+            }
+
+            $roles = array_values(array_intersect(
+                array_map('strval', (array) ($conf['roles'] ?? [])),
+                $rolesValidos
+            ));
+
+            $usuarios = array_values(array_intersect(
+                array_map('intval', (array) ($conf['usuarios'] ?? [])),
+                $idsValidos
+            ));
+
+            if ($roles || $usuarios) {
+                $out[$key] = ['roles' => $roles, 'usuarios' => $usuarios];
+            }
+        }
+
+        return json_encode($out, JSON_UNESCAPED_UNICODE);
+    }
+
+    private function usuariosValidos(): array
+    {
+        try {
+            $rows = \Config\Database::connect()
+                ->table('admin_usuarios')
+                ->select('id')
+                ->get()
+                ->getResultArray();
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        return array_map('intval', array_column($rows, 'id'));
     }
 
     public function subirLogo()

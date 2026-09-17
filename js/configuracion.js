@@ -282,28 +282,63 @@ function guardarSesion() {
 
 function cargarMenu() {
     if (!$('#formMenu').length) return;
+    $('#formMenu').on('change', '.menu-role, .menu-users', function() {
+        actualizarEstadoPerm($(this).closest('.menu-perm')[0]);
+    });
     $.ajax({
         url: BASE_URL + 'configuracion/obtener',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            var ocultos = [];
-            try {
-                ocultos = Array.isArray(data.menu_disabled) ? data.menu_disabled : JSON.parse(data.menu_disabled || '[]');
-            } catch (e) {
-                ocultos = [];
-            }
-            $('#formMenu input[type="checkbox"]').each(function() {
-                $(this).prop('checked', ocultos.indexOf(this.value) === -1);
+            var permisos = (data && typeof data.menu_permisos === 'object' && data.menu_permisos) ? data.menu_permisos : {};
+            $('#formMenu .menu-perm').each(function() {
+                var key = $(this).data('key');
+                var conf = permisos[key] || {};
+                var roles = Array.isArray(conf.roles) ? conf.roles : [];
+                var usuarios = Array.isArray(conf.usuarios) ? conf.usuarios.map(String) : [];
+
+                $(this).find('.menu-role').each(function() {
+                    this.checked = roles.indexOf(this.value) !== -1;
+                });
+                $(this).find('.menu-users').val(usuarios);
+                actualizarEstadoPerm(this);
             });
         }
     });
 }
 
+function actualizarEstadoPerm(el) {
+    if (!el) return;
+    var nRoles = $(el).find('.menu-role:checked').length;
+    var nUsers = ($(el).find('.menu-users').val() || []).length;
+    var $badge = $(el).find('.menu-perm-estado');
+
+    if (nRoles + nUsers === 0) {
+        $badge.text('Visible para todos').removeClass('off').addClass('ok');
+        return;
+    }
+
+    var partes = [];
+    if (nRoles) partes.push(nRoles + (nRoles === 1 ? ' tipo de usuario' : ' tipos de usuario'));
+    if (nUsers) partes.push(nUsers + (nUsers === 1 ? ' usuario' : ' usuarios'));
+    $badge.text('Oculto a ' + partes.join(' y ')).removeClass('ok').addClass('off');
+}
+
 function guardarMenu() {
-    var ocultos = [];
-    $('#formMenu input[type="checkbox"]').each(function() {
-        if (!this.checked) ocultos.push(this.value);
+    var permisos = {};
+    $('#formMenu .menu-perm').each(function() {
+        var key = $(this).data('key');
+        var roles = [];
+        $(this).find('.menu-role:checked').each(function() {
+            roles.push(this.value);
+        });
+        var usuarios = ($(this).find('.menu-users').val() || []).map(function(v) {
+            return parseInt(v, 10);
+        });
+
+        if (roles.length || usuarios.length) {
+            permisos[key] = { roles: roles, usuarios: usuarios };
+        }
     });
 
     showLoading();
@@ -311,7 +346,7 @@ function guardarMenu() {
         url: BASE_URL + 'configuracion/guardar',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ menu_disabled: ocultos }),
+        data: JSON.stringify({ menu_disabled: permisos }),
         dataType: 'json',
         success: function(response) {
             hideLoading();
@@ -319,7 +354,7 @@ function guardarMenu() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Guardado',
-                    text: 'Las pestañas del menú se actualizaron.',
+                    text: 'La visibilidad del menú se actualizó.',
                     timer: 2000,
                     showConfirmButton: false,
                 });

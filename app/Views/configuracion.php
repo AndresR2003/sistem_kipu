@@ -28,20 +28,85 @@
             margin: 18px 0 8px;
         }
         .menu-grupo-titulo:first-child { margin-top: 0; }
-        .menu-switch {
-            padding: 8px 12px;
+        .menu-perm {
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            margin-bottom: 6px;
             background: var(--bg-input);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            color: var(--text);
         }
-        .menu-switch .form-check-input { cursor: pointer; }
-        .menu-switch .form-check-label {
-            cursor: pointer;
-            font-size: 0.88rem;
+        .menu-perm-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .menu-perm-nombre {
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .menu-perm-nombre i { color: var(--primary); }
+        .menu-perm-estado {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .menu-perm-estado.ok { background: rgba(34,197,94,0.14); color: var(--success); }
+        .menu-perm-estado.off { background: rgba(245,158,11,0.16); color: var(--warning); }
+        .menu-perm-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .menu-perm-lbl {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .menu-role-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .menu-chip { position: relative; margin: 0; cursor: pointer; }
+        .menu-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .menu-chip span {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            color: var(--text);
+            transition: var(--transition);
+        }
+        .menu-chip input:checked + span {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+        }
+        .menu-perm .form-select {
+            background-color: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border-light);
+        }
+        .menu-perm .form-select option {
+            background: var(--bg-card);
+            color: var(--text);
+        }
+        .menu-hint { display: block; margin-top: 5px; font-size: 0.7rem; color: var(--text-muted); }
+        @media (max-width: 640px) {
+            .menu-perm-body { grid-template-columns: 1fr; }
         }
     </style>
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -216,8 +281,8 @@
                     <div class="tab-pane fade" id="tabMenu" role="tabpanel">
                         <h6 class="mb-2"><i class="bi bi-list-ul"></i> Pestañas del Menú</h6>
                         <p class="mb-3" style="color:var(--text-muted);font-size:0.82rem;">
-                            Activa o desactiva las pestañas que ven los demás usuarios en el menú lateral.
-                            Tu cuenta de superadministrador siempre verá todas las pestañas.
+                            Elige qué pestañas ocultar y a quién. Puedes bloquearlas por tipo de usuario,
+                            por usuarios específicos o ambos. Tu cuenta de superadministrador siempre las verá todas.
                         </p>
 
                         <form id="formMenu">
@@ -232,12 +297,37 @@
                                 ?>
                                 <div class="menu-grupo-titulo"><?= esc($grupo['titulo']) ?></div>
                                 <?php foreach ($toggles as $it): ?>
-                                <div class="form-check form-switch menu-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           id="menu_<?= esc($it['key']) ?>" value="<?= esc($it['key']) ?>" checked>
-                                    <label class="form-check-label" for="menu_<?= esc($it['key']) ?>">
-                                        <i class="<?= esc($it['icon']) ?>"></i> <?= esc($it['label']) ?>
-                                    </label>
+                                <div class="menu-perm" data-key="<?= esc($it['key']) ?>">
+                                    <div class="menu-perm-head">
+                                        <span class="menu-perm-nombre">
+                                            <i class="<?= esc($it['icon']) ?>"></i> <?= esc($it['label']) ?>
+                                        </span>
+                                        <span class="menu-perm-estado ok">Visible para todos</span>
+                                    </div>
+                                    <div class="menu-perm-body">
+                                        <div>
+                                            <label class="menu-perm-lbl">Ocultar a estos tipos de usuario</label>
+                                            <div class="menu-role-chips">
+                                                <?php foreach ($menuRoles as $rolCodigo => $rolLabel): ?>
+                                                <label class="menu-chip">
+                                                    <input type="checkbox" class="menu-role" value="<?= esc($rolCodigo) ?>">
+                                                    <span><?= esc($rolLabel) ?></span>
+                                                </label>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="menu-perm-lbl">Ocultar a usuarios específicos</label>
+                                            <select class="form-select menu-users" multiple size="4">
+                                                <?php foreach ($menuUsuarios as $u): ?>
+                                                <option value="<?= (int) $u['id'] ?>">
+                                                    <?= esc($u['nombre']) ?> (<?= esc(rol_legible($u['rol'])) ?>)
+                                                </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <small class="menu-hint">Mantén Ctrl (o Cmd) para elegir varios.</small>
+                                        </div>
+                                    </div>
                                 </div>
                                 <?php endforeach; ?>
                             <?php endforeach; ?>
