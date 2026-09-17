@@ -19,7 +19,7 @@ class Borradores extends BaseController
         return view('layout', [
             'contenido'   => view('borradores'),
             'titulo'      => 'Borradores - Kipucloud',
-            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '?v=' . filemtime(FCPATH . 'js/comentarios_archivos.js') . '"></script>'
                          . '<script src="' . base_url('js/borradores.js') . '?v=' . filemtime(FCPATH . 'js/borradores.js') . '"></script>',
         ]);
     }

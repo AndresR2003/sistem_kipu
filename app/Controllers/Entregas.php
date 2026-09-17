@@ -32,7 +32,7 @@ class Entregas extends BaseController
 
     public function index()
     {
-        $pageScripts = '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+        $pageScripts = '<script src="' . base_url('js/comentarios_archivos.js') . '?v=' . filemtime(FCPATH . 'js/comentarios_archivos.js') . '"></script>'
                      . '<script src="' . base_url('js/pases.js') . '?v=' . filemtime(FCPATH . 'js/pases.js') . '"></script>';
 
         return view('layout', [

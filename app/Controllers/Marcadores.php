@@ -11,7 +11,7 @@ class Marcadores extends BaseController
         return view('layout', [
             'contenido'   => view('marcadores'),
             'titulo'      => 'Marcadores - Kipucloud',
-            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '"></script>'
+            'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '?v=' . filemtime(FCPATH . 'js/comentarios_archivos.js') . '"></script>'
                          . '<script src="' . base_url('js/marcadores.js') . '?v=' . time() . '"></script>',
         ]);
     }
