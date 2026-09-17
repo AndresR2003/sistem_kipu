@@ -77,11 +77,10 @@ function cargarBorradoresPublicados(seccion) {
                         '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
                         '<div class="pub-acciones">' +
                         pubLikeButton(p) +
-                        pubLikesButton(p) +
-                        pubVistoButton(p) +
                         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
                         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
+                        pubAdminMenuButton(p) +
                         '</div>' +
                         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
                         '<div class="comentarios-lista"></div>' +
@@ -120,11 +119,10 @@ function tareaPublicadaCard(p) {
         '</div></div>' +
         '<div class="pub-acciones">' +
         pubLikeButton(p) +
-        pubLikesButton(p) +
-        pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
+        pubAdminMenuButton(p) +
         '</div>' +
         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +
         '<div class="comentarios-lista"></div>' +
@@ -215,11 +213,10 @@ function noticiaCard(p, seccion) {
         '<div class="noticia-footer">' +
         '<div class="pub-acciones">' +
         pubLikeButton(p) +
-        pubLikesButton(p) +
-        pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
+        pubAdminMenuButton(p) +
         '</div>' +
         '</div>' +
         '<div class="comentarios-wrap" id="comentarios-' + p.id + '" style="display:none;">' +

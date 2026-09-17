@@ -279,16 +279,6 @@ $comentarios = (int) ($publicacion['comentarios_count'] ?? 0);
                 <i class="bi bi-hand-thumbs-up<?= !empty($publicacion['me_gusta']) ? '-fill' : '' ?>"></i> Me gusta
                 <span class="com-count" <?= (int) ($publicacion['likes_count'] ?? 0) > 0 ? '' : 'style="display:none;"' ?>><?= (int) ($publicacion['likes_count'] ?? 0) ?></span>
             </button>
-            <?php if ($esAdmin): ?>
-            <button class="nd-accion visto" id="detalleLikesListaBtn" onclick="verLikesDetalle()" title="Quienes dieron me gusta">
-                <i class="bi bi-hand-thumbs-up"></i> Me gusta
-                <span class="com-count"><?= (int) ($publicacion['likes_count'] ?? 0) ?></span>
-            </button>
-            <button class="nd-accion visto" id="detalleVistoBtn" onclick="verVistosDetalle()" title="Quienes han visto">
-                <i class="bi bi-eye"></i> Visto por
-                <span class="com-count"><?= (int) ($publicacion['vistos_count'] ?? 0) ?></span>
-            </button>
-            <?php endif; ?>
             <button class="nd-accion rec" onclick="guardarComoDetalle('recordatorio')" title="Agregar a Recordatorio">
                 <i class="bi bi-bell"></i> Recordatorio
             </button>
@@ -299,6 +289,11 @@ $comentarios = (int) ($publicacion['comentarios_count'] ?? 0);
                 <i class="bi bi-chat"></i> Comentarios
                 <span class="com-count" <?= $comentarios > 0 ? '' : 'style="display:none;"' ?>><?= $comentarios ?></span>
             </button>
+            <?php if ($esAdmin): ?>
+            <button class="nd-accion" style="margin-left:auto;" onclick="comMenuAdmin(event, <?= (int) $publicacion['id'] ?>, <?= (int) ($publicacion['likes_count'] ?? 0) ?>, <?= (int) ($publicacion['vistos_count'] ?? 0) ?>)" title="Mas opciones">
+                <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <?php endif; ?>
         </div>
 
         <div class="nd-sep"></div>

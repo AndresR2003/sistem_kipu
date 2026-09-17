@@ -23,11 +23,10 @@
         '.com-adjunto-preview img{width:34px;height:34px;object-fit:cover;border-radius:4px;}' +
         '.com-adjunto-preview span{font-size:0.72rem;color:var(--text,#333);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
         '.com-lightbox-img{border-radius:8px;}' +
-        '.pub-like,.pub-visto{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border,#d0d0d0);border-radius:var(--radius,6px);padding:6px 10px;font-size:0.72rem;color:var(--text,#333);cursor:pointer;transition:all .15s;white-space:nowrap;}' +
-        '.pub-like:hover,.pub-visto:hover{background:var(--bg-hover,#e9ecef);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
+        '.pub-like{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border,#d0d0d0);border-radius:var(--radius,6px);padding:6px 10px;font-size:0.72rem;color:var(--text,#333);cursor:pointer;transition:all .15s;white-space:nowrap;}' +
+        '.pub-like:hover{background:var(--bg-hover,#e9ecef);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
         '.pub-like.activo{background:rgba(13,110,253,.1);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
-        '.pub-like .lbl,.pub-visto .lbl{display:none;}' +
-        '.pub-visto{color:var(--text-muted,#888);}' +
+        '.pub-like .lbl{display:none;}' +
         '.com-like{display:inline-flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-muted,#888);font-size:0.72rem;cursor:pointer;padding:2px 4px;border-radius:4px;transition:all .15s;}' +
         '.com-like:hover{color:#0dcaf0;background:rgba(13,202,240,.08);}' +
         '.com-like.activo{color:#0d6efd;}' +
@@ -37,7 +36,14 @@
         '.visto-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;background:var(--primary,#0d6efd);color:#fff;font-weight:700;}' +
         '.visto-lista{max-height:320px;overflow:auto;text-align:left;}' +
         '.visto-item{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border,#eee);}' +
-        '.visto-item:last-child{border-bottom:none;}';
+        '.visto-item:last-child{border-bottom:none;}' +
+        '.pub-menu-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:transparent;border:1px solid var(--border,#d0d0d0);border-radius:var(--radius,6px);color:var(--text,#333);cursor:pointer;transition:all .15s;}' +
+        '.pub-menu-btn:hover{background:var(--bg-hover,#e9ecef);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
+        '.pub-menu-btn.pub-menu-der{margin-left:auto;}' +
+        '.com-admin-menu{position:fixed;z-index:20000;background:#fff;border:1px solid var(--border,#d0d0d0);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);min-width:210px;padding:6px;display:none;}' +
+        '.com-admin-menu button{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;padding:9px 12px;border-radius:8px;font-size:0.82rem;color:var(--text,#333);cursor:pointer;text-align:left;}' +
+        '.com-admin-menu button:hover{background:var(--bg-hover,#f1f3f5);color:var(--primary,#0d6efd);}' +
+        '.com-admin-menu .badge-n{margin-left:auto;background:var(--primary,#0d6efd);color:#fff;border-radius:999px;padding:1px 8px;font-size:0.68rem;font-weight:700;}';
     var style = document.createElement('style');
     style.type = 'text/css';
     if (style.styleSheet) { style.styleSheet.cssText = css; } else { style.appendChild(document.createTextNode(css)); }
@@ -177,14 +183,53 @@ function pubLikeButton(p, extraClase) {
     return '<button type="button" class="pub-like' + activo + ' ' + (extraClase || '') + '" onclick="toggleLikePublicacion(' + p.id + ', this)" title="Me gusta"><i class="bi bi-hand-thumbs-up' + (p.me_gusta ? '-fill' : '') + '"></i><span class="lbl">Me gusta</span>' + (parseInt(p.likes_count) > 0 ? '<span class="com-count">' + p.likes_count + '</span>' : '') + '</button>';
 }
 
-function pubLikesButton(p) {
+function pubAdminMenuButton(p) {
     if (!comEsAdmin()) return '';
-    return '<button type="button" class="pub-visto" onclick="verLikesPublicacion(' + p.id + ')" title="Quienes dieron me gusta"><i class="bi bi-hand-thumbs-up"></i>' + (parseInt(p.likes_count) > 0 ? ' Me gusta <b>' + p.likes_count + '</b>' : ' Me gusta <b>0</b>') + '</button>';
+    var likes = parseInt(p.likes_count) || 0;
+    var vistos = parseInt(p.vistos_count) || 0;
+    return '<button type="button" class="pub-menu-btn pub-menu-der" onclick="comMenuAdmin(event,' + p.id + ',' + likes + ',' + vistos + ')" title="Mas opciones"><i class="bi bi-three-dots-vertical"></i></button>';
 }
 
-function pubVistoButton(p) {
-    if (!comEsAdmin()) return '';
-    return '<button type="button" class="pub-visto" onclick="verVistosPublicacion(' + p.id + ')" title="Quienes han visto"><i class="bi bi-eye"></i>' + (parseInt(p.vistos_count) > 0 ? ' Visto por <b>' + p.vistos_count + '</b>' : ' Visto por <b>0</b>') + '</button>';
+function comMenuAdmin(ev, id, likes, vistos) {
+    ev.stopPropagation();
+    var menu = document.getElementById('comAdminMenu');
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'comAdminMenu';
+        menu.className = 'com-admin-menu';
+        document.body.appendChild(menu);
+        document.addEventListener('click', function (e) {
+            if (e.target === menu || menu.contains(e.target)) return;
+            menu.style.display = 'none';
+        });
+        window.addEventListener('resize', function () { menu.style.display = 'none'; });
+        window.addEventListener('scroll', function () { menu.style.display = 'none'; }, true);
+    }
+    if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
+
+    menu.innerHTML =
+        '<button type="button" onclick="comCerrarMenuAdmin();verLikesPublicacion(' + id + ')"><i class="bi bi-hand-thumbs-up"></i> Quienes dieron me gusta<span class="badge-n">' + likes + '</span></button>' +
+        '<button type="button" onclick="comCerrarMenuAdmin();verVistosPublicacion(' + id + ')"><i class="bi bi-eye"></i> Quienes vieron<span class="badge-n">' + vistos + '</span></button>';
+
+    menu.style.display = 'block';
+    menu.style.left = '0px';
+    menu.style.top = '0px';
+    var rect = ev.currentTarget.getBoundingClientRect();
+    var mw = menu.offsetWidth;
+    var mh = menu.offsetHeight;
+    var left = rect.right - mw;
+    if (left < 8) left = 8;
+    if (left + mw > window.innerWidth - 8) left = window.innerWidth - mw - 8;
+    var top = rect.bottom + 6;
+    if (top + mh > window.innerHeight - 8) top = rect.top - mh - 6;
+    if (top < 8) top = 8;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+}
+
+function comCerrarMenuAdmin() {
+    var menu = document.getElementById('comAdminMenu');
+    if (menu) menu.style.display = 'none';
 }
 
 function toggleLikePublicacion(id, btn) {
