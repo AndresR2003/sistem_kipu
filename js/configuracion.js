@@ -280,11 +280,20 @@ function guardarSesion() {
     });
 }
 
+var menuUsuariosFila = null;
+
 function cargarMenu() {
     if (!$('#formMenu').length) return;
-    $('#formMenu').on('change', '.menu-role, .menu-users', function() {
-        actualizarEstadoPerm($(this).closest('.menu-perm')[0]);
+
+    $('#formMenu').on('change', '.menu-role', function() {
+        actualizarColToggle($(this).data('rol'));
     });
+    $('#formMenu').on('change', '.mm-col-toggle', function() {
+        var rol = $(this).data('rol');
+        var marcado = this.checked;
+        $('#formMenu .menu-role[data-rol="' + rol + '"]').prop('checked', marcado);
+    });
+
     $.ajax({
         url: BASE_URL + 'configuracion/obtener',
         type: 'GET',
@@ -294,50 +303,93 @@ function cargarMenu() {
             $('#formMenu .menu-perm').each(function() {
                 var key = $(this).data('key');
                 var conf = permisos[key] || {};
-                var roles = Array.isArray(conf.roles) ? conf.roles : [];
+                var bloqueados = Array.isArray(conf.roles) ? conf.roles : [];
                 var usuarios = Array.isArray(conf.usuarios) ? conf.usuarios.map(String) : [];
 
                 $(this).find('.menu-role').each(function() {
-                    this.checked = roles.indexOf(this.value) !== -1;
+                    this.checked = bloqueados.indexOf(this.value) === -1;
                 });
-                $(this).find('.menu-users').val(usuarios);
-                actualizarEstadoPerm(this);
+                $(this).attr('data-usuarios', JSON.stringify(usuarios));
+                actualizarBotonUsuarios(this);
+            });
+            $('#formMenu .mm-col-toggle').each(function() {
+                actualizarColToggle($(this).data('rol'));
             });
         }
     });
 }
 
-function actualizarEstadoPerm(el) {
-    if (!el) return;
-    var nRoles = $(el).find('.menu-role:checked').length;
-    var nUsers = ($(el).find('.menu-users').val() || []).length;
-    var $badge = $(el).find('.menu-perm-estado');
+function actualizarColToggle(rol) {
+    var $col = $('#formMenu .menu-role[data-rol="' + rol + '"]');
+    var total = $col.length;
+    var marcados = $col.filter(':checked').length;
+    var $toggle = $('#formMenu .mm-col-toggle[data-rol="' + rol + '"]');
+    if (!$toggle.length || total === 0) return;
+    $toggle.prop('checked', marcados === total);
+    $toggle[0].indeterminate = (marcados > 0 && marcados < total);
+}
 
-    if (nRoles + nUsers === 0) {
-        $badge.text('Visible para todos').removeClass('off').addClass('ok');
-        return;
+function leerUsuariosFila(fila) {
+    try {
+        var arr = JSON.parse($(fila).attr('data-usuarios') || '[]');
+        return Array.isArray(arr) ? arr.map(String) : [];
+    } catch (e) {
+        return [];
     }
+}
 
-    var partes = [];
-    if (nRoles) partes.push(nRoles + (nRoles === 1 ? ' tipo de usuario' : ' tipos de usuario'));
-    if (nUsers) partes.push(nUsers + (nUsers === 1 ? ' usuario' : ' usuarios'));
-    $badge.text('Oculto a ' + partes.join(' y ')).removeClass('ok').addClass('off');
+function actualizarBotonUsuarios(fila) {
+    var $btn = $(fila).find('.mm-users-btn');
+    var usuarios = leerUsuariosFila(fila);
+    if (usuarios.length) {
+        $btn.text(usuarios.length + (usuarios.length === 1 ? ' usuario' : ' usuarios')).addClass('has-users');
+    } else {
+        $btn.text('Todos').removeClass('has-users');
+    }
+}
+
+function abrirUsuariosMenu(btn) {
+    var $fila = $(btn).closest('.menu-perm');
+    if (!$fila.length) return;
+    menuUsuariosFila = $fila;
+    var seleccionados = leerUsuariosFila($fila[0]);
+
+    $('#mmUsuariosSeccion').text($(btn).data('label') || '');
+    $('#modalMenuUsuarios .mm-user').each(function() {
+        this.checked = seleccionados.indexOf(this.value) !== -1;
+    });
+
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalMenuUsuarios'));
+    modal.show();
+}
+
+function aplicarUsuariosMenu() {
+    if (!menuUsuariosFila) return;
+    var ids = [];
+    $('#modalMenuUsuarios .mm-user:checked').each(function() {
+        ids.push(this.value);
+    });
+    menuUsuariosFila.attr('data-usuarios', JSON.stringify(ids));
+    actualizarBotonUsuarios(menuUsuariosFila[0]);
+
+    var modal = bootstrap.Modal.getInstance(document.getElementById('modalMenuUsuarios'));
+    if (modal) modal.hide();
 }
 
 function guardarMenu() {
     var permisos = {};
     $('#formMenu .menu-perm').each(function() {
         var key = $(this).data('key');
-        var roles = [];
-        $(this).find('.menu-role:checked').each(function() {
-            roles.push(this.value);
+        var bloqueados = [];
+        $(this).find('.menu-role').each(function() {
+            if (!this.checked) bloqueados.push(this.value);
         });
-        var usuarios = ($(this).find('.menu-users').val() || []).map(function(v) {
+        var usuarios = leerUsuariosFila(this).map(function(v) {
             return parseInt(v, 10);
         });
 
-        if (roles.length || usuarios.length) {
-            permisos[key] = { roles: roles, usuarios: usuarios };
+        if (bloqueados.length || usuarios.length) {
+            permisos[key] = { roles: bloqueados, usuarios: usuarios };
         }
     });
 

@@ -19,95 +19,109 @@
             border-bottom-color: var(--bg-card);
             font-weight: 600;
         }
-        .menu-grupo-titulo {
+        .menu-matrix-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+        }
+        .menu-matrix {
+            width: 100%;
+            min-width: 640px;
+            border-collapse: collapse;
+            color: var(--text);
+        }
+        .menu-matrix th,
+        .menu-matrix td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            vertical-align: middle;
+        }
+        .menu-matrix thead th {
+            background: var(--bg-card-alt);
+            color: var(--text);
             font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin: 18px 0 8px;
+            letter-spacing: 0.4px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
-        .menu-grupo-titulo:first-child { margin-top: 0; }
-        .menu-perm {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+        .menu-matrix tbody tr:last-child td { border-bottom: none; }
+        .menu-matrix tbody tr.menu-perm:hover { background: var(--bg-input-hover); }
+        .menu-matrix tr.mm-grupo td {
             background: var(--bg-input);
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            color: var(--text);
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
         }
-        .menu-perm-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .menu-perm-nombre {
+        .menu-matrix th.mm-seccion,
+        .menu-matrix td.mm-seccion { text-align: left; }
+        .mm-seccion-nombre {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text);
         }
-        .menu-perm-nombre i { color: var(--primary); }
-        .menu-perm-estado {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-        .menu-perm-estado.ok { background: rgba(34,197,94,0.14); color: var(--success); }
-        .menu-perm-estado.off { background: rgba(245,158,11,0.16); color: var(--warning); }
-        .menu-perm-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 12px;
-        }
-        .menu-perm-lbl {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .menu-role-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-        .menu-chip { position: relative; margin: 0; cursor: pointer; }
-        .menu-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
-        .menu-chip span {
+        .mm-seccion-nombre i { color: var(--primary); width: 16px; text-align: center; }
+        .mm-rol-head {
             display: inline-flex;
             align-items: center;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            border: 1px solid var(--border-light);
-            background: var(--bg-card);
-            color: var(--text);
-            transition: var(--transition);
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            margin: 0;
         }
-        .menu-chip input:checked + span {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: #fff;
-        }
-        .menu-perm .form-select {
+        .menu-matrix .form-check-input,
+        .mm-usuario-item input {
+            cursor: pointer;
             background-color: var(--bg-card);
-            color: var(--text);
             border: 1px solid var(--border-light);
         }
-        .menu-perm .form-select option {
+        .menu-matrix .form-check-input:checked,
+        .mm-usuario-item input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .mm-users-btn {
+            border: 1px solid var(--border-light);
             background: var(--bg-card);
             color: var(--text);
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            white-space: nowrap;
         }
-        .menu-hint { display: block; margin-top: 5px; font-size: 0.7rem; color: var(--text-muted); }
-        @media (max-width: 640px) {
-            .menu-perm-body { grid-template-columns: 1fr; }
+        .mm-users-btn.has-users {
+            border-color: var(--warning);
+            color: var(--warning);
         }
+        .mm-users-lista {
+            display: grid;
+            gap: 6px;
+            max-height: 55vh;
+            overflow-y: auto;
+        }
+        .mm-usuario-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 11px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text);
+            cursor: pointer;
+            margin: 0;
+        }
+        .mm-usuario-item small { color: var(--text-muted); }
+        .mm-leyenda { display: block; margin-top: 8px; font-size: 0.72rem; color: var(--text-muted); }
     </style>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">
@@ -279,58 +293,74 @@
 
                     <?php if ($esSuperadmin): ?>
                     <div class="tab-pane fade" id="tabMenu" role="tabpanel">
-                        <h6 class="mb-2"><i class="bi bi-list-ul"></i> Pestañas del Menú</h6>
+                        <h6 class="mb-2"><i class="bi bi-list-ul"></i> Acceso al Menú por Rol</h6>
                         <p class="mb-3" style="color:var(--text-muted);font-size:0.82rem;">
-                            Elige qué pestañas ocultar y a quién. Puedes bloquearlas por tipo de usuario,
-                            por usuarios específicos o ambos. Tu cuenta de superadministrador siempre las verá todas.
+                            Marca con ✓ a qué roles se les muestra cada pestaña. Las celdas sin marcar se ocultan
+                            para ese rol. Usa el encabezado para activar/desactivar toda una columna de golpe.
+                            Puedes además ocultar pestañas a usuarios concretos con el botón de la última columna.
+                            El superadministrador siempre ve todo.
                         </p>
 
                         <form id="formMenu">
-                            <?php foreach (menu_secciones() as $grupo): ?>
-                                <?php
-                                $toggles = array_filter($grupo['items'], static function ($it) {
-                                    return empty($it['fijo']);
-                                });
-                                if (empty($toggles)) {
-                                    continue;
-                                }
-                                ?>
-                                <div class="menu-grupo-titulo"><?= esc($grupo['titulo']) ?></div>
-                                <?php foreach ($toggles as $it): ?>
-                                <div class="menu-perm" data-key="<?= esc($it['key']) ?>">
-                                    <div class="menu-perm-head">
-                                        <span class="menu-perm-nombre">
-                                            <i class="<?= esc($it['icon']) ?>"></i> <?= esc($it['label']) ?>
-                                        </span>
-                                        <span class="menu-perm-estado ok">Visible para todos</span>
-                                    </div>
-                                    <div class="menu-perm-body">
-                                        <div>
-                                            <label class="menu-perm-lbl">Ocultar a estos tipos de usuario</label>
-                                            <div class="menu-role-chips">
-                                                <?php foreach ($menuRoles as $rolCodigo => $rolLabel): ?>
-                                                <label class="menu-chip">
-                                                    <input type="checkbox" class="menu-role" value="<?= esc($rolCodigo) ?>">
+                            <div class="menu-matrix-wrap">
+                                <table class="menu-matrix">
+                                    <thead>
+                                        <tr>
+                                            <th class="mm-seccion">Sección</th>
+                                            <?php foreach ($menuRoles as $rolCodigo => $rolLabel): ?>
+                                            <th>
+                                                <label class="mm-rol-head">
+                                                    <input type="checkbox" class="form-check-input mm-col-toggle"
+                                                           data-rol="<?= esc($rolCodigo) ?>" checked>
                                                     <span><?= esc($rolLabel) ?></span>
                                                 </label>
+                                            </th>
+                                            <?php endforeach; ?>
+                                            <th>Usuarios</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach (menu_secciones() as $grupo): ?>
+                                            <?php
+                                            $toggles = array_filter($grupo['items'], static function ($it) {
+                                                return empty($it['fijo']);
+                                            });
+                                            if (empty($toggles)) {
+                                                continue;
+                                            }
+                                            ?>
+                                            <tr class="mm-grupo">
+                                                <td colspan="<?= count($menuRoles) + 2 ?>"><?= esc($grupo['titulo']) ?></td>
+                                            </tr>
+                                            <?php foreach ($toggles as $it): ?>
+                                            <tr class="menu-perm" data-key="<?= esc($it['key']) ?>" data-usuarios="[]">
+                                                <td class="mm-seccion">
+                                                    <span class="mm-seccion-nombre">
+                                                        <i class="<?= esc($it['icon']) ?>"></i> <?= esc($it['label']) ?>
+                                                    </span>
+                                                </td>
+                                                <?php foreach ($menuRoles as $rolCodigo => $rolLabel): ?>
+                                                <td>
+                                                    <input type="checkbox" class="form-check-input menu-role"
+                                                           data-rol="<?= esc($rolCodigo) ?>"
+                                                           value="<?= esc($rolCodigo) ?>" checked>
+                                                </td>
                                                 <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label class="menu-perm-lbl">Ocultar a usuarios específicos</label>
-                                            <select class="form-select menu-users" multiple size="4">
-                                                <?php foreach ($menuUsuarios as $u): ?>
-                                                <option value="<?= (int) $u['id'] ?>">
-                                                    <?= esc($u['nombre']) ?> (<?= esc(rol_legible($u['rol'])) ?>)
-                                                </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                            <small class="menu-hint">Mantén Ctrl (o Cmd) para elegir varios.</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php endforeach; ?>
+                                                <td>
+                                                    <button type="button" class="mm-users-btn"
+                                                            data-label="<?= esc($it['label']) ?>"
+                                                            onclick="abrirUsuariosMenu(this)">Todos</button>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <small class="mm-leyenda">
+                                <i class="bi bi-info-circle"></i>
+                                "Todos" = la pestaña se ve normal para todos los usuarios.
+                            </small>
 
                             <div class="mt-4">
                                 <button type="button" class="btn btn-primary-custom" onclick="guardarMenu()">
@@ -474,4 +504,39 @@
             </div>
         </div>
     </div>
+
+    <?php if ($esSuperadmin): ?>
+    <div class="modal fade" id="modalMenuUsuarios" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="background:var(--modal-bg);color:var(--text);border:1px solid var(--border);">
+                <div class="modal-header" style="border-bottom:1px solid var(--border);">
+                    <h6 class="modal-title mb-0">
+                        <i class="bi bi-people-fill"></i> Ocultar "<span id="mmUsuariosSeccion"></span>" a usuarios
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3" style="color:var(--text-muted);font-size:0.8rem;">
+                        Marca los usuarios que NO deben ver esta pestaña, sin importar su rol.
+                    </p>
+                    <div class="mm-users-lista">
+                        <?php foreach ($menuUsuarios as $u): ?>
+                        <label class="mm-usuario-item">
+                            <input type="checkbox" class="form-check-input mm-user" value="<?= (int) $u['id'] ?>">
+                            <span><?= esc($u['nombre']) ?> <small>(<?= esc(rol_legible($u['rol'])) ?>)</small></span>
+                        </label>
+                        <?php endforeach; ?>
+                        <?php if (empty($menuUsuarios)): ?>
+                        <div style="color:var(--text-muted);font-size:0.85rem;">No hay usuarios registrados.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid var(--border);">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="aplicarUsuariosMenu()">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
