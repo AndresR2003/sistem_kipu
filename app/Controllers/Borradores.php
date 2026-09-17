@@ -267,13 +267,36 @@ class Borradores extends BaseController
         ]);
     }
 
+    private function esRolPrivilegiado(): bool
+    {
+        $rol = session()->get('admin_rol') ?? 'empleado';
+        return in_array($rol, ['admin', 'superadmin'], true);
+    }
+
     public function vistos(int $id)
     {
+        if (!$this->esRolPrivilegiado()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Sin permisos.'])->setStatusCode(403);
+        }
         $data = (new InteraccionModel())->ObtenerVistosPublicacion($id);
         foreach ($data as &$d) {
             $d['rol_legible'] = rol_legible($d['rol'] ?? null);
             $d['fecha']       = fecha_publicacion($d['visto_en'] ?? 'now');
             $d['hora']        = hora_publicacion($d['visto_en'] ?? 'now');
+        }
+        return $this->response->setJSON(['success' => true, 'data' => $data]);
+    }
+
+    public function likes(int $id)
+    {
+        if (!$this->esRolPrivilegiado()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Sin permisos.'])->setStatusCode(403);
+        }
+        $data = (new InteraccionModel())->ObtenerLikesPublicacion($id);
+        foreach ($data as &$d) {
+            $d['rol_legible'] = rol_legible($d['rol'] ?? null);
+            $d['fecha']       = fecha_publicacion($d['created_at'] ?? 'now');
+            $d['hora']        = hora_publicacion($d['created_at'] ?? 'now');
         }
         return $this->response->setJSON(['success' => true, 'data' => $data]);
     }

@@ -70,6 +70,19 @@ class InteraccionModel extends Model
         return $resultado;
     }
 
+    public function ObtenerLikesPublicacion(int $publicacionId): array
+    {
+        $db = \Config\Database::connect();
+        return $db->query(
+            "SELECT u.id, u.nombre, u.foto, u.rol, pl.created_at
+             FROM publicacion_likes pl
+             LEFT JOIN admin_usuarios u ON u.id = pl.usuario_id
+             WHERE pl.publicacion_id = ?
+             ORDER BY pl.created_at DESC",
+            [$publicacionId]
+        )->getResultArray();
+    }
+
     // ─── Vistos de publicaciones ───
 
     public function MarcarVisto(int $publicacionId, int $usuarioId): bool

@@ -13,6 +13,10 @@ function verVistosDetalle() {
     verVistosPublicacion(DETALLE_PUB_ID);
 }
 
+function verLikesDetalle() {
+    verLikesPublicacion(DETALLE_PUB_ID);
+}
+
 function cargarComentariosDetalle() {
     var lista = $('#detalleComentariosLista');
     comVinculaInputDetalle();

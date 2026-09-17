@@ -77,6 +77,7 @@ function cargarBorradoresPublicados(seccion) {
                         '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
                         '<div class="pub-acciones">' +
                         pubLikeButton(p) +
+                        pubLikesButton(p) +
                         pubVistoButton(p) +
                         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
@@ -119,6 +120,7 @@ function tareaPublicadaCard(p) {
         '</div></div>' +
         '<div class="pub-acciones">' +
         pubLikeButton(p) +
+        pubLikesButton(p) +
         pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
@@ -213,6 +215,7 @@ function noticiaCard(p, seccion) {
         '<div class="noticia-footer">' +
         '<div class="pub-acciones">' +
         pubLikeButton(p) +
+        pubLikesButton(p) +
         pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +

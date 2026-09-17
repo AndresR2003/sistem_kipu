@@ -168,12 +168,22 @@ function comAvatarVisto(u) {
     return '<span class="visto-avatar">' + comEscHtml(inicial) + '</span>';
 }
 
+function comEsAdmin() {
+    return typeof USUARIO_ROL !== 'undefined' && (USUARIO_ROL === 'admin' || USUARIO_ROL === 'superadmin');
+}
+
 function pubLikeButton(p, extraClase) {
     var activo = p.me_gusta ? ' activo' : '';
     return '<button type="button" class="pub-like' + activo + ' ' + (extraClase || '') + '" onclick="toggleLikePublicacion(' + p.id + ', this)" title="Me gusta"><i class="bi bi-hand-thumbs-up' + (p.me_gusta ? '-fill' : '') + '"></i><span class="lbl">Me gusta</span>' + (parseInt(p.likes_count) > 0 ? '<span class="com-count">' + p.likes_count + '</span>' : '') + '</button>';
 }
 
+function pubLikesButton(p) {
+    if (!comEsAdmin()) return '';
+    return '<button type="button" class="pub-visto" onclick="verLikesPublicacion(' + p.id + ')" title="Quienes dieron me gusta"><i class="bi bi-hand-thumbs-up"></i>' + (parseInt(p.likes_count) > 0 ? ' Me gusta <b>' + p.likes_count + '</b>' : ' Me gusta <b>0</b>') + '</button>';
+}
+
 function pubVistoButton(p) {
+    if (!comEsAdmin()) return '';
     return '<button type="button" class="pub-visto" onclick="verVistosPublicacion(' + p.id + ')" title="Quienes han visto"><i class="bi bi-eye"></i>' + (parseInt(p.vistos_count) > 0 ? ' Visto por <b>' + p.vistos_count + '</b>' : ' Visto por <b>0</b>') + '</button>';
 }
 
@@ -212,6 +222,35 @@ function verVistosPublicacion(id) {
             html += '</div>';
             Swal.fire({
                 title: 'Visto por (' + res.data.length + ')',
+                html: html,
+                width: 460,
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        }
+    });
+}
+
+function verLikesPublicacion(id) {
+    $.ajax({
+        url: BASE_URL + 'borradores/likes/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function (res) {
+            if (!res.success) return;
+            var html = '<div class="visto-lista">';
+            if (!res.data.length) {
+                html += '<div class="text-muted text-center py-3"><i class="bi bi-hand-thumbs-up"></i> Aun nadie ha dado me gusta</div>';
+            } else {
+                res.data.forEach(function (u) {
+                    html += '<div class="visto-item">' + comAvatarVisto(u) +
+                        '<div class="flex-grow-1"><div class="fw-semibold">' + comEscHtml(u.nombre) + ' <span class="text-muted small">' + (u.rol_legible || '') + '</span></div>' +
+                        '<div class="small text-muted">Dio me gusta el ' + (u.fecha || '') + ' a las ' + (u.hora || '') + '</div></div></div>';
+                });
+            }
+            html += '</div>';
+            Swal.fire({
+                title: 'Me gusta (' + res.data.length + ')',
                 html: html,
                 width: 460,
                 showConfirmButton: false,

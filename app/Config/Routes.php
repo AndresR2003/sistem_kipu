@@ -87,6 +87,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('borradores/listar-publicados/(:segment)', 'Borradores::listarPublicados/$1');
     $routes->get('borradores/anuncio', 'Borradores::anuncio');
     $routes->post('borradores/toggle-like/(:num)', 'Borradores::toggleLike/$1');
+    $routes->get('borradores/likes/(:num)', 'Borradores::likes/$1');
     $routes->get('borradores/vistos/(:num)', 'Borradores::vistos/$1');
     $routes->get('entregas', 'Entregas::index');
     $routes->get('entregas/listar', 'Entregas::listar');
