@@ -76,12 +76,16 @@ function badgeSeccion(r) {
 }
 
 function renderCardRec(r) {
-  var fecha = r.fecha ? r.fecha.split(" ")[0] : "";
-  var hora = r.fecha ? r.fecha.split(" ")[1]?.slice(0, 5) : "";
+  var seccion = r.seccion || "";
+  if (seccion === "tareas_diarias") seccion = "tareas";
+  var destinoUrl = seccion && r.origen_id ? BASE_URL + seccion + "?select=" + r.origen_id : "";
+  var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: r.origen_tipo }) : "";
   var completado = parseInt(r.completado || 0, 10) === 1;
-  var seccion = r.seccion || '';
-  if (seccion === 'tareas_diarias') seccion = 'tareas';
-  var destinoUrl = seccion && r.origen_id ? (BASE_URL + seccion + '?select=' + r.origen_id) : '';
+
+  var nombre = r.autor_nombre || "Desconocido";
+  var avatar = avatarComentarioRec({ autor_foto: r.autor_foto }, nombre);
+  var fecha = r.origen_fecha || (r.fecha ? r.fecha.split(" ")[0] : "");
+  var hora = r.origen_hora || (r.fecha ? (r.fecha.split(" ")[1] || "").slice(0, 5) : "");
 
   var badgePrio = "";
   switch (r.prioridad) {
@@ -98,17 +102,25 @@ function renderCardRec(r) {
   var descHtml = r.descripcion
     ? '<div class="pub-contenido">' + escHtml(r.descripcion) + "</div>"
     : "";
-  var origenTitulo = r.origen_titulo ? escHtml(r.origen_titulo) : '';
-  var origenContenido = r.origen_contenido ? escHtml((r.origen_contenido || '').replace(/<[^>]*>/g, '').slice(0, 180)) : '';
-  var origenMeta = r.origen_meta ? formatearFechaHora(r.origen_meta) : '';
-   var completadoClass = completado ? "completado" : "";
-   var checked = completado ? "checked" : "";
-   var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: r.origen_tipo }) : "";
+
+  var origenHtml = "";
+  if (r.origen_titulo) {
+    var origenContenido = r.origen_contenido
+      ? escHtml((r.origen_contenido || "").replace(/<[^>]*>/g, "").slice(0, 220))
+      : "";
+    origenHtml =
+      '<div class="noticia-origen">' +
+      '<div class="noticia-origen-lbl"><i class="bi bi-link-45deg"></i> Publicacion original</div>' +
+      '<div class="noticia-origen-titulo">' + escHtml(r.origen_titulo) + "</div>" +
+      (origenContenido ? '<div class="pub-contenido">' + origenContenido + "</div>" : "") +
+      "</div>";
+  }
+
   var tipoTitulo = r.tipo === "marcador" ? "Marcador" : "Recordatorio";
 
   return (
-    '<div class="pub-card ' +
-    completadoClass +
+    '<div class="noticia-card' +
+    (completado ? " completado" : "") +
     '" id="rec-' +
     r.id +
     '" data-origen="' +
@@ -120,36 +132,47 @@ function renderCardRec(r) {
     '" role="button" tabindex="0" data-url="' +
     escHtml(destinoUrl) +
     '" onclick="abrirOrigenRec(' + r.id + ')">' +
+    '<div class="noticia-main">' +
     secTitulo +
-    '<div class="pub-titulo">' +
-    escHtml(r.titulo) +
-    "</div>" +
-    (origenTitulo ? '<div class="pub-meta" style="margin-top:0;">' +
-      '<i class="bi bi-link-45deg"></i> <strong>Origen:</strong> ' + origenTitulo +
-      '</div>' : '') +
-    (origenContenido ? '<div class="pub-contenido" style="margin-top:6px;">' + origenContenido + '</div>' : '') +
-    (origenMeta ? '<div class="pub-meta"><i class="bi bi-clock"></i> ' + origenMeta + '</div>' : '') +
+    '<div class="pub-titulo">' + escHtml(r.titulo) + "</div>" +
     descHtml +
-    '<div class="pub-meta"><i class="bi bi-clock"></i> ' +
-    fecha +
-    (hora ? " " + hora : "") +
-    " &nbsp;|&nbsp; <i class='bi bi-check2-circle'></i> " +
+    origenHtml +
+    '<div class="pub-meta"><i class="bi bi-check2-circle"></i> ' +
     tipoTitulo +
     " &nbsp; " +
     badgePrio +
+    (r.fecha ? ' &nbsp;|&nbsp; <i class="bi bi-clock"></i> ' + formatearFechaHora(r.fecha) : "") +
     "</div>" +
+    "</div>" +
+    '<div class="noticia-side">' +
+    '<div class="noticia-side-card">' +
+    '<div class="noticia-side-label">Publicado por</div>' +
+    '<div class="noticia-autor-row">' +
+    '<div class="noticia-autor-avatar">' + avatar + "</div>" +
+    "<div>" +
+    '<div class="noticia-autor-nombre">' + escHtml(nombre) + "</div>" +
+    '<div class="noticia-autor-rol">' + escHtml(r.autor_rol_legible || "") + "</div>" +
+    "</div>" +
+    "</div>" +
+    "</div>" +
+    '<div class="noticia-side-card">' +
+    '<div class="noticia-side-label">Fecha de publicacion</div>' +
+    '<div class="noticia-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + fecha + '</span></span></div>' +
+    '<div class="noticia-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + hora + ' hrs</span></span></div>' +
+    "</div>" +
+    "</div>" +
+    '<div class="noticia-footer">' +
     '<div class="pub-acciones">' +
     '<button type="button" class="del" onclick="event.stopPropagation(); eliminarRecordatorio(' +
     r.id +
     ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
-    (r.origen_id
-    ? comButtonRec(r.comentarios_count || 0, r)
-      : "") +
+    (r.origen_id ? comButtonRec(r.comentarios_count || 0, r) : "") +
+    "</div>" +
     "</div>" +
     (r.origen_id
       ? '<div class="comentarios-wrap" id="comentarios-rec-' +
         r.id +
-        '" style="display:none;">' +
+        '" style="display:none;" onclick="event.stopPropagation();">' +
         '<div class="comentarios-lista"></div>' +
         '<div class="comentarios-form">' +
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
@@ -164,7 +187,7 @@ function renderCardRec(r) {
         '<div class="com-adjuntos-form"></div>' +
         "</div>"
       : "") +
-    '</div>'
+    "</div>"
   );
 }
 
@@ -189,7 +212,7 @@ function comButtonRec(count, r) {
 }
 
 function setComentariosCountRec(id, count) {
-  var btn = $("#comentarios-rec-" + id).closest(".pub-card").find(".com");
+  var btn = $("#comentarios-rec-" + id).closest(".noticia-card, .pub-card").find(".com");
   if (!btn.length) return;
   btn.find(".com-count").remove();
   if (count > 0) {

@@ -20,7 +20,7 @@ class Marcadores extends BaseController
     {
         $model = new RecordatorioModel();
         $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
-        $data  = $model->ObtenerTodos('marcador', $usuarioId);
+        $data  = $model->ObtenerTodosConOrigen('marcador', $usuarioId);
         return $this->response->setJSON($data);
     }
 

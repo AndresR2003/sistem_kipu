@@ -73,17 +73,35 @@ function badgeSeccion(r) {
 }
 
 function renderCardMarcador(m) {
-  var fecha = m.created_at ? formatearFecha(m.created_at) : "";
+  var seccion = m.seccion || "";
+  if (seccion === "tareas_diarias") seccion = "tareas";
+  var destinoUrl = seccion && m.origen_id ? BASE_URL + seccion + "?select=" + m.origen_id : "";
+  var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: m.origen_tipo }) : "";
+
+  var nombre = m.autor_nombre || "Desconocido";
+  var avatar = avatarComentarioRec({ autor_foto: m.autor_foto }, nombre);
+  var fecha = m.origen_fecha || (m.created_at ? formatearFecha(m.created_at) : "");
+  var hora = m.origen_hora || "";
+
   var descHtml = m.descripcion
     ? '<div class="pub-contenido">' + escHtml(m.descripcion) + "</div>"
     : "";
-  var seccion = m.seccion || "";
-  if (seccion === "tareas_diarias") seccion = "tareas";
-  var destinoUrl = seccion && m.origen_id ? (BASE_URL + seccion + "?select=" + m.origen_id) : "";
-  var secTitulo = seccion ? badgeSeccion({ seccion: seccion, origen_tipo: m.origen_tipo }) : "";
+
+  var origenHtml = "";
+  if (m.origen_titulo) {
+    var origenContenido = m.origen_contenido
+      ? escHtml((m.origen_contenido || "").replace(/<[^>]*>/g, "").slice(0, 220))
+      : "";
+    origenHtml =
+      '<div class="noticia-origen">' +
+      '<div class="noticia-origen-lbl"><i class="bi bi-link-45deg"></i> Publicacion original</div>' +
+      '<div class="noticia-origen-titulo">' + escHtml(m.origen_titulo) + "</div>" +
+      (origenContenido ? '<div class="pub-contenido">' + origenContenido + "</div>" : "") +
+      "</div>";
+  }
 
   return (
-    '<div class="pub-card" id="rec-' +
+    '<div class="noticia-card" id="rec-' +
     m.id +
     '" data-origen="' +
     (m.origen_tipo === "entrega" ? "entrega" : m.origen_tipo === "tarea" ? "tarea" : "borrador") +
@@ -94,24 +112,42 @@ function renderCardMarcador(m) {
     '" role="button" tabindex="0" data-url="' +
     escHtml(destinoUrl) +
     '" onclick="abrirOrigenMarcador(' + m.id + ')">' +
+    '<div class="noticia-main">' +
     secTitulo +
-    '<div class="pub-titulo">' +
-    escHtml(m.titulo) +
-    "</div>" +
+    '<div class="pub-titulo">' + escHtml(m.titulo) + "</div>" +
     descHtml +
-    '<div class="pub-meta"><i class="bi bi-clock"></i> ' +
-    fecha +
+    origenHtml +
+    '<div class="pub-meta"><i class="bi bi-bookmark-fill"></i> Guardado el ' +
+    (m.created_at ? formatearFechaHora(m.created_at) : "") +
     "</div>" +
+    "</div>" +
+    '<div class="noticia-side">' +
+    '<div class="noticia-side-card">' +
+    '<div class="noticia-side-label">Publicado por</div>' +
+    '<div class="noticia-autor-row">' +
+    '<div class="noticia-autor-avatar">' + avatar + "</div>" +
+    "<div>" +
+    '<div class="noticia-autor-nombre">' + escHtml(nombre) + "</div>" +
+    '<div class="noticia-autor-rol">' + escHtml(m.autor_rol_legible || "") + "</div>" +
+    "</div>" +
+    "</div>" +
+    "</div>" +
+    '<div class="noticia-side-card">' +
+    '<div class="noticia-side-label">Fecha de publicacion</div>' +
+    '<div class="noticia-fecha-item"><i class="bi bi-calendar3"></i><span><span class="lbl">Fecha</span><span class="val"> ' + fecha + '</span></span></div>' +
+    '<div class="noticia-fecha-item"><i class="bi bi-clock"></i><span><span class="lbl">Hora</span><span class="val"> ' + hora + ' hrs</span></span></div>' +
+    "</div>" +
+    "</div>" +
+    '<div class="noticia-footer">' +
     '<div class="pub-acciones">' +
-    '<button class="del" onclick="event.stopPropagation(); eliminarMarcador(' +
-    m.id +
-    ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
+    '<button class="del" onclick="event.stopPropagation(); eliminarMarcador(' + m.id + ')" title="Eliminar"><i class="bi bi-trash"></i> Eliminar</button>' +
     (m.origen_id ? comButtonMarcador(m.comentarios_count || 0, m) : "") +
+    "</div>" +
     "</div>" +
     (m.origen_id
       ? '<div class="comentarios-wrap" id="comentarios-rec-' +
         m.id +
-        '" style="display:none;">' +
+        '" style="display:none;" onclick="event.stopPropagation();">' +
         '<div class="comentarios-lista"></div>' +
         '<div class="comentarios-form">' +
         '<textarea class="form-control form-control-sm" rows="2" placeholder="Escribe un comentario..."></textarea>' +
@@ -121,7 +157,7 @@ function renderCardMarcador(m) {
         '<input type="file" class="com-input-adjunto" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
         '<button class="btn btn-primary btn-sm mt-1" onclick="guardarComentarioRec(' +
         m.id +
-        ', this)">Enviar</button>' +
+        ', this, event)">Enviar</button>' +
         '</div>' +
         '<div class="com-adjuntos-form"></div>' +
         "</div>"
@@ -141,7 +177,7 @@ function comButtonMarcador(count, m) {
 }
 
 function setComentariosCountRec(id, count) {
-  var btn = $("#comentarios-rec-" + id).closest(".pub-card").find(".com");
+  var btn = $("#comentarios-rec-" + id).closest(".noticia-card, .pub-card").find(".com");
   if (!btn.length) return;
   btn.find(".com-count").remove();
   if (count > 0) {
@@ -240,7 +276,7 @@ function avatarComentarioRec(c, nombre) {
   return "<span>" + escHtml(inicial) + "</span>";
 }
 
-function guardarComentarioRec(id, btn) {
+function guardarComentarioRec(id, btn, ev) {
   var wrap = $("#comentarios-rec-" + id);
   var ta = wrap.find("textarea");
   var texto = ta.val().trim();
@@ -251,6 +287,7 @@ function guardarComentarioRec(id, btn) {
   var origenTipo = card.data("origen") || "borrador";
   var origenId = card.data("origen-id");
 
+  if (ev && typeof ev.stopPropagation === "function") ev.stopPropagation();
   $(btn).prop("disabled", true);
   var subir = function (archivos) {
     var payload, url;

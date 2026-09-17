@@ -380,7 +380,7 @@ function escHtml(s) {
 }
 
 function guardarComo(tipo, id, btn) {
-    var card = $(btn).closest('.pub-card');
+    var card = $(btn).closest('.pub-card, .noticia-card');
     var titulo = $.trim(card.find('.pub-titulo').first().text());
     var contenido = $.trim(card.find('.pub-contenido').first().text());
     var origenTipo = card.data('origen') || 'borrador';
