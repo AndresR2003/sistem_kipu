@@ -1,5 +1,6 @@
 <div class="table-container">
     <?php $puedeConfigSesion = in_array(session('admin_rol') ?? 'admin', ['admin', 'superadmin'], true); ?>
+    <?php $esSuperadmin = (session('admin_rol') ?? '') === 'superadmin'; ?>
     <style>
         .configuracion-tabs { border-bottom: 1px solid var(--border) !important; }
         .configuracion-tabs .nav-link {
@@ -17,6 +18,30 @@
             border-color: var(--border-light) var(--border-light) var(--bg-card);
             border-bottom-color: var(--bg-card);
             font-weight: 600;
+        }
+        .menu-grupo-titulo {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin: 18px 0 8px;
+        }
+        .menu-grupo-titulo:first-child { margin-top: 0; }
+        .menu-switch {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+            background: var(--bg-input);
+        }
+        .menu-switch .form-check-input { cursor: pointer; }
+        .menu-switch .form-check-label {
+            cursor: pointer;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -43,6 +68,13 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSesion" type="button" role="tab">
                             <i class="bi bi-hourglass-split"></i> Sesión
+                        </button>
+                    </li>
+                    <?php endif; ?>
+                    <?php if ($esSuperadmin): ?>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMenu" type="button" role="tab">
+                            <i class="bi bi-list-ul"></i> Menú
                         </button>
                     </li>
                     <?php endif; ?>
@@ -173,6 +205,45 @@
 
                             <div class="mt-4">
                                 <button type="button" class="btn btn-primary-custom" onclick="guardarSesion()">
+                                    <i class="bi bi-check-lg"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($esSuperadmin): ?>
+                    <div class="tab-pane fade" id="tabMenu" role="tabpanel">
+                        <h6 class="mb-2"><i class="bi bi-list-ul"></i> Pestañas del Menú</h6>
+                        <p class="mb-3" style="color:var(--text-muted);font-size:0.82rem;">
+                            Activa o desactiva las pestañas que ven los demás usuarios en el menú lateral.
+                            Tu cuenta de superadministrador siempre verá todas las pestañas.
+                        </p>
+
+                        <form id="formMenu">
+                            <?php foreach (menu_secciones() as $grupo): ?>
+                                <?php
+                                $toggles = array_filter($grupo['items'], static function ($it) {
+                                    return empty($it['fijo']);
+                                });
+                                if (empty($toggles)) {
+                                    continue;
+                                }
+                                ?>
+                                <div class="menu-grupo-titulo"><?= esc($grupo['titulo']) ?></div>
+                                <?php foreach ($toggles as $it): ?>
+                                <div class="form-check form-switch menu-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                           id="menu_<?= esc($it['key']) ?>" value="<?= esc($it['key']) ?>" checked>
+                                    <label class="form-check-label" for="menu_<?= esc($it['key']) ?>">
+                                        <i class="<?= esc($it['icon']) ?>"></i> <?= esc($it['label']) ?>
+                                    </label>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-primary-custom" onclick="guardarMenu()">
                                     <i class="bi bi-check-lg"></i> Guardar Cambios
                                 </button>
                             </div>

@@ -39,10 +39,18 @@ class Configuracion extends BaseController
             ]);
         }
 
+        if (array_key_exists('menu_disabled', $json)) {
+            if ((session('admin_rol') ?? '') !== 'superadmin') {
+                unset($json['menu_disabled']);
+            } else {
+                $json['menu_disabled'] = $this->sanitizarMenu($json['menu_disabled']);
+            }
+        }
+
         if ($this->model->Guardar($json)) {
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Colores guardados correctamente.',
+                'message' => 'Cambios guardados correctamente.',
             ]);
         }
 
@@ -50,6 +58,16 @@ class Configuracion extends BaseController
             'success' => false,
             'message' => 'Error al guardar.',
         ]);
+    }
+
+    private function sanitizarMenu($valor): string
+    {
+        $lista = is_array($valor) ? $valor : json_decode((string) $valor, true);
+        if (!is_array($lista)) {
+            $lista = [];
+        }
+
+        return json_encode(array_values(array_intersect($lista, menu_keys())));
     }
 
     public function subirLogo()

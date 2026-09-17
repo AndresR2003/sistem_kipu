@@ -19,6 +19,7 @@ class ConfiguracionVisualModel extends Model
         'marca_activa', 'marca_nombre', 'marca_logo',
         'session_idle_minutes',
         'anuncio',
+        'menu_disabled',
     ];
 
     public function Obtener(): array
@@ -47,6 +48,7 @@ class ConfiguracionVisualModel extends Model
             'marca_nombre'      => '',
             'marca_logo'        => '',
             'session_idle_minutes' => 10,
+            'menu_disabled'     => '[]',
         ];
 
         $cache->save('config_visual', $data, 60);
@@ -56,7 +58,18 @@ class ConfiguracionVisualModel extends Model
     public function Guardar(array $datos): bool
     {
         service('cache')->delete('config_visual');
-        $datos['id'] = 1;
-        return $this->replace($datos) ? true : false;
+
+        $actual = $this->find(1);
+        $datos = array_merge(is_array($actual) ? $actual : [], $datos);
+
+        $filtrados = [];
+        foreach ($this->allowedFields as $campo) {
+            if (array_key_exists($campo, $datos)) {
+                $filtrados[$campo] = $datos[$campo];
+            }
+        }
+        $filtrados['id'] = 1;
+
+        return $this->replace($filtrados) ? true : false;
     }
 }

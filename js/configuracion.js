@@ -2,6 +2,7 @@ $(document).ready(function() {
     cargarColores();
     cargarMarca();
     cargarSesion();
+    cargarMenu();
 
     $('#marca_nombre').on('input', function() {
         actualizarPreviewMarca();
@@ -265,6 +266,60 @@ function guardarSesion() {
                     icon: 'success',
                     title: 'Guardado',
                     text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            hideLoading();
+            Swal.fire('Error', 'Error de conexion.', 'error');
+        }
+    });
+}
+
+function cargarMenu() {
+    if (!$('#formMenu').length) return;
+    $.ajax({
+        url: BASE_URL + 'configuracion/obtener',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            var ocultos = [];
+            try {
+                ocultos = Array.isArray(data.menu_disabled) ? data.menu_disabled : JSON.parse(data.menu_disabled || '[]');
+            } catch (e) {
+                ocultos = [];
+            }
+            $('#formMenu input[type="checkbox"]').each(function() {
+                $(this).prop('checked', ocultos.indexOf(this.value) === -1);
+            });
+        }
+    });
+}
+
+function guardarMenu() {
+    var ocultos = [];
+    $('#formMenu input[type="checkbox"]').each(function() {
+        if (!this.checked) ocultos.push(this.value);
+    });
+
+    showLoading();
+    $.ajax({
+        url: BASE_URL + 'configuracion/guardar',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ menu_disabled: ocultos }),
+        dataType: 'json',
+        success: function(response) {
+            hideLoading();
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Guardado',
+                    text: 'Las pestañas del menú se actualizaron.',
                     timer: 2000,
                     showConfirmButton: false,
                 });

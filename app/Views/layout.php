@@ -17,6 +17,8 @@ $marcaActiva = !empty($cfg['marca_activa']);
 $marcaNombre = ($marcaActiva && !empty($cfg['marca_nombre'])) ? $cfg['marca_nombre'] : 'Kipucloud';
 $marcaLigo   = ($marcaActiva && !empty($cfg['marca_logo'])) ? base_url($cfg['marca_logo']) : '';
 $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
+$esSuperadmin = (session('admin_rol') ?? '') === 'superadmin';
+$menuOculto   = $esSuperadmin ? [] : menu_oculto();
 ?>
 <head>
     <meta charset="UTF-8">
@@ -1064,103 +1066,35 @@ $idleMinutes = max(1, (int) ($cfg['session_idle_minutes'] ?? 15));
         </div>
 
         <nav class="sidebar-nav">
-            <div class="nav-label">Menu principal</div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === '/' || uri_string() === 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
-                    <i class="bi bi-house-fill"></i>
-                    <span>Inicio</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'recordatorio' ? 'active' : '' ?>" href="<?= site_url('recordatorio') ?>">
-                    <i class="bi bi-bell-fill"></i>
-                    <span>Recordatorio</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'marcadores' ? 'active' : '' ?>" href="<?= site_url('marcadores') ?>">
-                    <i class="bi bi-bookmark-fill"></i>
-                    <span>Marcadores</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'borradores' ? 'active' : '' ?>" href="<?= site_url('borradores') ?>">
-                    <i class="bi bi-pencil-fill"></i>
-                    <span>Borradores</span>
-                </a>
-            </div>
+            <?php foreach (menu_secciones() as $i => $grupo): ?>
+                <?php
+                $items = array_filter($grupo['items'], static function ($it) use ($menuOculto) {
+                    return !in_array($it['key'], $menuOculto, true);
+                });
+                if (empty($items)) {
+                    continue;
+                }
+                ?>
+                <?php if ($i > 0): ?>
+                <div class="nav-divider"></div>
+                <?php endif; ?>
+                <div class="nav-label"><?= esc($grupo['titulo']) ?></div>
+                <?php foreach ($items as $it): ?>
+                    <?php
+                    $activo = $it['key'] === 'dashboard'
+                        ? in_array(uri_string(), ['', '/', 'dashboard'], true)
+                        : uri_string() === $it['url'];
+                    ?>
+                    <div class="nav-item">
+                        <a class="nav-link <?= $activo ? 'active' : '' ?>" href="<?= site_url($it['url']) ?>">
+                            <i class="<?= esc($it['icon']) ?>"></i>
+                            <span><?= esc($it['label']) ?></span>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
 
             <div class="nav-divider"></div>
-            <div class="nav-label">Herramientas</div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'entregas' ? 'active' : '' ?>" href="<?= site_url('entregas') ?>">
-                    <i class="bi bi-arrow-left-right"></i>
-                    <span>Pases de turno</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'noticias' ? 'active' : '' ?>" href="<?= site_url('noticias') ?>">
-                    <i class="bi bi-newspaper"></i>
-                    <span>Noticias</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'ideas' ? 'active' : '' ?>" href="<?= site_url('ideas') ?>">
-                    <i class="bi bi-lightbulb-fill"></i>
-                    <span>Ideas</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'manual' ? 'active' : '' ?>" href="<?= site_url('manual') ?>">
-                    <i class="bi bi-book-fill"></i>
-                    <span>Manual</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'tareas' ? 'active' : '' ?>" href="<?= site_url('tareas') ?>">
-                    <i class="bi bi-check2-square"></i>
-                    <span>Tareas</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'calendario' ? 'active' : '' ?>" href="<?= site_url('calendario') ?>">
-                    <i class="bi bi-calendar-fill"></i>
-                    <span>Calendario</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'reparaciones' ? 'active' : '' ?>" href="<?= site_url('reparaciones') ?>">
-                    <i class="bi bi-tools"></i>
-                    <span>Reparaciones</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'peticiones' ? 'active' : '' ?>" href="<?= site_url('peticiones') ?>">
-                    <i class="bi bi-chat-dots-fill"></i>
-                    <span>Peticiones de huéspedes</span>
-                </a>
-            </div>
-
-            <div class="nav-divider"></div>
-            <div class="nav-label">Más</div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'configuracion' ? 'active' : '' ?>" href="<?= site_url('configuracion') ?>">
-                    <i class="bi bi-gear-fill"></i>
-                    <span>Configuración</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'colaboradores' ? 'active' : '' ?>" href="<?= site_url('colaboradores') ?>">
-                    <i class="bi bi-person-badge-fill"></i>
-                    <span>Colaboradores / Personal</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link <?= uri_string() === 'soporte' ? 'active' : '' ?>" href="<?= site_url('soporte') ?>">
-                    <i class="bi bi-question-circle-fill"></i>
-                    <span>Soporte</span>
-                </a>
-            </div>
             <div class="nav-item">
                 <a class="nav-link" href="<?= site_url('logout') ?>">
                     <i class="bi bi-box-arrow-left"></i>
