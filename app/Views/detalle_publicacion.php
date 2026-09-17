@@ -103,6 +103,7 @@
 .nd-accion.rec:hover { color: var(--nd-accent); border-color: var(--nd-accent); }
 .nd-accion.mar:hover { color: var(--nd-accent); border-color: var(--nd-accent); }
 .nd-accion.com:hover { color: var(--nd-blue); border-color: var(--nd-blue); }
+.nd-accion.activo { background: rgba(37, 99, 235, 0.12); color: var(--nd-blue); border-color: var(--nd-blue); }
 .nd-accion .com-count {
     display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px;
     padding: 0 5px; border-radius: 999px; background: var(--nd-blue); color: #fff;
@@ -274,6 +275,14 @@ $comentarios = (int) ($publicacion['comentarios_count'] ?? 0);
         <div class="nd-contenido"><?= esc($contenido) ?></div>
 
         <div class="nd-acciones">
+            <button class="nd-accion like <?= !empty($publicacion['me_gusta']) ? 'activo' : '' ?>" id="detalleLikeBtn" onclick="toggleLikeDetalle()" title="Me gusta">
+                <i class="bi bi-hand-thumbs-up<?= !empty($publicacion['me_gusta']) ? '-fill' : '' ?>"></i> Me gusta
+                <span class="com-count" <?= (int) ($publicacion['likes_count'] ?? 0) > 0 ? '' : 'style="display:none;"' ?>><?= (int) ($publicacion['likes_count'] ?? 0) ?></span>
+            </button>
+            <button class="nd-accion visto" id="detalleVistoBtn" onclick="verVistosDetalle()" title="Quienes han visto">
+                <i class="bi bi-eye"></i> Visto por
+                <span class="com-count"><?= (int) ($publicacion['vistos_count'] ?? 0) ?></span>
+            </button>
             <button class="nd-accion rec" onclick="guardarComoDetalle('recordatorio')" title="Agregar a Recordatorio">
                 <i class="bi bi-bell"></i> Recordatorio
             </button>

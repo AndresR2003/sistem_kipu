@@ -5,6 +5,14 @@ function toggleComentariosDetalle() {
     if (!visible) cargarComentariosDetalle();
 }
 
+function toggleLikeDetalle() {
+    toggleLikePublicacion(DETALLE_PUB_ID, $('#detalleLikeBtn')[0]);
+}
+
+function verVistosDetalle() {
+    verVistosPublicacion(DETALLE_PUB_ID);
+}
+
 function cargarComentariosDetalle() {
     var lista = $('#detalleComentariosLista');
     comVinculaInputDetalle();
@@ -29,6 +37,7 @@ function cargarComentariosDetalle() {
                     '<div class="comentario-autor">' + escHtmlDetalle(nombre) + '<span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtmlDetalle(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
+                    '<div class="comentario-acciones">' + comLikeButton(c) + '</div>' +
                     '</div>' +
                     '</div>'
                 );

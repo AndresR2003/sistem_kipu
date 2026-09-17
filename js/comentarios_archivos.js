@@ -22,7 +22,22 @@
         '.com-adjunto-preview .bi-x-circle{position:absolute;top:-7px;right:-7px;background:#dc3545;color:#fff;border-radius:50%;font-size:0.9rem;cursor:pointer;}' +
         '.com-adjunto-preview img{width:34px;height:34px;object-fit:cover;border-radius:4px;}' +
         '.com-adjunto-preview span{font-size:0.72rem;color:var(--text,#333);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
-        '.com-lightbox-img{border-radius:8px;}';
+        '.com-lightbox-img{border-radius:8px;}' +
+        '.pub-like,.pub-visto{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border,#d0d0d0);border-radius:var(--radius,6px);padding:6px 10px;font-size:0.72rem;color:var(--text,#333);cursor:pointer;transition:all .15s;white-space:nowrap;}' +
+        '.pub-like:hover,.pub-visto:hover{background:var(--bg-hover,#e9ecef);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
+        '.pub-like.activo{background:rgba(13,110,253,.1);border-color:var(--primary,#0d6efd);color:var(--primary,#0d6efd);}' +
+        '.pub-like .lbl,.pub-visto .lbl{display:none;}' +
+        '.pub-visto{color:var(--text-muted,#888);}' +
+        '.com-like{display:inline-flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--text-muted,#888);font-size:0.72rem;cursor:pointer;padding:2px 4px;border-radius:4px;transition:all .15s;}' +
+        '.com-like:hover{color:#0dcaf0;background:rgba(13,202,240,.08);}' +
+        '.com-like.activo{color:#0d6efd;}' +
+        '.com-like .lbl{display:none;}' +
+        '.com-like-count{font-weight:700;}' +
+        '.comentario-acciones{display:flex;align-items:center;gap:4px;margin-top:4px;}' +
+        '.visto-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;background:var(--primary,#0d6efd);color:#fff;font-weight:700;}' +
+        '.visto-lista{max-height:320px;overflow:auto;text-align:left;}' +
+        '.visto-item{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border,#eee);}' +
+        '.visto-item:last-child{border-bottom:none;}';
     var style = document.createElement('style');
     style.type = 'text/css';
     if (style.styleSheet) { style.styleSheet.cssText = css; } else { style.appendChild(document.createTextNode(css)); }
@@ -132,5 +147,113 @@ function comPrepararSubida(input, callback) {
                 if (pendientes === 0) callback(result);
             }
         });
+    });
+}
+
+// ─────────────── Me gusta y Vistos ───────────────
+
+function comRutaFoto(u) {
+    if (!u || !u.foto) return '';
+    if (u.foto.indexOf('http') === 0) return u.foto;
+    var base = BASE_URL.charAt(BASE_URL.length - 1) === '/' ? BASE_URL : BASE_URL + '/';
+    return base + u.foto;
+}
+
+function comAvatarVisto(u) {
+    var nombre = u.nombre || 'Desconocido';
+    var inicial = nombre.charAt(0) ? nombre.charAt(0).toUpperCase() : 'A';
+    if (u.foto) {
+        return '<img class="visto-avatar" src="' + comRutaFoto(u) + '?t=' + Date.now() + '" alt="" onerror="this.outerHTML=\'<span class=visto-avatar>\' + \'' + comEscHtml(inicial) + '\' + \'</span>\';">';
+    }
+    return '<span class="visto-avatar">' + comEscHtml(inicial) + '</span>';
+}
+
+function pubLikeButton(p, extraClase) {
+    var activo = p.me_gusta ? ' activo' : '';
+    return '<button type="button" class="pub-like' + activo + ' ' + (extraClase || '') + '" onclick="toggleLikePublicacion(' + p.id + ', this)" title="Me gusta"><i class="bi bi-hand-thumbs-up' + (p.me_gusta ? '-fill' : '') + '"></i><span class="lbl">Me gusta</span>' + (parseInt(p.likes_count) > 0 ? '<span class="com-count">' + p.likes_count + '</span>' : '') + '</button>';
+}
+
+function pubVistoButton(p) {
+    return '<button type="button" class="pub-visto" onclick="verVistosPublicacion(' + p.id + ')" title="Quienes han visto"><i class="bi bi-eye"></i>' + (parseInt(p.vistos_count) > 0 ? ' Visto por <b>' + p.vistos_count + '</b>' : ' Visto por <b>0</b>') + '</button>';
+}
+
+function toggleLikePublicacion(id, btn) {
+    $.ajax({
+        url: BASE_URL + 'borradores/toggle-like/' + id,
+        type: 'POST',
+        dataType: 'json',
+        success: function (res) {
+            if (!res.success) return;
+            $(btn).toggleClass('activo', !!res.me_gusta);
+            $(btn).find('.bi').removeClass('bi-hand-thumbs-up bi-hand-thumbs-up-fill').addClass(res.me_gusta ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up');
+            $(btn).find('.com-count').remove();
+            if (res.likes > 0) $(btn).append('<span class="com-count">' + res.likes + '</span>');
+        }
+    });
+}
+
+function verVistosPublicacion(id) {
+    $.ajax({
+        url: BASE_URL + 'borradores/vistos/' + id,
+        type: 'GET',
+        dataType: 'json',
+        success: function (res) {
+            if (!res.success) return;
+            var html = '<div class="visto-lista">';
+            if (!res.data.length) {
+                html += '<div class="text-muted text-center py-3"><i class="bi bi-eye-slash"></i> Aun nadie ha visto esta publicacion</div>';
+            } else {
+                res.data.forEach(function (u) {
+                    html += '<div class="visto-item">' + comAvatarVisto(u) +
+                        '<div class="flex-grow-1"><div class="fw-semibold">' + comEscHtml(u.nombre) + ' <span class="text-muted small">' + (u.rol_legible || '') + '</span></div>' +
+                        '<div class="small text-muted">Visto el ' + (u.fecha || '') + ' a las ' + (u.hora || '') + '</div></div></div>';
+                });
+            }
+            html += '</div>';
+            Swal.fire({
+                title: 'Visto por (' + res.data.length + ')',
+                html: html,
+                width: 460,
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        }
+    });
+}
+
+function comLikeButton(c, esPase) {
+    var activo = c.me_gusta ? ' activo' : '';
+    var onclick = esPase ? 'toggleLikePaseComentario(' + c.id + ', this)' : 'toggleLikeComentario(' + c.id + ', this)';
+    var icono = esPase ? 'bi bi-hand-thumbs-up' : 'bi bi-hand-thumbs-up';
+    return '<button type="button" class="com-like' + activo + '" onclick="' + onclick + '" title="Me gusta"><i class="' + icono + (c.me_gusta ? '-fill' : '') + '"></i><span class="lbl">Me gusta</span>' + (parseInt(c.likes_count) > 0 ? '<span class="com-like-count">' + c.likes_count + '</span>' : '') + '</button>';
+}
+
+function toggleLikeComentario(id, btn) {
+    $.ajax({
+        url: BASE_URL + 'comentarios/toggle-like/' + id,
+        type: 'POST',
+        dataType: 'json',
+        success: function (res) {
+            if (!res.success) return;
+            $(btn).toggleClass('activo', !!res.me_gusta);
+            $(btn).find('.bi').removeClass('bi-hand-thumbs-up bi-hand-thumbs-up-fill').addClass(res.me_gusta ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up');
+            $(btn).find('.com-like-count').remove();
+            if (res.likes > 0) $(btn).append('<span class="com-like-count">' + res.likes + '</span>');
+        }
+    });
+}
+
+function toggleLikePaseComentario(id, btn) {
+    $.ajax({
+        url: BASE_URL + 'comentarios/toggle-like-pase/' + id,
+        type: 'POST',
+        dataType: 'json',
+        success: function (res) {
+            if (!res.success) return;
+            $(btn).toggleClass('activo', !!res.me_gusta);
+            $(btn).find('.bi').removeClass('bi-hand-thumbs-up bi-hand-thumbs-up-fill').addClass(res.me_gusta ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up');
+            $(btn).find('.com-like-count').remove();
+            if (res.likes > 0) $(btn).append('<span class="com-like-count">' + res.likes + '</span>');
+        }
     });
 }

@@ -333,15 +333,14 @@ class Entregas extends BaseController
     public function guardarComentario(): \CodeIgniter\HTTP\Response
     {
         $json = $this->request->getJSON(true);
-        if (!$json || empty($json['punto_id']) || trim($json['comentario'] ?? '') === '') {
+        $archivos = isset($json['archivos']) && is_array($json['archivos']) ? array_values($json['archivos']) : [];
+        if (!$json || empty($json['punto_id']) || (trim($json['comentario'] ?? '') === '' && empty($archivos))) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'El comentario es obligatorio.',
             ]);
         }
 
-        $archivos = $json['archivos'] ?? [];
-        $archivos = is_array($archivos) ? array_values($archivos) : [];
         $ok = $this->model->GuardarComentario((int) $json['punto_id'], $this->usuarioId(), trim($json['comentario']), $archivos);
         return $this->response->setJSON([
             'success' => $ok,

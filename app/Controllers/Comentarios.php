@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\InteraccionModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Comentarios extends BaseController
@@ -69,5 +70,35 @@ class Comentarios extends BaseController
             'success' => false,
             'message' => $mensaje,
         ])->setStatusCode(422);
+    }
+
+    public function toggleLike(int $comentarioId): ResponseInterface
+    {
+        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $interaccion = new InteraccionModel();
+        $interaccion->ToggleLikeComentario($comentarioId, $usuarioId);
+        $total = $interaccion->ContarLikesPorComentarios([$comentarioId])[$comentarioId] ?? 0;
+        $meGusta = $interaccion->MeGustaComentarios([$comentarioId], $usuarioId)[$comentarioId] ?? false;
+
+        return $this->response->setJSON([
+            'success'  => true,
+            'likes'    => $total,
+            'me_gusta' => !empty($meGusta),
+        ]);
+    }
+
+    public function toggleLikePase(int $comentarioId): ResponseInterface
+    {
+        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $interaccion = new InteraccionModel();
+        $interaccion->ToggleLikePaseComentario($comentarioId, $usuarioId);
+        $total = $interaccion->ContarLikesPorPaseComentarios([$comentarioId])[$comentarioId] ?? 0;
+        $meGusta = $interaccion->MeGustaPaseComentarios([$comentarioId], $usuarioId)[$comentarioId] ?? false;
+
+        return $this->response->setJSON([
+            'success'  => true,
+            'likes'    => $total,
+            'me_gusta' => !empty($meGusta),
+        ]);
     }
 }

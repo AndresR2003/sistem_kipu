@@ -59,6 +59,23 @@ class ComentarioModel extends Model
                     ->findAll();
     }
 
+    public function EnriquecerLikes(array $comentarios): array
+    {
+        if (empty($comentarios)) {
+            return $comentarios;
+        }
+        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $ids = array_column($comentarios, 'id');
+        $interaccion = new \App\Models\InteraccionModel();
+        $likes = $interaccion->ContarLikesPorComentarios($ids);
+        $meGusta = $interaccion->MeGustaComentarios($ids, $usuarioId);
+        foreach ($comentarios as &$c) {
+            $c['likes_count'] = $likes[$c['id']] ?? 0;
+            $c['me_gusta']    = !empty($meGusta[$c['id']]);
+        }
+        return $comentarios;
+    }
+
     public function ContarPorEntregas(array $ids): array
     {
         if (empty($ids)) {

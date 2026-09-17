@@ -224,6 +224,7 @@ function cargarComentariosRec(id) {
             '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + "</span></div>" +
             '<div class="comentario-texto">' + escHtml(c.comentario) + "</div>" +
             comRenderAdjuntos(c) +
+            '<div class="comentario-acciones">' + comLikeButton(c, origenTipo === "entrega") + '</div>' +
             "</div></div>",
         );
       });

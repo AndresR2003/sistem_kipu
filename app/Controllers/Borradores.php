@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\BorradorModel;
 use App\Models\ComentarioModel;
 use App\Models\DepartamentoModel;
+use App\Models\InteraccionModel;
 use App\Models\TareaModel;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\API\ResponseTrait;
@@ -219,15 +220,62 @@ class Borradores extends BaseController
         $data  = $model->ObtenerPublicados($seccion, $usuarioId, $departamentoId ?: null, $rol);
 
         $ids = array_column($data, 'id');
+
+        $interaccion = new InteraccionModel();
+        if (!empty($ids)) {
+            $interaccion->MarcarVistos($ids, $usuarioId);
+            $likesCounts = $interaccion->ContarLikesPorPublicaciones($ids);
+            $vistosCounts = $interaccion->ContarVistosPorPublicaciones($ids);
+            $meGusta = $interaccion->MeGustaPublicaciones($ids, $usuarioId);
+            $visto = $interaccion->VistoPorPublicaciones($ids, $usuarioId);
+        } else {
+            $likesCounts = $vistosCounts = $meGusta = $visto = [];
+        }
+
         $counts = empty($ids) ? [] : (new ComentarioModel())->ContarPorBorradores($ids);
         foreach ($data as &$d) {
             $d['comentarios_count'] = $counts[$d['id']] ?? 0;
+            $d['likes_count']       = $likesCounts[$d['id']] ?? 0;
+            $d['vistos_count']      = $vistosCounts[$d['id']] ?? 0;
+            $d['me_gusta']          = !empty($meGusta[$d['id']]);
+            $d['visto']             = !empty($visto[$d['id']]);
             $d['autor_rol_legible'] = rol_legible($d['autor_rol'] ?? null);
             $d['fecha']             = fecha_publicacion($d['updated_at'] ?? $d['created_at'] ?? 'now');
             $d['hora']              = hora_publicacion($d['updated_at'] ?? $d['created_at'] ?? 'now');
         }
 
         return $this->response->setJSON($data);
+    }
+
+    public function toggleLike(int $id)
+    {
+        $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+        $model = new BorradorModel();
+        if (!$model->ObtenerPorId($id)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Publicacion no encontrada.']);
+        }
+
+        $interaccion = new InteraccionModel();
+        $interaccion->ToggleLikePublicacion($id, $usuarioId);
+        $total = $interaccion->ContarLikesPorPublicaciones([$id])[$id] ?? 0;
+        $meGusta = $interaccion->MeGustaPublicaciones([$id], $usuarioId)[$id] ?? false;
+
+        return $this->response->setJSON([
+            'success' => true,
+            'likes'   => $total,
+            'me_gusta' => !empty($meGusta),
+        ]);
+    }
+
+    public function vistos(int $id)
+    {
+        $data = (new InteraccionModel())->ObtenerVistosPublicacion($id);
+        foreach ($data as &$d) {
+            $d['rol_legible'] = rol_legible($d['rol'] ?? null);
+            $d['fecha']       = fecha_publicacion($d['visto_en'] ?? 'now');
+            $d['hora']        = hora_publicacion($d['visto_en'] ?? 'now');
+        }
+        return $this->response->setJSON(['success' => true, 'data' => $data]);
     }
 
     public function despublicar(int $id)
@@ -255,22 +303,20 @@ class Borradores extends BaseController
     {
         $model = new ComentarioModel();
         $data  = $model->ObtenerPorBorrador($borradorId);
-        return $this->response->setJSON($data);
+        return $this->response->setJSON($model->EnriquecerLikes($data));
     }
 
-    public function guardarComentario()
+public function guardarComentario()
     {
         $json = $this->request->getJSON(true);
+        $archivos = isset($json['archivos']) && is_array($json['archivos']) ? array_values($json['archivos']) : [];
 
-        if (!$json || empty($json['borrador_id']) || trim($json['comentario'] ?? '') === '') {
+        if (!$json || empty($json['borrador_id']) || (trim($json['comentario'] ?? '') === '' && empty($archivos))) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Faltan datos.',
             ]);
         }
-
-        $archivos = $json['archivos'] ?? [];
-        $archivos = is_array($archivos) ? array_values($archivos) : [];
 
         $model = new ComentarioModel();
         $ok    = $model->Guardar([

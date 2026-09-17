@@ -76,6 +76,8 @@ function cargarBorradoresPublicados(seccion) {
                         '<div class="pub-contenido">' + escHtml(p.contenido) + '</div>' +
                         '<div class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</div>' +
                         '<div class="pub-acciones">' +
+                        pubLikeButton(p) +
+                        pubVistoButton(p) +
                         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
                         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
                         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
@@ -116,6 +118,8 @@ function tareaPublicadaCard(p) {
         '<span class="pub-meta"><i class="bi bi-clock"></i> ' + d + '</span></div>' +
         '</div></div>' +
         '<div class="pub-acciones">' +
+        pubLikeButton(p) +
+        pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
@@ -208,6 +212,8 @@ function noticiaCard(p, seccion) {
         '</div>' +
         '<div class="noticia-footer">' +
         '<div class="pub-acciones">' +
+        pubLikeButton(p) +
+        pubVistoButton(p) +
         '<button class="rec" onclick="guardarComo(\'recordatorio\',' + p.id + ', this)" title="Agregar a Recordatorio"><i class="bi bi-bell-fill"></i> Recordatorio</button>' +
         '<button class="mar" onclick="guardarComo(\'marcador\',' + p.id + ', this)" title="Agregar a Marcadores"><i class="bi bi-bookmark-fill"></i> Marcador</button>' +
         comButton(p.comentarios_count || 0, 'toggleComentarios(' + p.id + ')') +
@@ -291,6 +297,7 @@ function cargarComentarios(id) {
                     '<div class="comentario-autor">' + escHtml(nombre) + ' <span class="comentario-fecha">' + fecha + '</span></div>' +
                     '<div class="comentario-texto">' + escHtml(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
+                    '<div class="comentario-acciones">' + comLikeButton(c) + '</div>' +
                     '</div>' +
                     '</div>'
                 );

@@ -404,6 +404,7 @@ function cargarComentarios(puntoId) {
                     '<span class="fecha-c">' + formatearFecha(c.created_at) + '</span>' +
                     '<div>' + escHtml(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
+                    '<div class="comentario-acciones">' + comLikeButton(c, true) + '</div>' +
                     '</div>';
             });
         } else {

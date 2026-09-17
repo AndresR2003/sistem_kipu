@@ -274,7 +274,7 @@ class Tareas extends BaseController
     public function listarComentarios(int $id): \CodeIgniter\HTTP\Response
     {
         $model = new ComentarioModel();
-        $comentarios = $model->ObtenerPorTarea($id);
+        $comentarios = $model->EnriquecerLikes($model->ObtenerPorTarea($id));
 
         return $this->response->setJSON(['success' => true, 'data' => $comentarios]);
     }
@@ -282,16 +282,14 @@ class Tareas extends BaseController
     public function guardarComentario(): \CodeIgniter\HTTP\Response
     {
         $json = $this->request->getJSON(true);
+        $archivos = isset($json['archivos']) && is_array($json['archivos']) ? array_values($json['archivos']) : [];
 
-        if (!$json || empty($json['tarea_id']) || trim($json['comentario'] ?? '') === '') {
+        if (!$json || empty($json['tarea_id']) || (trim($json['comentario'] ?? '') === '' && empty($archivos))) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Faltan datos.',
             ]);
         }
-
-        $archivos = $json['archivos'] ?? [];
-        $archivos = is_array($archivos) ? array_values($archivos) : [];
 
         $model = new ComentarioModel();
         $ok = $model->Guardar([

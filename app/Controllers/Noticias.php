@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BorradorModel;
 use App\Models\ComentarioModel;
+use App\Models\InteraccionModel;
 
 class Noticias extends BaseController
 {
@@ -28,7 +29,13 @@ class Noticias extends BaseController
             return redirect()->to(base_url('noticias'))->with('error', 'Publicacion no encontrada.');
         }
 
+        $interaccion = new InteraccionModel();
+        $interaccion->MarcarVisto($id, $usuarioId);
         $publicacion['comentarios_count'] = (new ComentarioModel())->ContarPorBorradores([$id])[$id] ?? 0;
+        $publicacion['likes_count']  = $interaccion->ContarLikesPorPublicaciones([$id])[$id] ?? 0;
+        $publicacion['vistos_count'] = $interaccion->ContarVistosPorPublicaciones([$id])[$id] ?? 0;
+        $publicacion['me_gusta']     = !empty($interaccion->MeGustaPublicaciones([$id], $usuarioId)[$id]);
+        $publicacion['visto']        = true;
 
         return view('layout', [
             'contenido'  => view('detalle_publicacion', [

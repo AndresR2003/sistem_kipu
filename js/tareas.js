@@ -690,6 +690,7 @@ function cargarComentariosTarea(id) {
                     '<span class="tarea-comentario-fecha">' + fecha + '</span></span>' +
                     '<div class="tarea-comentario-texto">' + escHtml(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
+                    '<div class="comentario-acciones">' + comLikeButton(c) + '</div>' +
                     '</div></div>'
                 );
             });

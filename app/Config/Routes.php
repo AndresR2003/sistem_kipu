@@ -38,6 +38,8 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
 
     // API AJAX - Adjuntos de comentarios
     $routes->post('comentarios/subir-archivo', 'Comentarios::subirArchivo');
+    $routes->post('comentarios/toggle-like/(:num)', 'Comentarios::toggleLike/$1');
+    $routes->post('comentarios/toggle-like-pase/(:num)', 'Comentarios::toggleLikePase/$1');
 
     // API AJAX - Chat grupal
     $routes->get('chat/usuarios', 'Chat::usuarios');
@@ -84,6 +86,8 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('borradores/destinatarios', 'Borradores::destinatarios');
     $routes->get('borradores/listar-publicados/(:segment)', 'Borradores::listarPublicados/$1');
     $routes->get('borradores/anuncio', 'Borradores::anuncio');
+    $routes->post('borradores/toggle-like/(:num)', 'Borradores::toggleLike/$1');
+    $routes->get('borradores/vistos/(:num)', 'Borradores::vistos/$1');
     $routes->get('entregas', 'Entregas::index');
     $routes->get('entregas/listar', 'Entregas::listar');
     $routes->get('entregas/turnos', 'Entregas::turnos');

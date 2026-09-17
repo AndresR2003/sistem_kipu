@@ -226,6 +226,18 @@ class PaseTurnoModel extends Model
         foreach ($filas as &$fila) {
             $fila['archivos'] = !empty($fila['archivos']) ? (json_decode($fila['archivos'], true) ?: []) : [];
         }
+        if (!empty($filas)) {
+            $usuarioId = (int) (session()->get('usuario_id') ?? session()->get('admin_id'));
+            $ids = array_column($filas, 'id');
+            $interaccion = new \App\Models\InteraccionModel();
+            $likes = $interaccion->ContarLikesPorPaseComentarios($ids);
+            $meGusta = $interaccion->MeGustaPaseComentarios($ids, $usuarioId);
+            foreach ($filas as &$fila) {
+                $fila['likes_count'] = $likes[$fila['id']] ?? 0;
+                $fila['me_gusta']    = !empty($meGusta[$fila['id']]);
+            }
+            unset($fila);
+        }
         return $filas;
     }
 
