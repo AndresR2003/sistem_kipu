@@ -88,15 +88,11 @@ function renderCardMarcador(m) {
     : "";
 
   var origenHtml = "";
-  if (m.origen_titulo) {
-    var origenContenido = m.origen_contenido
-      ? escHtml((m.origen_contenido || "").replace(/<[^>]*>/g, "").slice(0, 220))
-      : "";
+  if (m.origen_id) {
     origenHtml =
-      '<div class="noticia-origen">' +
-      '<div class="noticia-origen-lbl"><i class="bi bi-link-45deg"></i> Publicacion original</div>' +
-      '<div class="noticia-origen-titulo">' + escHtml(m.origen_titulo) + "</div>" +
-      (origenContenido ? '<div class="pub-contenido">' + origenContenido + "</div>" : "") +
+      '<div class="noticia-origen" onclick="event.stopPropagation(); abrirOrigenMarcador(' + m.id + ')" title="Ir a la publicacion original">' +
+      '<i class="bi bi-link-45deg"></i> Publicacion original' +
+      '<i class="bi bi-arrow-right-short"></i>' +
       "</div>";
   }
 

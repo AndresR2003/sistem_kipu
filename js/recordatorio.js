@@ -104,15 +104,11 @@ function renderCardRec(r) {
     : "";
 
   var origenHtml = "";
-  if (r.origen_titulo) {
-    var origenContenido = r.origen_contenido
-      ? escHtml((r.origen_contenido || "").replace(/<[^>]*>/g, "").slice(0, 220))
-      : "";
+  if (r.origen_id) {
     origenHtml =
-      '<div class="noticia-origen">' +
-      '<div class="noticia-origen-lbl"><i class="bi bi-link-45deg"></i> Publicacion original</div>' +
-      '<div class="noticia-origen-titulo">' + escHtml(r.origen_titulo) + "</div>" +
-      (origenContenido ? '<div class="pub-contenido">' + origenContenido + "</div>" : "") +
+      '<div class="noticia-origen" onclick="event.stopPropagation(); abrirOrigenRec(' + r.id + ')" title="Ir a la publicacion original">' +
+      '<i class="bi bi-link-45deg"></i> Publicacion original' +
+      '<i class="bi bi-arrow-right-short"></i>' +
       "</div>";
   }
 

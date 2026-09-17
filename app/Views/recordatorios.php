@@ -56,10 +56,8 @@
 .noticia-footer .pub-acciones button.del:hover{color:var(--danger);}
 .noticia-footer .pub-acciones button.com:hover{color:var(--success);}
 .noticia-card .comentarios-wrap{grid-column:1 / -1;border-top:1px solid var(--border);margin-top:14px;padding-top:14px;}
-.noticia-origen{margin-top:10px;padding:10px 12px;border:1px dashed var(--border);border-radius:8px;background:var(--bg-card-alt);}
-.noticia-origen-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:700;margin-bottom:4px;}
-.noticia-origen-titulo{font-size:0.83rem;font-weight:600;color:var(--text);margin-bottom:2px;}
-.noticia-origen .pub-contenido{margin-bottom:0;}
+.noticia-origen{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:6px 13px;border:1px solid var(--border);border-radius:20px;background:var(--bg-card-alt);font-size:0.72rem;font-weight:600;color:var(--primary);cursor:pointer;transition:all 0.15s;}
+.noticia-origen:hover{border-color:var(--primary);background:var(--bg-input);}
 .noticia-side-card{background:transparent;border:none;border-radius:var(--radius);padding:2px 0;font-size:0.9em;}
 .noticia-side-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);font-weight:600;margin-bottom:10px;}
 .noticia-autor-row{display:flex;align-items:center;gap:10px;}
