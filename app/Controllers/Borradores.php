@@ -16,11 +16,15 @@ class Borradores extends BaseController
 
     public function index(): string
     {
+        $esAdmin = in_array(session()->get('admin_rol') ?? 'empleado', ['admin', 'superadmin'], true);
+        $puedePases = !in_array('entregas', menu_oculto_para(), true);
+
         return view('layout', [
-            'contenido'   => view('borradores'),
+            'contenido'   => view('borradores', ['esAdmin' => $esAdmin, 'puedePases' => $puedePases]),
             'titulo'      => 'Borradores - Kipucloud',
             'pageScripts' => '<script src="' . base_url('js/comentarios_archivos.js') . '?v=' . filemtime(FCPATH . 'js/comentarios_archivos.js') . '"></script>'
-                         . '<script src="' . base_url('js/borradores.js') . '?v=' . filemtime(FCPATH . 'js/borradores.js') . '"></script>',
+                         . '<script src="' . base_url('js/borradores.js') . '?v=' . filemtime(FCPATH . 'js/borradores.js') . '"></script>'
+                         . '<script src="' . base_url('js/pases.js') . '?v=' . filemtime(FCPATH . 'js/pases.js') . '"></script>',
         ]);
     }
 

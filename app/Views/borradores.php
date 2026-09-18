@@ -57,9 +57,11 @@
         <button class="active" data-tab="borradores" onclick="cambiarTabBorradores('borradores', this)">
             <i class="bi bi-pencil-fill"></i> Borradores
         </button>
+        <?php if (!empty($puedePases)): ?>
         <button data-tab="pase" onclick="cambiarTabBorradores('pase', this)">
             <i class="bi bi-arrow-left-right"></i> Pase de turno
         </button>
+        <?php endif; ?>
     </div>
 
     <!-- TAB BORRADORES -->
@@ -126,16 +128,11 @@
     </div>
 
     <!-- TAB PASE DE TURNO -->
-    <div class="brd-tabpane" id="panePase" style="min-height:300px;display:none;">
-        <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;min-height:300px;padding:24px;">
-            <i class="bi bi-arrow-left-right" style="font-size:3rem;color:var(--primary);opacity:0.6;"></i>
-            <h6 class="mb-0" style="font-size:0.95rem;color:var(--text);"><i class="bi bi-clock-history"></i> Pase de turno</h6>
-            <p class="text-muted small" style="max-width:360px;text-align:center;">El intercambio de informacion entre turnos ahora tiene su propia seccion, con puntos por area, revisiones y comentarios.</p>
-            <a href="<?= site_url('entregas') ?>" class="btn btn-primary-custom btn-sm">
-                <i class="bi bi-box-arrow-up-right"></i> Ir a Pases de turno
-            </a>
-        </div>
+    <?php if (!empty($puedePases)): ?>
+    <div class="brd-tabpane" id="panePase">
+        <?= view('entregas', ['esAdmin' => $esAdmin]) ?>
     </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Publicar -->
@@ -189,6 +186,9 @@ function cambiarTabBorradores(nombre, btn) {
     $(btn).addClass('active');
     $('.brd-tabpane').removeClass('active');
     $('#pane' + nombre.charAt(0).toUpperCase() + nombre.slice(1)).addClass('active');
+    if (nombre === 'pase' && typeof inicializarPases === 'function') {
+        inicializarPases();
+    }
 }
 
 function llenarChecks() {

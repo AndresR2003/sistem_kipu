@@ -1,13 +1,13 @@
 var BASE = BASE_URL + 'entregas/';
 var filtroEstado = '';
 
-function escHtml(texto) {
+function paseEscHtml(texto) {
     return String(texto == null ? '' : texto)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function formatearFecha(fechaHora) {
+function paseFormatoFecha(fechaHora) {
     if (!fechaHora) return '';
     var f = new Date(fechaHora.replace(' ', 'T'));
     if (isNaN(f)) return fechaHora;
@@ -25,12 +25,19 @@ function toastExito(mensaje) {
 
 // ─── Carga inicial ───
 
-$(document).ready(function () {
+function inicializarPases() {
+    if (!$('#listaPases').length) return;
     $('#paseFecha').val(new Date().toISOString().slice(0, 10));
     cargarPases();
     cargarAreas();
     cargarUsuarios();
     cargarTurnosSelects();
+}
+
+$(document).ready(function () {
+    // Si esta dentro de una pestana oculta (Borradores), se inicializa al abrirla.
+    if ($('#panePase').length && !$('#panePase').hasClass('active')) return;
+    inicializarPases();
 });
 
 // ─── Listado de pases ───
@@ -63,13 +70,13 @@ function cargarPases() {
                     '<div class="pase-flecha"><i class="bi bi-arrow-left-right"></i></div>' +
                     '<div class="pase-info">' +
                         '<div class="pase-titulo">' +
-                            (p.titulo ? escHtml(p.titulo) : 'Pase de turno') +
+                            (p.titulo ? paseEscHtml(p.titulo) : 'Pase de turno') +
                             ' <span class="badge-estado ' + p.estado + '">' + (p.estado === 'abierto' ? 'Abierto' : 'Cerrado') + '</span>' +
                         '</div>' +
                         '<div class="pase-meta">' +
-                            '<i class="bi bi-arrow-right"></i> De <b>' + escHtml(p.de_turno) + '</b> a <b>' + escHtml(p.a_turno) + '</b>' +
-                            ' &middot; ' + formatearFecha(p.fecha) +
-                            ' &middot; <i class="bi bi-person-fill"></i> ' + escHtml(p.creador_nombre) +
+                            '<i class="bi bi-arrow-right"></i> De <b>' + paseEscHtml(p.de_turno) + '</b> a <b>' + paseEscHtml(p.a_turno) + '</b>' +
+                            ' &middot; ' + paseFormatoFecha(p.fecha) +
+                            ' &middot; <i class="bi bi-person-fill"></i> ' + paseEscHtml(p.creador_nombre) +
                             (total > 0 ? ' &middot; <span style="color:' + (p.puntos_pendientes > 0 ? '#f59e0b' : '#22c55e') + '">' + p.puntos_pendientes + ' pendiente(s)</span>' : '') +
                         '</div>' +
                     '</div>' +
@@ -90,7 +97,7 @@ function cargarTurnosSelects() {
     $.get(BASE + 'turnos', function (res) {
         var turnos = (res && res.data) || [];
         var opts = turnos.map(function (t) {
-            return '<option value="' + t.id + '">' + escHtml(t.nombre) + '</option>';
+            return '<option value="' + t.id + '">' + paseEscHtml(t.nombre) + '</option>';
         }).join('');
         $('#paseDeTurno').html(opts);
         $('#paseATurno').html(opts);
@@ -170,13 +177,13 @@ function recargarDetalle() {
         var puntos = rPuntos[0].data || [];
 
         $('#detTitulo').html('<i class="bi bi-arrow-right" style="color:var(--primary);"></i> De ' +
-            escHtml(pase.de_turno) + ' a ' + escHtml(pase.a_turno) +
+            paseEscHtml(pase.de_turno) + ' a ' + paseEscHtml(pase.a_turno) +
             ' <span class="badge-estado ' + pase.estado + '">' + (pase.estado === 'abierto' ? 'Abierto' : 'Cerrado') + '</span>');
         $('#detMeta').html(
-            (pase.titulo ? '<b>' + escHtml(pase.titulo) + '</b> &middot; ' : '') +
-            formatearFecha(pase.fecha) +
-            ' &middot; Creado por <i class="bi bi-person-fill"></i> ' + escHtml(pase.creador_nombre) +
-            (pase.cerrado_por ? ' &middot; Cerrado por ' + escHtml(pase.cerrado_por_nombre) + ' (' + formatearFecha(pase.cerrado_at) + ')' : '')
+            (pase.titulo ? '<b>' + paseEscHtml(pase.titulo) + '</b> &middot; ' : '') +
+            paseFormatoFecha(pase.fecha) +
+            ' &middot; Creado por <i class="bi bi-person-fill"></i> ' + paseEscHtml(pase.creador_nombre) +
+            (pase.cerrado_por ? ' &middot; Cerrado por ' + paseEscHtml(pase.cerrado_por_nombre) + ' (' + paseFormatoFecha(pase.cerrado_at) + ')' : '')
         );
 
         renderizarPuntos(puntos, pase.estado);
@@ -209,7 +216,7 @@ function renderizarPuntos(puntos, estadoPase) {
             var items = grupos[area];
             html += '<div class="area-grupo">' +
                 '<div class="area-grupo-head">' +
-                    '<span><i class="bi bi-grid-fill" style="color:var(--primary);"></i> ' + escHtml(area) + '</span>' +
+                    '<span><i class="bi bi-grid-fill" style="color:var(--primary);"></i> ' + paseEscHtml(area) + '</span>' +
                     '<span class="small" style="color:var(--text-muted);font-weight:400;">' + items.length + ' punto(s)</span>' +
                 '</div>';
             items.forEach(function (pp) {
@@ -246,13 +253,13 @@ function renderPunto(pp, estadoPase) {
     }
 
     return '<div class="punto-item ' + pp.estado + '">' +
-        '<div class="punto-texto">' + escHtml(pp.contenido) + '</div>' +
+        '<div class="punto-texto">' + paseEscHtml(pp.contenido) + '</div>' +
         '<div class="punto-meta">' +
             '<span class="badge-punto ' + pp.estado + '">' + etiquetas[pp.estado] + '</span>' +
-            '<span class="autor"><i class="bi bi-person-fill"></i> ' + escHtml(pp.creador_nombre) + '</span>' +
-            '<span>' + formatearFecha(pp.created_at) + '</span>' +
+            '<span class="autor"><i class="bi bi-person-fill"></i> ' + paseEscHtml(pp.creador_nombre) + '</span>' +
+            '<span>' + paseFormatoFecha(pp.created_at) + '</span>' +
             (pp.actualizado_por && pp.actualizado_nombre && pp.created_at !== pp.updated_at
-                ? '<span class="autor"><i class="bi bi-pencil-fill"></i> Editado por ' + escHtml(pp.actualizado_nombre) + ' ' + formatearFecha(pp.updated_at) + '</span>'
+                ? '<span class="autor"><i class="bi bi-pencil-fill"></i> Editado por ' + paseEscHtml(pp.actualizado_nombre) + ' ' + paseFormatoFecha(pp.updated_at) + '</span>'
                 : '') +
         '</div>' +
         '<div class="punto-acciones">' + acciones + '</div>' +
@@ -267,7 +274,7 @@ function cargarAreas() {
         areasCache = (res && res.data) || [];
         var opts = '<option value="">General</option>';
         areasCache.forEach(function (a) {
-            opts += '<option value="' + a.id + '">' + escHtml(a.descripcion) + '</option>';
+            opts += '<option value="' + a.id + '">' + paseEscHtml(a.descripcion) + '</option>';
         });
         $('#puntoArea').html(opts);
         $('#tareaDepartamentos').html(opts.replace('<option value="">General</option>', ''));
@@ -278,7 +285,7 @@ function cargarUsuarios() {
     $.get(BASE + 'usuarios', function (res) {
         usuariosCache = (res && res.data) || [];
         var opts = usuariosCache.map(function (u) {
-            return '<option value="' + u.id + '">' + escHtml(u.nombre) + '</option>';
+            return '<option value="' + u.id + '">' + paseEscHtml(u.nombre) + '</option>';
         }).join('');
         $('#tareaAsignados').html(opts);
     });
@@ -400,9 +407,9 @@ function cargarComentarios(puntoId) {
         if (comentarios.length) {
             comentarios.forEach(function (c) {
                 html += '<div class="comentario-item">' +
-                    '<span class="autor-c"><i class="bi bi-person-fill"></i> ' + escHtml(c.autor_nombre) + '</span>' +
-                    '<span class="fecha-c">' + formatearFecha(c.created_at) + '</span>' +
-                    '<div>' + escHtml(c.comentario) + '</div>' +
+                    '<span class="autor-c"><i class="bi bi-person-fill"></i> ' + paseEscHtml(c.autor_nombre) + '</span>' +
+                    '<span class="fecha-c">' + paseFormatoFecha(c.created_at) + '</span>' +
+                    '<div>' + paseEscHtml(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
                     '<div class="comentario-acciones">' + comLikeButton(c, true) + '</div>' +
                     '</div>';
@@ -676,9 +683,9 @@ function cargarTurnos() {
         turnos.forEach(function (t) {
             html += '<div class="d-flex align-items-center gap-2 py-2" style="border-bottom:1px solid var(--border);">' +
                 '<div style="flex:1;">' +
-                    '<div class="small fw-semibold" style="color:var(--text);">' + escHtml(t.nombre) +
+                    '<div class="small fw-semibold" style="color:var(--text);">' + paseEscHtml(t.nombre) +
                     (t.activo ? '' : ' <span class="badge-estado cerrado">Inactivo</span>') + '</div>' +
-                    (t.descripcion ? '<div class="small text-muted">' + escHtml(t.descripcion) + '</div>' : '') +
+                    (t.descripcion ? '<div class="small text-muted">' + paseEscHtml(t.descripcion) + '</div>' : '') +
                 '</div>' +
                 '<button class="btn-sm-pase blue" onclick="editarTurno(' + t.id + ')"><i class="bi bi-pencil"></i></button>' +
                 '<button class="btn-sm-pase red" onclick="eliminarTurno(' + t.id + ')"><i class="bi bi-trash"></i></button>' +
