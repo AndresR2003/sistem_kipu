@@ -7,6 +7,8 @@
 .btn-sm-icon:hover{background:var(--bg-input);}
 .btn-primary-custom{background:var(--primary);color:#fff;border:none;}
 .btn-primary-custom:hover{background:var(--primary-dark);color:#fff;}
+.btn-outline-custom{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline-custom:hover{background:var(--bg-input);color:var(--text);}
 .badge-pub{font-size:0.6rem;padding:2px 8px;border-radius:8px;margin-left:6px;font-weight:600;}
 .badge-pub.si{background:rgba(34,197,94,0.15);color:#22c55e;}
 .badge-pub.no{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);}
@@ -129,9 +131,28 @@
 
     <!-- TAB PASE DE TURNO -->
     <?php if (!empty($puedePases)): ?>
-    <div class="brd-tabpane" id="panePase">
-        <?= view('entregas', ['esAdmin' => $esAdmin]) ?>
+    <div class="brd-tabpane" id="panePase" style="min-height:240px;">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:240px;padding:28px 20px;text-align:center;">
+            <i class="bi bi-arrow-left-right" style="font-size:2.6rem;color:var(--primary);opacity:0.6;"></i>
+            <h6 class="mb-0" style="font-size:0.95rem;color:var(--text);">Pase de turno</h6>
+            <p class="text-muted small mb-0" style="max-width:400px;">Crea pases de turno y administra el catalogo de turnos desde aqui.</p>
+            <div class="d-flex gap-2 flex-wrap justify-content-center">
+                <?php if ($esAdmin): ?>
+                <button class="btn btn-outline-custom btn-sm" onclick="abrirModalTurnos()">
+                    <i class="bi bi-gear-fill"></i> Administrar turnos
+                </button>
+                <button class="btn btn-primary-custom btn-sm" onclick="abrirModalNuevoPase()">
+                    <i class="bi bi-plus-lg"></i> Nuevo pase de turno
+                </button>
+                <?php endif; ?>
+            </div>
+            <div class="small text-muted">
+                <i class="bi bi-info-circle"></i> El listado y detalle completo sigue en la seccion
+                <a href="<?= site_url('entregas') ?>" style="color:var(--primary);">Pases de turno</a>.
+            </div>
+        </div>
     </div>
+    <?= view('partials/pase_modals') ?>
     <?php endif; ?>
 </div>
 

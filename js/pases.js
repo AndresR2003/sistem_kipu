@@ -26,12 +26,11 @@ function toastExito(mensaje) {
 // ─── Carga inicial ───
 
 function inicializarPases() {
-    if (!$('#listaPases').length) return;
     $('#paseFecha').val(new Date().toISOString().slice(0, 10));
-    cargarPases();
-    cargarAreas();
-    cargarUsuarios();
-    cargarTurnosSelects();
+    if ($('#listaPases').length) cargarPases();
+    if ($('#puntoArea').length) cargarAreas();
+    if ($('#tareaAsignados').length) cargarUsuarios();
+    if ($('#paseDeTurno').length) cargarTurnosSelects();
 }
 
 $(document).ready(function () {
@@ -50,6 +49,7 @@ function cambiarFiltroPase(btn) {
 }
 
 function cargarPases() {
+    if (!$('#listaPases').length) return;
     showLoading();
     $.get(BASE + 'listar', { estado: filtroEstado }, function (res) {
         hideLoading();
