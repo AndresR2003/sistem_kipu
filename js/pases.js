@@ -434,15 +434,7 @@ function comVinculaInputPase(puntoId) {
         preview.empty();
         var files = this.files || [];
         Array.prototype.forEach.call(files, function (file) {
-            var ext = (file.name.split('.').pop() || '').toLowerCase();
-            var esImg = COM_EXT_IMAGEN.indexOf(ext) !== -1;
-            var icono = esImg ? '<img src="' + URL.createObjectURL(file) + '" alt="">' : comIconoArchivo(ext);
-            var muestra = '<div class="com-adjunto-preview">' +
-                icono +
-                '<span>' + escHtml(file.name) + '</span>' +
-                '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
-                '</div>';
-            $(muestra).appendTo(preview);
+            $(comPreviewArchivoHtml(file)).appendTo(preview);
         });
     });
 }

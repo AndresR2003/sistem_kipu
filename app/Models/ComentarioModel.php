@@ -16,20 +16,45 @@ class ComentarioModel extends Model
         'borrador_id', 'entrega_id', 'tarea_id', 'usuario_id', 'comentario', 'archivos',
     ];
 
-    protected $beforeFind = ['decodificarArchivos'];
+    protected $afterFind = ['decodificarArchivos'];
 
     protected function decodificarArchivos(array $data)
     {
-        if (isset($data['data']) && is_array($data['data'])) {
+        if (!array_key_exists('data', $data) || !is_array($data['data'])) {
+            return $data;
+        }
+
+        if (!empty($data['singleton'])) {
+            $data['data'] = $this->normalizarArchivosFila($data['data']);
+        } else {
             foreach ($data['data'] as &$fila) {
-                if (is_array($fila) && !empty($fila['archivos'])) {
-                    $fila['archivos'] = json_decode($fila['archivos'], true) ?: [];
-                } elseif (is_array($fila) && array_key_exists('archivos', $fila)) {
-                    $fila['archivos'] = [];
+                if (is_array($fila)) {
+                    $fila = $this->normalizarArchivosFila($fila);
                 }
             }
+            unset($fila);
         }
+
         return $data;
+    }
+
+    private function normalizarArchivosFila(array $fila): array
+    {
+        if (!array_key_exists('archivos', $fila)) {
+            return $fila;
+        }
+
+        if (empty($fila['archivos'])) {
+            $fila['archivos'] = [];
+            return $fila;
+        }
+
+        if (is_string($fila['archivos'])) {
+            $decodificado = json_decode($fila['archivos'], true);
+            $fila['archivos'] = is_array($decodificado) ? $decodificado : [];
+        }
+
+        return $fila;
     }
 
     public function ObtenerPorBorrador(int $borradorId): array

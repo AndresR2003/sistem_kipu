@@ -61,10 +61,14 @@ function comEscHtml(s) {
 
 // Renderiza los adjuntos de un comentario (array de metadata).
 function comRenderAdjuntos(c) {
-    if (!c.archivos || !c.archivos.length) return '';
+    var archivos = c && c.archivos;
+    if (typeof archivos === 'string') {
+        try { archivos = JSON.parse(archivos); } catch (e) { archivos = []; }
+    }
+    if (!Array.isArray(archivos) || !archivos.length) return '';
     var html = '<div class="com-adjuntos">';
-    c.archivos.forEach(function (a) {
-        var ext = (a.extension || a.nombre.split('.').pop() || '').toLowerCase();
+    archivos.forEach(function (a) {
+        var ext = (a.extension || (a.nombre || '').split('.').pop() || '').toLowerCase();
         html += comHtmlAdjunto(a, ext);
     });
     html += '</div>';
@@ -115,6 +119,29 @@ function comAbrirImagen(url, nombre) {
         showCloseButton: true,
         customClass: { image: 'com-lightbox-img' }
     });
+}
+
+// HTML de previsualizacion de un archivo elegido en el input (aun sin subir).
+function comPreviewArchivoHtml(file) {
+    var ext = (file.name.split('.').pop() || '').toLowerCase();
+    var nombre = comEscHtml(file.name);
+    var icono;
+    if (COM_EXT_IMAGEN.indexOf(ext) !== -1) {
+        var nombreJs = nombre.replace(/(['"\\])/g, '\\$1');
+        icono = '<img src="' + URL.createObjectURL(file) + '" alt="' + nombre + '" title="Ver imagen" ' +
+            'onclick="comAbrirImagen(this.src, \'' + nombreJs + '\')">';
+    } else {
+        icono = comIconoArchivo(ext);
+    }
+    return '<div class="com-adjunto-preview">' + icono +
+        '<span>' + nombre + '</span>' +
+        '<i class="bi bi-x-circle" onclick="comQuitarArchivo(this)"></i>' +
+        '</div>';
+}
+
+// Quita una previsualizacion de la cola de adjuntos aun sin enviar.
+function comQuitarArchivo(icono) {
+    $(icono).closest('.com-adjunto-preview').remove();
 }
 
 // Convierte un archivo del input en metadata (sin subir, solo preview).
