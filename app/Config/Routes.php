@@ -37,6 +37,14 @@ $routes->post('save_fcm_token', 'GeoApiControlller::api_registrar_token_fcm3');
 $routes->post('send_notification', 'GeoApiControlller::enviar_notificacion_fcm_v1');
 $routes->post('actualizar_datos_personales', 'GeoApiControlller::update_datos_personales');
 
+// Chat (app móvil) - JWT
+$routes->get('chat_usuarios', 'GeoApiControlller::chat_usuarios');
+$routes->get('chat_conversaciones', 'GeoApiControlller::chat_conversaciones');
+$routes->get('chat_listar', 'GeoApiControlller::chat_listar');
+$routes->post('chat_marcar_leidos', 'GeoApiControlller::chat_marcar_leidos');
+$routes->post('chat_enviar', 'GeoApiControlller::chat_enviar');
+$routes->get('chat_archivo/(:num)', 'GeoApiControlller::chat_archivo/$1');
+
 
 
 

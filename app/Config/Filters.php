@@ -81,6 +81,8 @@ class Filters extends BaseFilters
                     'save_fcm_token',
                     'send_notification',
                     'actualizar_datos_personales',
+                    'chat_enviar',
+                    'chat_marcar_leidos',
                 ],
             ],
         ],
