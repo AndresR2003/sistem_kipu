@@ -1,4 +1,4 @@
-﻿<style>
+<style>
 /* Iconify: tamaño hereda font-size, color hereda parent */
 iconify-icon{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;}
 /* Animaciones al hover */
@@ -108,16 +108,16 @@ iconify-icon{vertical-align:-0.125em;}
     <div id="paseListView">
         <div class="ent-header">
             <div>
-                <h5 class="mb-0" style="font-size:1rem;"><iconify-icon icon="mdi:swap-horizontal-bold" width="1em" height="1em" style="color:var(--primary);" class="ani-mover"></iconify-icon> Pases de turno</h5>
-                <div class="ent-sub"><iconify-icon icon="mdi:shield-lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Transmite la informacion y pendientes al siguiente turno</div>
+                <h5 class="mb-0" style="font-size:1rem;"><i class="bi bi-arrow-left-right ani-mover"></i> Pases de turno</h5>
+                <div class="ent-sub"><i class="bi bi-shield-lock ani-latido"></i> Transmite la informacion y pendientes al siguiente turno</div>
             </div>
             <div class="d-flex gap-2">
                 <?php if ($esAdmin): ?>
                 <button class="btn btn-outline-custom btn-sm" onclick="abrirModalTurnos()">
-                    <iconify-icon icon="mdi:cog" width="1em" height="1em" class="ani-girar"></iconify-icon> Turnos
+                    <i class="bi bi-gear ani-girar"></i> Turnos
                 </button>
                 <button class="btn btn-primary-custom btn-sm" onclick="abrirModalNuevoPase()">
-                    <iconify-icon icon="mdi:plus" width="1em" height="1em" class="ani-girar"></iconify-icon> Nuevo pase de turno
+                    <i class="bi bi-plus-lg ani-girar"></i> Nuevo pase de turno
                 </button>
                 <?php endif; ?>
             </div>
@@ -126,11 +126,11 @@ iconify-icon{vertical-align:-0.125em;}
         <div class="pase-filtros">
             <div class="btn-chips" id="paseFiltros">
                 <button class="chip-filtro active" data-estado="" onclick="cambiarFiltroPase(this)">Todos</button>
-                <button class="chip-filtro" data-estado="abierto" onclick="cambiarFiltroPase(this)"><iconify-icon icon="mdi:lock-open-variant" width="1em" height="1em" class="ani-latido"></iconify-icon> Abiertos</button>
-                <button class="chip-filtro" data-estado="cerrado" onclick="cambiarFiltroPase(this)"><iconify-icon icon="mdi:lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Cerrados</button>
+                <button class="chip-filtro" data-estado="abierto" onclick="cambiarFiltroPase(this)"><i class="bi bi-unlock ani-latido"></i> Abiertos</button>
+                <button class="chip-filtro" data-estado="cerrado" onclick="cambiarFiltroPase(this)"><i class="bi bi-lock ani-latido"></i> Cerrados</button>
             </div>
             <div class="ms-auto">
-                <button class="btn btn-outline-custom btn-sm" onclick="cargarPases()"><iconify-icon icon="mdi:refresh" width="1em" height="1em" class="ani-girar"></iconify-icon></button>
+                <button class="btn btn-outline-custom btn-sm" onclick="cargarPases()"><i class="bi bi-arrow-clockwise ani-girar"></i></button>
             </div>
         </div>
 
@@ -141,16 +141,16 @@ iconify-icon{vertical-align:-0.125em;}
     <div id="paseDetailView" style="display:none;">
         <div class="pase-detalle-head">
             <div>
-                <button class="btn btn-outline-custom btn-sm mb-2" onclick="volverALista()"><iconify-icon icon="mdi:arrow-left" width="1em" height="1em" class="ani-mover"></iconify-icon> Volver</button>
+                <button class="btn btn-outline-custom btn-sm mb-2" onclick="volverALista()"><i class="bi bi-arrow-left ani-mover"></i> Volver</button>
                 <div class="tit" id="detTitulo"></div>
                 <div class="sub" id="detMeta"></div>
             </div>
             <div class="d-flex gap-2" id="detAcciones">
-                <button class="btn btn-sm btn-outline-secondary" onclick="recargarDetalle()"><iconify-icon icon="mdi:refresh" width="1em" height="1em" class="ani-girar"></iconify-icon></button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="recargarDetalle()"><i class="bi bi-arrow-clockwise ani-girar"></i></button>
                 <?php if ($esAdmin): ?>
-                <button class="btn btn-sm btn-outline-secondary" onclick="toggleAccionPase()"><iconify-icon icon="mdi:lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Cerrar / Reabrir</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPase()"><iconify-icon icon="mdi:trash-can-outline" width="1em" height="1em" class="ani-sacudida"></iconify-icon> Eliminar</button>
-                <button class="btn btn-sm btn-primary-custom" onclick="abrirModalPunto(null)"><iconify-icon icon="mdi:plus" width="1em" height="1em" class="ani-girar"></iconify-icon> Añadir punto</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="toggleAccionPase()"><i class="bi bi-lock ani-latido"></i> Cerrar / Reabrir</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPase()"><i class="bi bi-trash ani-sacudida"></i> Eliminar</button>
+                <button class="btn btn-sm btn-primary-custom" onclick="abrirModalPunto(null)"><i class="bi bi-plus-lg ani-girar"></i> Añadir punto</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -165,7 +165,7 @@ iconify-icon{vertical-align:-0.125em;}
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title" id="puntoModalTitulo"><iconify-icon icon="mdi:pin" width="1em" height="1em" style="color:var(--primary);" class="ani-latido"></iconify-icon> Nuevo punto</h6>
+                <h6 class="modal-title" id="puntoModalTitulo"><i class="bi bi-pin ani-latido"></i> Nuevo punto</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -183,7 +183,7 @@ iconify-icon{vertical-align:-0.125em;}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary-custom btn-sm" onclick="guardarPunto()"><iconify-icon icon="mdi:check-bold" width="1em" height="1em" class="ani-latido"></iconify-icon> Guardar</button>
+                <button class="btn btn-primary-custom btn-sm" onclick="guardarPunto()"><i class="bi bi-check-lg ani-latido"></i> Guardar</button>
             </div>
         </div>
     </div>
@@ -194,7 +194,7 @@ iconify-icon{vertical-align:-0.125em;}
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title"><iconify-icon icon="mdi:format-list-checks" width="1em" height="1em" style="color:var(--primary);" class="ani-rotar"></iconify-icon> Convertir punto en tarea</h6>
+                <h6 class="modal-title"><i class="bi bi-list-task ani-rotar"></i> Convertir punto en tarea</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -245,7 +245,7 @@ iconify-icon{vertical-align:-0.125em;}
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary-custom btn-sm" onclick="convertirEnTarea()"><iconify-icon icon="mdi:arrow-right-circle" width="1em" height="1em" class="ani-mover"></iconify-icon> Crear tarea</button>
+                <button class="btn btn-primary-custom btn-sm" onclick="convertirEnTarea()"><i class="bi bi-arrow-right-circle ani-mover"></i> Crear tarea</button>
             </div>
         </div>
     </div>
