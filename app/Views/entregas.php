@@ -19,6 +19,14 @@
 .pase-meta{font-size:0.75rem;color:var(--text-muted);margin-top:2px;}
 .pase-progreso{width:180px;flex-shrink:0;}
 .pase-progreso .barra{height:5px;background:var(--bg-input);border-radius:10px;overflow:hidden;margin-top:4px;}
+/* Modo panel (dentro de Borradores): tarjeta compacta, barra al costado, texto fluido */
+#pasePanelGrid .table-container .pase-card{flex-wrap:wrap;gap:4px 10px;padding:10px 12px;}
+#pasePanelGrid .table-container .pase-flecha{width:34px;height:34px;font-size:1rem;}
+#pasePanelGrid .table-container .pase-info{flex:1 1 0;min-width:0;}
+#pasePanelGrid .table-container .pase-titulo{font-size:0.85rem;line-height:1.3;overflow-wrap:anywhere;}
+#pasePanelGrid .table-container .pase-meta{white-space:normal;overflow-wrap:anywhere;line-height:1.35;}
+#pasePanelGrid .table-container .pase-progreso{width:120px;flex-shrink:0;align-self:center;}
+#pasePanelGrid .table-container .pase-progreso .small{font-size:0.72rem;white-space:nowrap;}
 .pase-progreso .barra > div{height:100%;background:var(--success);border-radius:10px;}
 .badge-estado{font-size:0.6rem;padding:3px 10px;border-radius:14px;font-weight:700;letter-spacing:0.3px;}
 .badge-estado.abierto{background:rgba(34,197,94,0.14);color:#22c55e;}
