@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <?php
 try {
@@ -1199,7 +1199,7 @@ $menuOculto   = $esSuperadmin ? [] : menu_oculto_para();
                 </div>
                 <div class="chat-composer">
                     <div class="chat-attachment-preview" id="chatAttachmentPreview">
-                        <i class="bi bi-paperclip"></i><span id="chatAttachmentName"></span>
+                        <iconify-icon icon="mdi:paperclip" width="1em" height="1em" class="ani-sacudir"></iconify-icon><span id="chatAttachmentName"></span>
                         <button class="chat-attachment-remove" id="chatAttachmentRemove" type="button" aria-label="Quitar archivo"><i class="bi bi-x"></i></button>
                     </div>
                     <div class="chat-emoji-picker" id="chatEmojiPicker" aria-label="Emojis">
@@ -1210,11 +1210,11 @@ $menuOculto   = $esSuperadmin ? [] : menu_oculto_para();
                     <form id="chatForm" enctype="multipart/form-data">
                         <div class="chat-input-row">
                             <button class="chat-tool" id="chatEmojiButton" type="button" title="Agregar emoji" aria-label="Agregar emoji"><i class="bi bi-emoji-smile"></i></button>
-                            <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>
+                            <button class="chat-tool" id="chatFileButton" type="button" title="Adjuntar archivo" aria-label="Adjuntar archivo"><iconify-icon icon="mdi:paperclip" width="1em" height="1em" class="ani-sacudir"></iconify-icon></button>
                             <button class="chat-tool" id="chatRecordButton" type="button" title="Grabar audio" aria-label="Grabar audio"><i class="bi bi-mic-fill"></i></button>
                             <input type="file" id="chatFile" name="archivo" accept="image/*,.pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.mp3,.ogg,.wav,.webm,.m4a,.mp4" hidden>
                             <textarea class="chat-input" id="chatInput" name="mensaje" rows="1" maxlength="2000" placeholder="Escribe un mensaje..."></textarea>
-                            <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><i class="bi bi-send-fill"></i></button>
+                            <button class="chat-send" id="chatSend" type="submit" title="Enviar mensaje" aria-label="Enviar mensaje"><iconify-icon icon="mdi:send" width="1em" height="1em" class="ani-mover"></iconify-icon></button>
                         </div>
                     </form>
                 </div>
@@ -1226,6 +1226,7 @@ $menuOculto   = $esSuperadmin ? [] : menu_oculto_para();
         <div class="spinner-litio"></div>
     </div>
 
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <script src="<?= base_url('assets/js/jquery-3.7.0.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
     <script src="<?= base_url('assets/js/sweetalert2.min.js') ?>"></script>
@@ -1243,6 +1244,28 @@ $menuOculto   = $esSuperadmin ? [] : menu_oculto_para();
         $.ajaxSetup({
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('X-CSRF-TOKEN', CSRF_TOKEN);
+            }
+        });
+
+        // ===== 403 CSRF global: token viejo (sesion renovada en otra pestana / expiro) =====
+        $(document).ajaxError(function (event, xhr, settings) {
+            if (!xhr || xhr.status !== 403) return polygon;
+            if (settings && (settings.url || '').indexOf('csrf') !== -1) return;
+            if (window.__csfrRecargando) return;
+            window.__csfrRecargando = true;
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'La sesi\u00f3n se actualiz\u00f3',
+                    text: 'Tu token de seguridad venci\u00f3 (abriste sesi\u00f3n en otra pesta\u00f1a o expir\u00f3). Vamos a recargar para continuar.',
+                    confirmButtonText: 'Recargar',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then(function () {
+                    window.location.reload();
+                });
+            } else {
+                window.location.reload();
             }
         });
 
