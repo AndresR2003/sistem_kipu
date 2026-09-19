@@ -1,5 +1,8 @@
 var BASE = BASE_URL + 'entregas/';
 var filtroEstado = '';
+var paseModoPanel = false;
+
+var paseDosPaneles = false;
 
 function paseEscHtml(texto) {
     return String(texto == null ? '' : texto)
@@ -26,11 +29,13 @@ function toastExito(mensaje) {
 // ─── Carga inicial ───
 
 function inicializarPases() {
+    paseModoPanel = !!document.getElementById('pasePanelGrid');
     $('#paseFecha').val(new Date().toISOString().slice(0, 10));
     if ($('#listaPases').length) cargarPases();
     if ($('#puntoArea').length) cargarAreas();
     if ($('#tareaAsignados').length) cargarUsuarios();
     if ($('#paseDeTurno').length) cargarTurnosSelects();
+    if ($('#detallesPase').length) cargarTurnos();
 }
 
 $(document).ready(function () {
@@ -153,14 +158,14 @@ function guardarPase() {
 
 function abrirDetalle(id) {
     paseActualId = id;
-    $('#paseListView').hide();
+    if (!paseModoPanel) $('#paseListView').hide();
     $('#paseDetailView').show();
     recargarDetalle();
 }
 
 function volverALista() {
     $('#paseDetailView').hide();
-    $('#paseListView').show();
+    if (!paseModoPanel) $('#paseListView').show();
     paseActualId = null;
     cargarPases();
 }

@@ -25,6 +25,12 @@
 .brd-tabpane{display:none;}
 .brd-tabpane.active{display:block;}
 
+/* Pase de turno: dos paneles como Borradores */
+#pasePanelGrid .table-container{display:grid;grid-template-columns:minmax(300px,340px) 1fr;gap:0;padding:0;overflow:hidden;}
+#pasePanelGrid .table-container #paseListView{grid-column:1;grid-row:1;min-width:0;border-right:1px solid var(--border);overflow-y:auto;}
+#pasePanelGrid .table-container #paseDetailView{grid-column:2;grid-row:1;min-width:0;border-left:1px solid var(--border);overflow-y:auto;}
+#pasePanelGrid .table-container .modal,#pasePanelGrid .table-container .modal-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;}
+
 /* Pase de turno */
 .ent-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:linear-gradient(135deg,rgba(70,105,250,0.09),transparent 60%);}
 .ent-sub{font-size:0.8rem;color:var(--text-muted);margin-top:2px;}
@@ -129,30 +135,13 @@
     </div>
     </div>
 
-    <!-- TAB PASE DE TURNO -->
+    <!-- TAB PASE DE TURNO (dos paneles como Borradores) -->
     <?php if (!empty($puedePases)): ?>
     <div class="brd-tabpane" id="panePase" style="min-height:240px;">
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:240px;padding:28px 20px;text-align:center;">
-            <i class="bi bi-arrow-left-right" style="font-size:2.6rem;color:var(--primary);opacity:0.6;"></i>
-            <h6 class="mb-0" style="font-size:0.95rem;color:var(--text);">Pase de turno</h6>
-            <p class="text-muted small mb-0" style="max-width:400px;">Crea pases de turno y administra el catalogo de turnos desde aqui.</p>
-            <div class="d-flex gap-2 flex-wrap justify-content-center">
-                <?php if ($esAdmin): ?>
-                <button class="btn btn-outline-custom btn-sm" onclick="abrirModalTurnos()">
-                    <i class="bi bi-gear-fill"></i> Administrar turnos
-                </button>
-                <button class="btn btn-primary-custom btn-sm" onclick="abrirModalNuevoPase()">
-                    <i class="bi bi-plus-lg"></i> Nuevo pase de turno
-                </button>
-                <?php endif; ?>
-            </div>
-            <div class="small text-muted">
-                <i class="bi bi-info-circle"></i> El listado y detalle completo sigue en la seccion
-                <a href="<?= site_url('entregas') ?>" style="color:var(--primary);">Pases de turno</a>.
-            </div>
+        <div id="pasePanelGrid">
+            <?= view('entregas', ['esAdmin' => $esAdmin]) ?>
         </div>
     </div>
-    <?= view('partials/pase_modals') ?>
     <?php endif; ?>
 </div>
 
