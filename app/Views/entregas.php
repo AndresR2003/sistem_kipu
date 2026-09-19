@@ -1,4 +1,33 @@
-<style>
+﻿<style>
+/* Iconify: tamaño hereda font-size, color hereda parent */
+iconify-icon{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;}
+/* Animaciones al hover */
+.ani-girar{transition:transform 0.35s ease;display:inline-block;}
+.ani-girar:hover{transform:rotate(180deg);}
+.ani-mover{transition:transform 0.3s ease;display:inline-block;}
+.ani-mover:hover{transform:translateX(3px);}
+.ani-latido{transition:transform 0.25s ease;display:inline-block;}
+.ani-latido:hover{animation:latido 0.6s ease;}
+@keyframes latido{0%,100%{transform:scale(1);}30%{transform:scale(1.2);}50%{transform:scale(1);}70%{transform:scale(1.15);}}
+.ani-sacudida{transition:transform 0.25s ease;display:inline-block;}
+.ani-sacudida:hover{animation:sacudida 0.4s ease;}
+@keyframes sacudida{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}50%{transform:translateX(3px);}75%{transform:translateX(-2px);}}
+.ani-flotar{transition:transform 0.3s ease;display:inline-block;}
+.ani-flotar:hover{animation:flotar 0.5s ease;}
+@keyframes flotar{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+/* Iconify: animaciones al pasar el mouse */
+.ani-giro{transition:transform 0.35s ease;display:inline-flex;}
+.ani-giro:hover{transform:rotate(180deg);}
+.ani-mover{transition:transform 0.25s ease;display:inline-flex;}
+.ani-mover:hover{transform:translateX(3px);}
+.ani-flotar{transition:transform 0.3s ease;display:inline-flex;}
+.ani-flotar:hover{transform:translateY(-2px);}
+.ani-pulso{transition:none;display:inline-flex;}
+.ani-pulso:hover{animation:aniPulso 0.5s ease;}
+@keyframes aniPulso{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.ani-girar-hover{transition:transform 0.4s ease;display:inline-flex;}
+.ani-girar-hover:hover{transform:rotate(45deg);}
+iconify-icon{vertical-align:-0.125em;}
 .ent-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:linear-gradient(135deg,rgba(70,105,250,0.09),transparent 60%);}
 .ent-sub{font-size:0.8rem;color:var(--text-muted);margin-top:2px;}
 .btn-primary-custom{background:var(--primary);color:#fff;border:none;}
@@ -79,16 +108,16 @@
     <div id="paseListView">
         <div class="ent-header">
             <div>
-                <h5 class="mb-0" style="font-size:1rem;"><i class="bi bi-arrow-left-right" style="color:var(--primary);"></i> Pases de turno</h5>
-                <div class="ent-sub"><i class="bi bi-shield-lock-fill"></i> Transmite la informacion y pendientes al siguiente turno</div>
+                <h5 class="mb-0" style="font-size:1rem;"><iconify-icon icon="mdi:swap-horizontal-bold" width="1em" height="1em" style="color:var(--primary);" class="ani-mover"></iconify-icon> Pases de turno</h5>
+                <div class="ent-sub"><iconify-icon icon="mdi:shield-lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Transmite la informacion y pendientes al siguiente turno</div>
             </div>
             <div class="d-flex gap-2">
                 <?php if ($esAdmin): ?>
                 <button class="btn btn-outline-custom btn-sm" onclick="abrirModalTurnos()">
-                    <i class="bi bi-gear-fill"></i> Turnos
+                    <iconify-icon icon="mdi:cog" width="1em" height="1em" class="ani-girar"></iconify-icon> Turnos
                 </button>
                 <button class="btn btn-primary-custom btn-sm" onclick="abrirModalNuevoPase()">
-                    <i class="bi bi-plus-lg"></i> Nuevo pase de turno
+                    <iconify-icon icon="mdi:plus" width="1em" height="1em" class="ani-girar"></iconify-icon> Nuevo pase de turno
                 </button>
                 <?php endif; ?>
             </div>
@@ -97,11 +126,11 @@
         <div class="pase-filtros">
             <div class="btn-chips" id="paseFiltros">
                 <button class="chip-filtro active" data-estado="" onclick="cambiarFiltroPase(this)">Todos</button>
-                <button class="chip-filtro" data-estado="abierto" onclick="cambiarFiltroPase(this)"><i class="bi bi-unlock"></i> Abiertos</button>
-                <button class="chip-filtro" data-estado="cerrado" onclick="cambiarFiltroPase(this)"><i class="bi bi-lock"></i> Cerrados</button>
+                <button class="chip-filtro" data-estado="abierto" onclick="cambiarFiltroPase(this)"><iconify-icon icon="mdi:lock-open-variant" width="1em" height="1em" class="ani-latido"></iconify-icon> Abiertos</button>
+                <button class="chip-filtro" data-estado="cerrado" onclick="cambiarFiltroPase(this)"><iconify-icon icon="mdi:lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Cerrados</button>
             </div>
             <div class="ms-auto">
-                <button class="btn btn-outline-custom btn-sm" onclick="cargarPases()"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="btn btn-outline-custom btn-sm" onclick="cargarPases()"><iconify-icon icon="mdi:refresh" width="1em" height="1em" class="ani-girar"></iconify-icon></button>
             </div>
         </div>
 
@@ -112,16 +141,16 @@
     <div id="paseDetailView" style="display:none;">
         <div class="pase-detalle-head">
             <div>
-                <button class="btn btn-outline-custom btn-sm mb-2" onclick="volverALista()"><i class="bi bi-arrow-left"></i> Volver</button>
+                <button class="btn btn-outline-custom btn-sm mb-2" onclick="volverALista()"><iconify-icon icon="mdi:arrow-left" width="1em" height="1em" class="ani-mover"></iconify-icon> Volver</button>
                 <div class="tit" id="detTitulo"></div>
                 <div class="sub" id="detMeta"></div>
             </div>
             <div class="d-flex gap-2" id="detAcciones">
-                <button class="btn btn-sm btn-outline-secondary" onclick="recargarDetalle()"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="recargarDetalle()"><iconify-icon icon="mdi:refresh" width="1em" height="1em" class="ani-girar"></iconify-icon></button>
                 <?php if ($esAdmin): ?>
-                <button class="btn btn-sm btn-outline-secondary" onclick="toggleAccionPase()"><i class="bi bi-lock-fill"></i> Cerrar / Reabrir</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPase()"><i class="bi bi-trash"></i> Eliminar</button>
-                <button class="btn btn-sm btn-primary-custom" onclick="abrirModalPunto(null)"><i class="bi bi-plus-lg"></i> Añadir punto</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="toggleAccionPase()"><iconify-icon icon="mdi:lock" width="1em" height="1em" class="ani-latido"></iconify-icon> Cerrar / Reabrir</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPase()"><iconify-icon icon="mdi:trash-can-outline" width="1em" height="1em" class="ani-sacudida"></iconify-icon> Eliminar</button>
+                <button class="btn btn-sm btn-primary-custom" onclick="abrirModalPunto(null)"><iconify-icon icon="mdi:plus" width="1em" height="1em" class="ani-girar"></iconify-icon> Añadir punto</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -136,7 +165,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title" id="puntoModalTitulo"><i class="bi bi-pin-fill" style="color:var(--primary);"></i> Nuevo punto</h6>
+                <h6 class="modal-title" id="puntoModalTitulo"><iconify-icon icon="mdi:pin" width="1em" height="1em" style="color:var(--primary);" class="ani-latido"></iconify-icon> Nuevo punto</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -154,7 +183,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary-custom btn-sm" onclick="guardarPunto()"><i class="bi bi-check-lg"></i> Guardar</button>
+                <button class="btn btn-primary-custom btn-sm" onclick="guardarPunto()"><iconify-icon icon="mdi:check-bold" width="1em" height="1em" class="ani-latido"></iconify-icon> Guardar</button>
             </div>
         </div>
     </div>
@@ -165,7 +194,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title"><i class="bi bi-list-task" style="color:var(--primary);"></i> Convertir punto en tarea</h6>
+                <h6 class="modal-title"><iconify-icon icon="mdi:format-list-checks" width="1em" height="1em" style="color:var(--primary);" class="ani-rotar"></iconify-icon> Convertir punto en tarea</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -216,7 +245,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                <button class="btn btn-primary-custom btn-sm" onclick="convertirEnTarea()"><i class="bi bi-arrow-right-circle-fill"></i> Crear tarea</button>
+                <button class="btn btn-primary-custom btn-sm" onclick="convertirEnTarea()"><iconify-icon icon="mdi:arrow-right-circle" width="1em" height="1em" class="ani-mover"></iconify-icon> Crear tarea</button>
             </div>
         </div>
     </div>

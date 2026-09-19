@@ -1,4 +1,4 @@
-var BASE = BASE_URL + 'entregas/';
+﻿var BASE = BASE_URL + 'entregas/';
 var filtroEstado = '';
 var paseModoPanel = false;
 
@@ -62,7 +62,7 @@ function cargarPases() {
         var html = '';
         if (!datos.length) {
             html = '<div class="tabla-vacia">' +
-                '<i class="bi bi-arrow-left-right"></i>' +
+                '<iconify-icon icon="mdi:swap-horizontal-bold" width="1em" height="1em" class="ani-mover"></iconify-icon>' +
                 '<p>No hay pases de turno' + (filtroEstado ? ' ' + filtroEstado + 's' : '') + '.</p>' +
                 (esAdmin ? '<p class="small"><a href="#" onclick="abrirModalNuevoPase();return false;">Crear el primero</a></p>' : '') +
                 '</div>';
@@ -72,16 +72,16 @@ function cargarPases() {
                 var avanzados = parseInt(p.puntos_avanzados || 0);
                 var pct = total > 0 ? Math.round((avanzados / total) * 100) : 0;
                 html += '<div class="pase-card" onclick="abrirDetalle(' + p.id + ')">' +
-                    '<div class="pase-flecha"><i class="bi bi-arrow-left-right"></i></div>' +
+                    '<div class="pase-flecha"><iconify-icon icon="mdi:swap-horizontal-bold" width="1em" height="1em" class="ani-mover"></iconify-icon></div>' +
                     '<div class="pase-info">' +
                         '<div class="pase-titulo">' +
                             (p.titulo ? paseEscHtml(p.titulo) : 'Pase de turno') +
                             ' <span class="badge-estado ' + p.estado + '">' + (p.estado === 'abierto' ? 'Abierto' : 'Cerrado') + '</span>' +
                         '</div>' +
                         '<div class="pase-meta">' +
-                            '<i class="bi bi-arrow-right"></i> De <b>' + paseEscHtml(p.de_turno) + '</b> a <b>' + paseEscHtml(p.a_turno) + '</b>' +
+                            '<iconify-icon icon="mdi:arrow-right" width="1em" height="1em" class="ani-mover"></iconify-icon> De <b>' + paseEscHtml(p.de_turno) + '</b> a <b>' + paseEscHtml(p.a_turno) + '</b>' +
                             ' &middot; ' + paseFormatoFecha(p.fecha) +
-                            ' &middot; <i class="bi bi-person-fill"></i> ' + paseEscHtml(p.creador_nombre) +
+                            ' &middot; <iconify-icon icon="mdi:account-circle" width="1em" height="1em"></iconify-icon> ' + paseEscHtml(p.creador_nombre) +
                             (total > 0 ? ' &middot; <span style="color:' + (p.puntos_pendientes > 0 ? '#f59e0b' : '#22c55e') + '">' + p.puntos_pendientes + ' pendiente(s)</span>' : '') +
                         '</div>' +
                     '</div>' +
@@ -181,13 +181,13 @@ function recargarDetalle() {
         var pase = rPase[0].data;
         var puntos = rPuntos[0].data || [];
 
-        $('#detTitulo').html('<i class="bi bi-arrow-right" style="color:var(--primary);"></i> De ' +
+        $('#detTitulo').html('<iconify-icon icon="mdi:arrow-right-bold" width="1em" height="1em" style="color:var(--primary);" class="ani-mover"></iconify-icon> De ' +
             paseEscHtml(pase.de_turno) + ' a ' + paseEscHtml(pase.a_turno) +
             ' <span class="badge-estado ' + pase.estado + '">' + (pase.estado === 'abierto' ? 'Abierto' : 'Cerrado') + '</span>');
         $('#detMeta').html(
             (pase.titulo ? '<b>' + paseEscHtml(pase.titulo) + '</b> &middot; ' : '') +
             paseFormatoFecha(pase.fecha) +
-            ' &middot; Creado por <i class="bi bi-person-fill"></i> ' + paseEscHtml(pase.creador_nombre) +
+            ' &middot; Creado por <iconify-icon icon="mdi:account-circle" width="1em" height="1em"></iconify-icon> ' + paseEscHtml(pase.creador_nombre) +
             (pase.cerrado_por ? ' &middot; Cerrado por ' + paseEscHtml(pase.cerrado_por_nombre) + ' (' + paseFormatoFecha(pase.cerrado_at) + ')' : '')
         );
 
@@ -212,7 +212,7 @@ function renderizarPuntos(puntos, estadoPase) {
 
     if (!puntos.length) {
         html = '<div class="tabla-vacia">' +
-            '<i class="bi bi-pin-angle"></i>' +
+            '<iconify-icon icon="mdi:pin" width="1em" height="1em"></iconify-icon>' +
             '<p>Este pase aun no tiene puntos. Añade informacion o pendientes para el siguiente turno.</p>' +
             (esAdmin ? '<p class="small"><a href="#" onclick="abrirModalPunto(null);return false;">Añadir el primer punto</a></p>' : '') +
             '</div>';
@@ -221,7 +221,7 @@ function renderizarPuntos(puntos, estadoPase) {
             var items = grupos[area];
             html += '<div class="area-grupo">' +
                 '<div class="area-grupo-head">' +
-                    '<span><i class="bi bi-grid-fill" style="color:var(--primary);"></i> ' + paseEscHtml(area) + '</span>' +
+                    '<span><iconify-icon icon="mdi:view-grid-outline" width="1em" height="1em" style="color:var(--primary);" class="ani-latido"></iconify-icon> ' + paseEscHtml(area) + '</span>' +
                     '<span class="small" style="color:var(--text-muted);font-weight:400;">' + items.length + ' punto(s)</span>' +
                 '</div>';
             items.forEach(function (pp) {
@@ -238,33 +238,33 @@ function renderPunto(pp, estadoPase) {
     var etiquetas = { pendiente: 'Pendiente', revisado: 'Revisado', completado: 'Completado' };
     var acciones = '';
     if (esAdmin) {
-        acciones += '<button class="btn-sm-pase" onclick="editarPunto(' + pp.id + ')"><i class="bi bi-pencil"></i> Editar</button>';
+        acciones += '<button class="btn-sm-pase" onclick="editarPunto(' + pp.id + ')"><iconify-icon icon="mdi:pencil" width="1em" height="1em" class="ani-sacudida"></iconify-icon> Editar</button>';
     }
-    acciones += '<button class="btn-sm-pase cyan" onclick="cambiarEstadoPunto(' + pp.id + ', \'revisado\')"><i class="bi bi-eye"></i> Revisado</button>';
-    acciones += '<button class="btn-sm-pase green" onclick="cambiarEstadoPunto(' + pp.id + ', \'completado\')"><i class="bi bi-check-lg"></i> Completado</button>';
-    acciones += '<button class="btn-sm-pase amber" onclick="cambiarEstadoPunto(' + pp.id + ', \'pendiente\')"><i class="bi bi-arrow-counterclockwise"></i> Pendiente</button>';
+    acciones += '<button class="btn-sm-pase cyan" onclick="cambiarEstadoPunto(' + pp.id + ', \'revisado\')"><iconify-icon icon="mdi:eye-outline" width="1em" height="1em" class="ani-latido"></iconify-icon> Revisado</button>';
+    acciones += '<button class="btn-sm-pase green" onclick="cambiarEstadoPunto(' + pp.id + ', \'completado\')"><iconify-icon icon="mdi:check-bold" width="1em" height="1em" class="ani-latido"></iconify-icon> Completado</button>';
+    acciones += '<button class="btn-sm-pase amber" onclick="cambiarEstadoPunto(' + pp.id + ', \'pendiente\')"><iconify-icon icon="mdi:undo" width="1em" height="1em" class="ani-girar"></iconify-icon> Pendiente</button>';
     if (esAdmin && !pp.tarea_id) {
-        acciones += '<button class="btn-sm-pase blue" onclick="abrirModalTarea(' + pp.id + ')"><i class="bi bi-list-task"></i> Convertir en tarea</button>';
+        acciones += '<button class="btn-sm-pase blue" onclick="abrirModalTarea(' + pp.id + ')"><iconify-icon icon="mdi:format-list-checks" width="1em" height="1em" class="ani-mover"></iconify-icon> Convertir en tarea</button>';
     }
     if (pp.tarea_id) {
-        acciones += '<a class="vinculo-tarea" href="' + BASE_URL + 'tareas" target="_blank"><i class="bi bi-list-task"></i> Tarea vinculada</a>';
+        acciones += '<a class="vinculo-tarea" href="' + BASE_URL + 'tareas" target="_blank"><iconify-icon icon="mdi:format-list-checks" width="1em" height="1em" class="ani-mover"></iconify-icon> Tarea vinculada</a>';
         if (esAdmin) {
-            acciones += '<button class="btn-sm-pase red" onclick="desvincularTarea(' + pp.id + ')"><i class="bi bi-unlink"></i></button>';
+            acciones += '<button class="btn-sm-pase red" onclick="desvincularTarea(' + pp.id + ')"><iconify-icon icon="mdi:link-off" width="1em" height="1em" class="ani-sacudida"></iconify-icon></button>';
         }
     }
-    acciones += '<button class="btn-sm-pase" onclick="toggleComentarios(' + pp.id + ', this)"><i class="bi bi-chat-dots"></i> Comentarios</button>';
+    acciones += '<button class="btn-sm-pase" onclick="toggleComentarios(' + pp.id + ', this)"><iconify-icon icon="mdi:message-processing-outline" width="1em" height="1em" class="ani-latido"></iconify-icon> Comentarios</button>';
     if (esAdmin || pp.creado_por == USUARIO_ID) {
-        acciones += '<button class="btn-sm-pase red" onclick="eliminarPunto(' + pp.id + ')"><i class="bi bi-trash"></i></button>';
+        acciones += '<button class="btn-sm-pase red" onclick="eliminarPunto(' + pp.id + ')"><iconify-icon icon="mdi:trash-can-outline" width="1em" height="1em" class="ani-sacudida"></iconify-icon></button>';
     }
 
     return '<div class="punto-item ' + pp.estado + '">' +
         '<div class="punto-texto">' + paseEscHtml(pp.contenido) + '</div>' +
         '<div class="punto-meta">' +
             '<span class="badge-punto ' + pp.estado + '">' + etiquetas[pp.estado] + '</span>' +
-            '<span class="autor"><i class="bi bi-person-fill"></i> ' + paseEscHtml(pp.creador_nombre) + '</span>' +
+            '<span class="autor"><iconify-icon icon="mdi:account-circle" width="1em" height="1em"></iconify-icon> ' + paseEscHtml(pp.creador_nombre) + '</span>' +
             '<span>' + paseFormatoFecha(pp.created_at) + '</span>' +
             (pp.actualizado_por && pp.actualizado_nombre && pp.created_at !== pp.updated_at
-                ? '<span class="autor"><i class="bi bi-pencil-fill"></i> Editado por ' + paseEscHtml(pp.actualizado_nombre) + ' ' + paseFormatoFecha(pp.updated_at) + '</span>'
+                ? '<span class="autor"><iconify-icon icon="mdi:pencil" width="1em" height="1em" class="ani-sacudida"></iconify-icon> Editado por ' + paseEscHtml(pp.actualizado_nombre) + ' ' + paseFormatoFecha(pp.updated_at) + '</span>'
                 : '') +
         '</div>' +
         '<div class="punto-acciones">' + acciones + '</div>' +
@@ -300,9 +300,9 @@ function abrirModalPunto(id) {
     $('#puntoId').val(id || '');
     $('#puntoContenido').val('');
     if (id) {
-        $('#puntoModalTitulo').html('<i class="bi bi-pencil-fill" style="color:var(--primary);"></i> Editar punto');
+        $('#puntoModalTitulo').html('<iconify-icon icon="mdi:pencil" width="1em" height="1em" style="color:var(--primary);" class="ani-sacudida"></iconify-icon> Editar punto');
     } else {
-        $('#puntoModalTitulo').html('<i class="bi bi-pin-fill" style="color:var(--primary);"></i> Nuevo punto');
+        $('#puntoModalTitulo').html('<iconify-icon icon="mdi:pin" width="1em" height="1em" style="color:var(--primary);" class="ani-latido"></iconify-icon> Nuevo punto');
     }
     new bootstrap.Modal(document.getElementById('modalPunto')).show();
 }
@@ -412,7 +412,7 @@ function cargarComentarios(puntoId) {
         if (comentarios.length) {
             comentarios.forEach(function (c) {
                 html += '<div class="comentario-item">' +
-                    '<span class="autor-c"><i class="bi bi-person-fill"></i> ' + paseEscHtml(c.autor_nombre) + '</span>' +
+                    '<span class="autor-c"><iconify-icon icon="mdi:account-circle" width="1em" height="1em"></iconify-icon> ' + paseEscHtml(c.autor_nombre) + '</span>' +
                     '<span class="fecha-c">' + paseFormatoFecha(c.created_at) + '</span>' +
                     '<div>' + paseEscHtml(c.comentario) + '</div>' +
                     comRenderAdjuntos(c) +
@@ -423,10 +423,10 @@ function cargarComentarios(puntoId) {
             html = '<div class="small text-muted">Sin comentarios todavia.</div>';
         }
         html += '<div class="comentario-input">' +
-            '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorPase(' + puntoId + ')" title="Adjuntar archivo"><i class="bi bi-paperclip"></i></button>' +
+            '<button type="button" class="com-adjuntar-btn" onclick="comAbrirSelectorPase(' + puntoId + ')" title="Adjuntar archivo"><iconify-icon icon="mdi:paperclip" width="1em" height="1em" class="ani-sacudir"></iconify-icon></button>' +
             '<input type="text" class="form-control form-control-sm" id="comentarioInput-' + puntoId + '" placeholder="Escribe un comentario...">' +
             '<input type="file" class="com-input-adjunto" id="comAdjuntoInput-' + puntoId + '" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv">' +
-            '<button class="btn btn-primary-custom btn-sm" onclick="guardarComentario(' + puntoId + ')"><i class="bi bi-send-fill"></i></button>' +
+            '<button class="btn btn-primary-custom btn-sm" onclick="guardarComentario(' + puntoId + ')"><iconify-icon icon="mdi:send" width="1em" height="1em" class="ani-mover"></iconify-icon></button>' +
             '</div>' +
             '<div class="com-adjuntos-form" id="comPreview-' + puntoId + '"></div>';
         $('#comentarios-' + puntoId).html(html);
@@ -692,8 +692,8 @@ function cargarTurnos() {
                     (t.activo ? '' : ' <span class="badge-estado cerrado">Inactivo</span>') + '</div>' +
                     (t.descripcion ? '<div class="small text-muted">' + paseEscHtml(t.descripcion) + '</div>' : '') +
                 '</div>' +
-                '<button class="btn-sm-pase blue" onclick="editarTurno(' + t.id + ')"><i class="bi bi-pencil"></i></button>' +
-                '<button class="btn-sm-pase red" onclick="eliminarTurno(' + t.id + ')"><i class="bi bi-trash"></i></button>' +
+                '<button class="btn-sm-pase blue" onclick="editarTurno(' + t.id + ')"><iconify-icon icon="mdi:pencil" width="1em" height="1em" class="ani-sacudida"></iconify-icon></button>' +
+                '<button class="btn-sm-pase red" onclick="eliminarTurno(' + t.id + ')"><iconify-icon icon="mdi:trash-can-outline" width="1em" height="1em" class="ani-sacudida"></iconify-icon></button>' +
             '</div>';
         });
         $('#listaTurnos').html(html);
