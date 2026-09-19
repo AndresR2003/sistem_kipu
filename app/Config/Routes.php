@@ -16,6 +16,36 @@ $routes->get('logout', 'Login::logout');
 // =====================================================
 $routes->get('/', 'Landing::index');
 
+
+
+// *************************************
+// *************************************
+// *************************************
+// *************************************
+// APi
+// *************************************
+// *************************************
+// *************************************
+// *************************************
+
+//iniciar session - gestor campo
+$routes->get('obtener_data_usuario', 'GeoApiControlller::get_data_usuario'); //✅
+$routes->get('obtener_gestores_campo', 'GeoApiControlller::get_gestores_campo'); //✅
+
+$routes->post('iniciar_session', 'GeoApiControlller::login');
+$routes->post('save_fcm_token', 'GeoApiControlller::api_registrar_token_fcm3');
+$routes->post('send_notification', 'GeoApiControlller::enviar_notificacion_fcm_v1');
+$routes->post('actualizar_datos_personales', 'GeoApiControlller::update_datos_personales');
+
+
+
+
+
+
+
+
+
+
 // =====================================================
 // RUTAS PROTEGIDAS (requieren autenticacion)
 // =====================================================

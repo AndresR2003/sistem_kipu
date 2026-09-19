@@ -73,7 +73,16 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            'csrf',
+            'csrf' => [
+                'except' => [
+                    'iniciar_session',
+                    'obtener_data_usuario',
+                    'obtener_gestores_campo',
+                    'save_fcm_token',
+                    'send_notification',
+                    'actualizar_datos_personales',
+                ],
+            ],
         ],
         'after' => [
             // 'honeypot',
