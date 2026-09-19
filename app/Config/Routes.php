@@ -45,6 +45,63 @@ $routes->post('chat_marcar_leidos', 'GeoApiControlller::chat_marcar_leidos');
 $routes->post('chat_enviar', 'GeoApiControlller::chat_enviar');
 $routes->get('chat_archivo/(:num)', 'GeoApiControlller::chat_archivo/$1');
 
+// Recordatorio / Marcadores (app móvil) - JWT
+$routes->get('recordatorio_listar', 'AppApiController::recordatorio_listar');
+$routes->get('recordatorio_obtener/(:num)', 'AppApiController::recordatorio_obtener/$1');
+$routes->post('recordatorio_guardar', 'AppApiController::recordatorio_guardar');
+$routes->post('recordatorio_eliminar/(:num)', 'AppApiController::recordatorio_eliminar/$1');
+$routes->post('recordatorio_completar/(:num)', 'AppApiController::recordatorio_completar/$1');
+$routes->get('marcadores_listar', 'AppApiController::marcadores_listar');
+$routes->post('marcadores_eliminar/(:num)', 'AppApiController::marcadores_eliminar/$1');
+
+// Borradores (app móvil) - JWT
+$routes->get('borradores_listar', 'AppApiController::borradores_listar');
+$routes->get('borradores_obtener/(:num)', 'AppApiController::borradores_obtener/$1');
+$routes->post('borradores_guardar', 'AppApiController::borradores_guardar');
+$routes->post('borradores_eliminar/(:num)', 'AppApiController::borradores_eliminar/$1');
+$routes->post('borradores_publicar', 'AppApiController::borradores_publicar');
+
+// Publicaciones: Noticias / Ideas / Manual (app móvil) - JWT
+$routes->get('publicaciones_listar/(:segment)', 'AppApiController::publicaciones_listar/$1');
+$routes->get('publicaciones_ver/(:num)', 'AppApiController::publicaciones_ver/$1');
+$routes->post('publicaciones_toggle_like/(:num)', 'AppApiController::publicaciones_toggle_like/$1');
+$routes->get('publicaciones_listar_comentarios/(:num)', 'AppApiController::publicaciones_listar_comentarios/$1');
+$routes->post('publicaciones_guardar_comentario', 'AppApiController::publicaciones_guardar_comentario');
+
+// Pases de turno (app móvil) - JWT
+$routes->get('pases_turnos', 'AppApiController::pases_turnos');
+$routes->get('pases_listar', 'AppApiController::pases_listar');
+$routes->get('pases_obtener/(:num)', 'AppApiController::pases_obtener/$1');
+$routes->post('pases_guardar', 'AppApiController::pases_guardar');
+$routes->post('pases_cerrar/(:num)', 'AppApiController::pases_cerrar/$1');
+$routes->post('pases_reabrir/(:num)', 'AppApiController::pases_reabrir/$1');
+$routes->post('pases_eliminar/(:num)', 'AppApiController::pases_eliminar/$1');
+$routes->get('pases_puntos/(:num)', 'AppApiController::pases_puntos/$1');
+$routes->post('pases_guardar_punto', 'AppApiController::pases_guardar_punto');
+$routes->post('pases_cambiar_estado_punto/(:num)', 'AppApiController::pases_cambiar_estado_punto/$1');
+$routes->post('pases_eliminar_punto/(:num)', 'AppApiController::pases_eliminar_punto/$1');
+$routes->get('pases_listar_comentarios/(:num)', 'AppApiController::pases_listar_comentarios/$1');
+$routes->post('pases_guardar_comentario', 'AppApiController::pases_guardar_comentario');
+
+// Tareas (app móvil) - JWT
+$routes->get('tareas_listar', 'AppApiController::tareas_listar');
+$routes->get('tareas_obtener/(:num)', 'AppApiController::tareas_obtener/$1');
+$routes->post('tareas_guardar', 'AppApiController::tareas_guardar');
+$routes->post('tareas_eliminar/(:num)', 'AppApiController::tareas_eliminar/$1');
+$routes->post('tareas_completar/(:num)', 'AppApiController::tareas_completar/$1');
+$routes->post('tareas_descompletar/(:num)', 'AppApiController::tareas_descompletar/$1');
+$routes->get('tareas_listar_comentarios/(:num)', 'AppApiController::tareas_listar_comentarios/$1');
+$routes->post('tareas_guardar_comentario', 'AppApiController::tareas_guardar_comentario');
+
+// Calendario (app móvil) - JWT
+$routes->get('calendario_listar', 'AppApiController::calendario_listar');
+$routes->post('calendario_guardar', 'AppApiController::calendario_guardar');
+$routes->post('calendario_eliminar/(:num)', 'AppApiController::calendario_eliminar/$1');
+
+// Utilidades compartidas (app móvil) - JWT
+$routes->get('app_departamentos', 'AppApiController::app_departamentos');
+$routes->get('app_usuarios', 'AppApiController::app_usuarios');
+
 
 
 
